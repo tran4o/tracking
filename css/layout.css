@@ -1,0 +1,132 @@
+BODY 
+{
+	font-family: "Arial", "Lucida Grande", "Tahoma", "Verdana";
+    font-size: 13px;
+	background-color : white;
+}
+
+.map {
+	position : absolute;
+	width : 100%;
+	height : 100%;
+	left:0;
+	top:0;
+}
+
+.popup_pulse_div {
+	height : 22px;
+}
+
+.popup_pulse {
+	width : 17px;
+	height : 15px;
+	position : absolute;
+	right : 4px;
+	top : 4px;
+}
+
+.popup_freq {
+	position : absolute;
+	right : 5px;
+	font-weight : bold;
+	top : 21px;
+	font-size : 10px;
+	overflow : visible;
+	width : 15px;
+	text-align : center;
+}
+
+.popup_table {
+	padding : 0;
+	width : 100%;
+	padding-left : 105px;
+	padding-right: 5px;
+	margin-top : 2px;
+	border-radius : 4px;
+	min-height : 100px;
+	height : 100px;
+	background-repeat : no-repeat;
+}
+
+.popup_table td {
+	padding : 0;
+	line-height : 1.1;
+	white-space:nowrap;
+}
+
+.popup_table td.label {
+	color : #909090;
+	text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);	
+}
+
+.popup_table td.value {
+	text-align : right;
+	padding-left : 5px;
+	font-weight : bold;
+	text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);	
+}
+
+.popup_info {
+	width : 100px;
+	height : 100px;
+	background-color:red;
+}
+
+.popup_freq, .popup_shadow, .popup_code {
+	text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);	
+}
+
+.popup_code {
+	white-space : nowrap;
+	display : block;
+	font-size : 26px;
+	font-weight : bold;
+	line-height : 1;
+	padding-right : 18px;
+	/*background-image : url('../img/pulse-anim.gif');
+	background-repeat : no-repeat;
+	background-size: 423px 22px;*/
+}
+
+.map_button img {
+	width : 32px;
+	height : 32px;
+} 
+.map_buttons {
+	z-index : 999999999999;
+	position:absolute;
+	bottom:5px;
+	left:5px;
+}	
+.map_button {
+	border : 2px solid #404040; 
+	border-radius : 5px;
+	padding : 5px;
+	float : left;
+	margin-right: 5px;
+	cursor:pointer;
+	background-color:rgba(0,0,0,0.3);
+}
+
+.map_buttons .active {
+	border : 2px solid #FFFFFF;
+	background-color : black; 
+}
+
+#route_text_area {
+	border : 2px solid #404040; 
+	border-radius : 5px;
+	float : left;
+	background-color:rgba(0,0,0,0.3);
+	height : 41px;
+	width : 300px;
+	line-height : 1;
+	padding : 2px;
+	color : white;
+	font-size : 10px;
+}	
+
+.map_button:hover
+{
+	background-color:#A0A0A0;
+} 

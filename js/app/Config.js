@@ -1,0 +1,31 @@
+window.CONFIG=
+{
+	timeouts : // in seconds
+	{
+		deviceTimeout : 60*5,
+		animationFrame : 0.04,
+		gpsLocationDebugShow : 4		// time to show gps location (debug) info
+	},
+	distances : // in m
+	{
+		stayOnRoadTolerance : 500,	// 500m stay on road tolerance
+		elapsedDirectionEpsilon : 500 // 500m direction tolerance, too fast movement will discard 
+	},
+	constraints : {
+		backwardsEpsilonInMeter : 400, //220 m movement in the backward direction will not trigger next run counter increment		
+		maxSpeed : 20,	//kmh
+		maxParticipantStateHistory : 10000, // number of elements
+		popupEnsureVisibleWidth : 200,
+		popupEnsureVisibleHeight: 120,
+	},
+	math : {
+		speedAndAccelerationAverageDegree : 4,	// caclulation based on N states (average) (MIN 2)
+		displayDelay : 30,	// display delay in SECONDS
+		interpolateGPSAverage : 3 // number of recent values to caclulate average gps for position (smooting the curve.min 0 = NO,1 = 2 values (current and last))
+	},
+	simulation : {
+		pingInterval : 10, // interval in secods to ping with gps data
+		gpsInaccuracy : 30 	// error simulation in METER
+	}
+	
+};

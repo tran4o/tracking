@@ -1,0 +1,264 @@
+Class("GUI", 
+{
+    //--------------------------------------
+	// ALL COORDINATES ARE IN WORLD MERCATOR
+    //--------------------------------------
+    has: 
+	{
+    	isDebug : {
+    		is : "rw",
+    		init : true
+    	},
+		receiverOnMapClick : {
+			is : "rw",
+			init : []
+		},
+        width : {
+            is:   "rw",
+            init: 750
+        },
+        height: {
+            is:   "rw",
+            init: 500
+        },
+		track : {
+			is:   "rw"
+		},
+		elementId : {
+			is : "rw",
+			init : "map"
+		},
+		initialPos : {	
+			is : "rw",
+			init : null
+		},
+		initialZoom : {	
+			is : "rw",
+			init : 10
+		},
+		bingMapKey : {
+			is : "rw",
+			init : 'Aijt3AsWOME3hPEE_HqRlUKdcBKqe8dGRZH_v-L3H_FF64svXMbkr1T6u_WASoet'
+		},
+		//-------------------
+		map : {
+			is : "rw",
+			init : null
+		},
+		trackLayer : {
+			is : "rw",
+			init : null
+		},
+		participantsLayer : {
+			is : "rw",
+			init : null
+		},
+		debugLayerGPS : {
+			is : "rw",
+			init : null
+		},	
+		selectedParticipant : {
+			is : "rw",
+			init : null
+		},
+		popup : {
+			is : "rw",
+			init : null
+		}
+    },
+    //--------------------------------------
+	methods: 
+	{
+        init: function (params)  
+		{
+			var defPos = [0,0];
+			if (this.initialPos) 
+				defPos=this.initialPos;
+			//---------------------------------------------
+			var extent = params && params.skipExtent ? null : TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
+			this.trackLayer = new ol.layer.Vector({
+			  source: new ol.source.Vector(),
+			  style : STYLES["track"]
+			});
+			this.participantsLayer = new ol.layer.Vector({
+			  source: new ol.source.Vector(),
+			  style : STYLES["participant"]
+			});
+			if (this.isDebug)
+			this.debugLayerGPS = new ol.layer.Vector({
+				  source: new ol.source.Vector(),
+				  style : STYLES["debugGPS"]
+			});
+			//--------------------------------------------------------------
+			var ints = [];
+			this.popup = new ol.Overlay.Popup({ani:false});
+			this.map = new ol.Map({
+			  renderer : "canvas",
+			  target: 'map',
+			  layers: [
+				new ol.layer.Tile({
+				  source: new ol.source.BingMaps({
+					key: this.bingMapKey,
+					imagerySet: 'AerialWithLabels'
+				  })
+				}),
+				this.trackLayer,this.participantsLayer
+			  ],
+			  view: new ol.View({
+				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
+				zoom: this.getInitialZoom(),
+				minZoom: 0,
+				maxZoom: 19,
+				extent : extent ? extent : undefined
+			  })
+			});
+			for (var i=0;i<ints.length;i++)
+				this.map.addInteraction(ints[i]);
+
+			
+			this.map.addOverlay(this.popup);
+			if (this.isDebug) 
+				this.map.addLayer(this.debugLayerGPS);
+			TRACK.init();
+			if (TRACK.feature)
+				this.trackLayer.getSource().addFeature(TRACK.feature);
+			//----------------------------------------------------
+			this.map.on('click', function(event) 
+			{
+				TRACK.onMapClick(event);
+				var res=[];
+				var fl = this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+					if (layer == this.participantsLayer)
+						res.push(feature);
+				},this);
+				if (res.length) 
+				{
+					var feat = this.getSelectedParticipantFromArrayCyclic(res);
+					if (feat)
+						this.setSelectedParticipant(feat.participant);
+					else
+						this.setSelectedParticipant(null);
+				} else {
+					this.setSelectedParticipant(null);
+				}
+			},this);
+			//-----------------------------------------------------
+			if (!this._animationInit) {
+				this._animationInit=true;
+				setInterval(this.onAnimation.bind(this), 1000*CONFIG.timeouts.animationFrame );
+			}
+        },
+		
+        
+        getSelectedParticipantFromArrayCyclic : function(features) {
+    		var arr = [];
+    		var tmap = {};
+    		var crrPos = 0;
+			var pos=null;
+    		for (var i=0;i<features.length;i++) {
+    			var feature = features[i];
+    			var id = feature.participant.code;
+    			arr.push(id);
+    			tmap[id]=true;
+				if (id == this.vr_lastselected) {
+					pos=i;
+				}
+    		}
+    		var same = this.vr_oldbestarr && pos != null; 
+    		if (same) 
+    		{
+    			// all from the old contained in the new
+    			for (var i=0;i<this.vr_oldbestarr.length;i++) 
+    			{
+    				if (!tmap[this.vr_oldbestarr[i]]) {
+    					same=false;
+    					break;
+    				}
+    			}
+    		}
+    		if (!same) {
+    			this.vr_oldbestarr=arr;
+    			this.vr_lastselected=arr[0];
+    			return features[0];
+    		} else {
+    			this.vr_lastselected = pos > 0 ? arr[pos-1] : arr[arr.length-1];    			
+        		var resultFeature;
+    			for (var i=0;i<features.length;i++) 
+        		{
+        			var feature = features[i];
+        			var id = feature.participant.code;
+        			if (id == this.vr_lastselected) {
+        				resultFeature=feature;
+        				break;
+        			}
+        		}
+                return resultFeature;
+    		}
+        },
+        
+		showError : function(msg,onCloseCallback) 
+		{
+			alert("ERROR : "+msg);
+			if (onCloseCallback) 
+				onCloseCallback();
+		},
+		
+		onAnimation : function() 
+		{
+			for (var ip=0;ip<TRACK.participants.length;ip++) 
+			{
+				var p = TRACK.participants[ip];
+				p.interpolate();
+			}
+			if (this.selectedParticipant) {
+				var spos = this.selectedParticipant.getFeature().getGeometry().getCoordinates();
+				if (!this.popup.is_shown) {
+				    this.popup.show(spos, this.popup.lastHTML=this.selectedParticipant.getPopupHTML());
+				    this.popup.is_shown=1;
+				} else {
+					if (!this.popup.getPosition() || this.popup.getPosition()[0] != spos[0] || this.popup.getPosition()[1] != spos[1])
+					    this.popup.setPosition(spos);
+				    var rr = this.selectedParticipant.getPopupHTML();
+				    if (rr != this.popup.lastHTML) {
+				    	this.popup.lastHTML=rr;
+					    this.popup.content.innerHTML=rr; 
+				    }
+					this.popup.panIntoView_(spos);
+				}
+			}
+			//--------------------			
+			if (this.isDebug)  
+				this.doDebugAnimation();
+		},
+		
+		setSelectedParticipant : function(part) 
+		{
+			this.selectedParticipant=part;
+			if (!part) {
+				this.popup.hide();
+				delete this.popup.is_shown;
+			} 
+		},
+		
+		doDebugAnimation : function() 
+		{
+			var ctime = (new Date()).getTime();
+			var todel=[];
+			var rr = this.debugLayerGPS.getSource().getFeatures();
+			for (var i=0;i<rr.length;i++)
+			{
+				var f = rr[i];
+				if (ctime - f.timeCreated - CONFIG.math.displayDelay*1000 > CONFIG.timeouts.gpsLocationDebugShow*1000)
+					todel.push(f);
+				else
+					f.changed();
+			}
+			if (todel.length) 
+			{
+				for (var i=0;i<todel.length;i++)
+					this.debugLayerGPS.getSource().removeFeature(todel[i]);
+			}
+			//-------------------------------------------------------------
+		}
+    }
+});
