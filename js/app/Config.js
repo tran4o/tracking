@@ -3,7 +3,7 @@ window.CONFIG=
 	timeouts : // in seconds
 	{
 		deviceTimeout : 60*5,
-		animationFrame : 0.04,
+		animationFrame : MOBILE ? 0.4 : 0.1,
 		gpsLocationDebugShow : 4		// time to show gps location (debug) info
 	},
 	distances : // in m
@@ -26,6 +26,26 @@ window.CONFIG=
 	simulation : {
 		pingInterval : 10, // interval in secods to ping with gps data
 		gpsInaccuracy : 30 	// error simulation in METER
+	},	
+	constants : 
+	{
+		ageGroups :  
+		[
+		 {
+			 from : null,
+			 to : 8, 
+			 code : "FirstAgeGroup"
+		 }
+		 ,{
+			 from : 8,
+			 to : 40, 
+			 code : "MiddleAgeGroup"
+		 }
+		 ,{
+			 from : 40,
+			 to : null, 
+			 code : "LastAgeGroup"
+		 }
+		]
 	}
-	
 };

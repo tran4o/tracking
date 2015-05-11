@@ -236,6 +236,10 @@ Class("Participant",
 						} while (nel < lstate.getElapsed());
 					}
 					//--------------------------------------------------------------
+					if (nel > TRACK.laps) {
+						nel=TRACK.laps;
+					}
+					//--------------------------------------------------------------
 					llstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree*2 ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree*2] : null;
 					lstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree] : null;
 					if (lstate)  {
@@ -359,12 +363,29 @@ Class("Participant",
 				if (lstate.getAcceleration() > 0)
 					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
 			}
-			
+				
+			var pass = Math.round((new Date()).getTime()/3500) % 3;
+
 			html+="<table class='popup_table' style='background-image:url(\""+this.getImage()+"\")'>";
 			var isDummy=!(this.getElapsed() > 0);
-			html+="<tr><td class='label'>Rank</td><td class='value'>"+(isDummy ? "-":this.getRank())+"</td></tr>";
-			html+="<tr><td class='label'>Run</td><td class='value'>"+(isDummy ? "-":(1+Math.floor(elkm%1)))+"</td></tr>";
-			html+="<tr><td class='label'>Elapsed</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			if (pass == 0)
+				html+="<tr><td class='label'>Ovr rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
+			else if (pass == 1)
+					html+="<tr><td class='label'>Grp rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
+			else if (pass == 2)
+				html+="<tr><td class='label'>Gnd rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
+			else
+				html+="<tr><td class='label'>Run</td><td class='value'>"+(isDummy ? "-":(1+Math.floor(elkm%1)))+"</td></tr>";
+			
+			if (pass == 0)
+				html+="<tr><td class='label'>Total</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			else if (pass == 1)
+				html+="<tr><td class='label'>Swim</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			else if (pass == 2)
+				html+="<tr><td class='label'>Bike</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			else 
+				html+="<tr><td class='label'>Run</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			
 			html+="<tr><td class='label'>Speed</td><td class='value'>"+(!isDummy && etxt1 ? etxt1 : "-") + "</td></tr>";
 			html+="<tr><td class='label'>Acceler.</td><td class='value'>"+(!isDummy && etxt2 ? etxt2 : "-") +"</td></tr>";
 			

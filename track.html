@@ -23,19 +23,19 @@
     <title>Tracking Example</title>
   </head>
   <body onLoad="">
-	<div id="map" class="map">		
-	</div>
-	<div class="map_buttons">
-	<div id="button_erase" class="map_button">
-		<img src="img/erase.png"/>
-	</div>
-	<div id="button_navigate" class="map_button">
-		<img src="img/navigate.png"/>
-	</div>
-	<div id="button_save" class="map_button">
-		<img src="img/save.png"/>
-	</div>
-	<textarea id="route_text_area" readonly></textarea>
+	<div id="map" class="map_fullscreen">		
+		<div class="map_buttons">
+		<div id="button_erase" class="map_button">
+			<img src="img/erase.png"/>
+		</div>
+		<div id="button_navigate" class="map_button">
+			<img src="img/navigate.png"/>
+		</div>
+		<div id="button_save" class="map_button">
+			<img src="img/save.png"/>
+		</div>
+		<textarea id="route_text_area" readonly></textarea>
+		</div>
 	</div>
 	<script>
 window.TRACK = new Track();
@@ -48,20 +48,26 @@ window.GUI = new GUI(
 function errorRoute(err) {
 	GUI.showError(err);
 }
+
 function initGUI() 
 {
 	var trackData = localStorage.getItem("CURRENT_TRACK");
 	if (trackData != null) 
 	{
-		trackData=JSON.parse(trackData);
-		TRACK.setRoute(trackData);
+		try {
+			trackData=JSON.parse(trackData);
+			TRACK.setRoute(trackData);
+		} catch (e) {
+			console.log("ERROR PARSE JSON "+e);
+			trackData=null;
+		}
 	}
 	GUI.init({skipExtent:true});
 	//-------------------------------------------------
 	function store() 
 	{
 		if (!GUI.getTrackLayer().getSource().getFeatures().length) {
-			localStorage.setItem("CURREN*T_TRACK",null);
+			localStorage.setItem("CURRENT_TRACK",null);
 			$("#route_text_area").val("")
 			return;
 		}
@@ -99,10 +105,10 @@ function initGUI()
 	});
 	draw.on('drawend', function(e) {
 		GUI.map.removeInteraction(draw);
-		GUI.map.addInteraction(modify);
 		GUI.map.addInteraction(select);
+		GUI.map.addInteraction(modify);
 		store();
-		if (TRACK.feature)
+		if (!TRACK.feature)
 			TRACK.feature=GUI.getTrackLayer().getSource().getFeatures()[0];
 	});
 	//-------------------------------------------------
@@ -110,8 +116,8 @@ function initGUI()
 		GUI.map.addInteraction(draw);
 	else {
 		$("#route_text_area").val(JSON.stringify(trackData));
-		GUI.map.addInteraction(modify);
 		GUI.map.addInteraction(select);
+		GUI.map.addInteraction(modify);
 	}
 	//-------------------------------------------------
 	$("#button_erase").click(function(){

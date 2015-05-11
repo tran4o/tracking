@@ -38,7 +38,7 @@ BODY
 
 .popup_table {
 	padding : 0;
-	width : 100%;
+	width : 250px;
 	padding-left : 105px;
 	padding-right: 5px;
 	margin-top : 2px;
@@ -55,7 +55,7 @@ BODY
 }
 
 .popup_table td.label {
-	color : #909090;
+	color : #C0C0C0;
 	text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);	
 }
 
@@ -130,3 +130,177 @@ BODY
 {
 	background-color:#A0A0A0;
 } 
+
+.map_fullscreen {
+	position : absolute;
+	width : 100%;
+	height : 100%;
+	left:0;
+	top:0;
+}
+
+.toolbar_map {
+	z-index : 999999;
+	position:absolute;
+	top:0.25em;
+	right:0.25em; 
+	background-color: #eee;
+  	background-color: rgba(255,255,255,.4);
+  	border-radius: 4px;
+  	padding: 2px;	
+}	
+
+.toolbar_track{
+	z-index : 999999;
+	position:absolute;
+	bottom:0.25em;
+	left:0.25em;
+	background-color: #eee;
+  	background-color: rgba(255,255,255,.4);
+  	border-radius: 4px;
+  	padding: 2px;	
+}
+
+.toolbar_button img {
+    width : 1.375em;
+    height : 1.375em;
+}
+
+.toolbar_button 
+{
+  float: right;
+  margin: 1px;
+  color: #fff;
+  font-size: 2.23em; /*1.23em; */
+  padding : 0.2em;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  height: auto;
+  width: auto;
+  line-height: .4em;
+  background-color: #7b98bc;
+  background-color: rgba(0,60,136,.5);
+  border: none;
+  border-radius: 2px;
+}
+
+body.mobile .toolbar_button {
+	font-size: 1.23em; 
+}
+
+.toolbar_button:hover {
+  background-color: rgba(0, 60, 136, .7);
+}
+
+.map_participants,.map_favorites {
+	display:inline;
+	position : absolute;
+	z-index : 9999999;
+	width : auto;
+	height : auto;
+	max-width : 100%;
+	max-height : 100%;
+	background-color:rgba(255,255,255,0.75);
+	border-radius : 5px;
+	padding : 5px;
+	overflow : auto;	
+	-webkit-box-shadow: 0px 0px 9px 1px rgba(0,0,0,0.95);
+	-moz-box-shadow: 0px 0px 9px 1px rgba(0,0,0,0.95);
+	box-shadow: 0px 0px 9px 1px rgba(0,0,0,0.95);	
+}
+
+
+th.center {
+	text-align : center;	
+}
+
+.map_participants table.dataTable tbody th, .map_participants table.dataTable tbody td,
+.map_favorites table.dataTable tbody th, .map_favorites table.dataTable tbody td
+ {
+	padding :4px 2px !important;
+}
+.map_participants td,.map_favorites td {
+	background-color : rgba(255,255,255,0) !important;	
+	text-shadow: 0px 0px 4px white;	
+	cursor : pointer;
+}
+
+.map_participants tbody tr:hover,.map_favorites tbody tr:hover {
+	background-color : rgba(0,0,0,0.35) !important;
+	color : white;
+}
+
+.map_participants tr,.map_favorites tr {
+	background-color : transparent !important;
+}
+
+.map_participants .dataTables_length,.map_favorites .dataTables_length {
+	display : none;
+}
+
+.caption-general {
+	font-size : 200%;
+	font-weight : bold;
+	display : block;
+	line-height : 1;
+	border-bottom : 1px solid black;
+	margin-bottom : 10px;
+	text-shadow: 0px 0px 4px white;	
+	padding-bottom : 3px;
+}
+
+.table-favorite-add {
+	width : 32px;
+	height : 32px;
+	/* border : 2px solid black; */
+	cursor : pointer;
+}
+
+.invisible {
+	display : none;
+}
+
+.close {
+	position : absolute;
+	right : 5px;
+	top : 0.4em;
+	width : 22px;
+	height : 22px;
+	background-image:url("/img/close.png");
+	background-repeat:no-repeat;
+	cursor:pointer;
+}
+
+.close:hover {
+	background-image:url("/img/close-hover.png");
+}
+
+.ol-zoom{
+	left : 0.25em;
+	top : 0.25em;
+}
+
+.ol-attribution {
+	right : 0.25em;
+	bottom : 0.25em;
+}
+
+.inactive {
+	opacity : 0.5;
+}
+
+.ol-popup {
+	pointer-events : none;
+}
+
+#participant_details {
+	z-index:99999;
+	position:absolute;
+	background-color:red;
+	top:0;
+	bottom:0;
+	left:0;
+	width:auto;
+	padding:5px;
+}

@@ -4,34 +4,136 @@ window.STYLES={
 	//------------------------------------------------
 	"track" : function(feature,resolution) 
 	{
-		var styles=
-		[
-			// DEFAULT STYLE
-			new ol.style.Style({
-			  stroke: new ol.style.Stroke({
-				color: '#9bff80',
-				width: 4
-			  })
-			})
-		];
-		var coords = feature.getGeometry().getCoordinates(); 
+		var styles=[];
+		var track=feature.track;
+		var coords=feature.getGeometry().getCoordinates();
+		var geomswim=coords;
+		var geombike;
+		var geomrun;
+		
+		if (track.bikeStartKM) {
+			for (var i=0;i<track.distances.length;i++) {
+				if (track.distances[i] >= track.bikeStartKM*1000)
+					break;
+			}
+			var j;
+			if (track.runStartKM) {
+				for (j=i;j<track.distances.length;j++) {
+					if (track.distances[j] >= track.runStartKM*1000)
+						break;
+				}
+			} else {
+				j=track.distances.length;
+			}
+			geomswim=coords.slice(0,i);
+			geombike=coords.slice(i-1,j);
+			if (j < track.distances.length)
+				geomrun=coords.slice(j-1,track.distances.length);
+			if (!geomswim.length)
+				geomswim=null;
+			if (!geombike.length)
+				geombike=null;
+			if (!geomrun.length)
+				geomswim=null;
+			
+		}
+		if (geomswim && GUI.isShowSwim) {
+			styles.push
+			(					
+					new ol.style.Style({
+						geometry: new ol.geom.LineString(geomswim),
+						stroke: new ol.style.Stroke({
+						color: '#ff4040',
+						width: 4
+					  })
+					})
+			);
+		}
+		if (geombike && GUI.isShowBike) 
+		{
+			styles.push
+			(					
+					new ol.style.Style({
+						geometry: new ol.geom.LineString(geombike),
+						stroke: new ol.style.Stroke({
+						color: '#40ff40',
+						width: 4
+					  })
+					})
+			);
+		}
+		if (geomrun && GUI.isShowRun) 
+		{
+			styles.push
+			(					
+					new ol.style.Style({
+						geometry: new ol.geom.LineString(geomrun),
+						stroke: new ol.style.Stroke({
+						color: '#ffff40',
+						width: 4
+					  })
+					})
+			);
+		}
+		
+		//-------------------------------------
 		if (coords && coords.length >= 2) 
 		{
-			var end = coords[coords.length-1];
-			var start = coords[coords.length-2];
+			var end = coords[1];
+			var start = coords[0];
 			var dx = end[0] - start[0];
 			var dy = end[1] - start[1];
 			var rotation = Math.atan2(dy, dx);
 			styles.push(new ol.style.Style(
 			{
-			  geometry: new ol.geom.Point(end),
+			  geometry: new ol.geom.Point(start),
 			  image: new ol.style.Icon({
-				src: 'img/arrow.png',
-				anchor: [1, 0.5],
+				src: 'img/begin-end-arrow.png',
+				scale : 0.45,
+				anchor: [0.0, 0.5],
 				rotateWithView: false,
-				rotation: -rotation
+				rotation: -rotation,
+				opacity : 1,
 			  })
 			}));
+
+			// loop?
+			end = coords[coords.length-1];
+			if (end[0] != start[0] || end[1] != start[1]) 
+			{
+				var start = coords[coords.length-2];
+				var dx = end[0] - start[0];
+				var dy = end[1] - start[1];
+				var rotation = Math.atan2(dy, dx);
+				styles.push(new ol.style.Style(
+				{
+				  geometry: new ol.geom.Point(end),
+				  image: new ol.style.Icon({
+					src: 'img/finish.png',
+					scale : 0.65,
+					anchor: [0.2, 0.8],
+					rotateWithView: false,
+					//rotation: -rotation,
+					opacity : 1,
+				  })
+				}));
+			}
+			
+
+			/*if (0 == 1)
+			styles.push(new ol.style.Style(
+					{
+					  geometry: new ol.geom.Point(end),
+					  image: new ol.style.Icon({
+						src: 'img/direction-small.png',
+						scale : 0.7,
+						anchor: [0.5, 0.5],
+						rotateWithView: false,
+						rotation: -rotation,
+						opacity : 0.5,
+					  })
+					}));*/
+
 		}
 		return styles;
 	},
@@ -87,7 +189,7 @@ window.STYLES={
 						  color: feature.participant.color
 						}),
 						stroke: new ol.style.Stroke({
-						  color: [0, 0, 0, 0.5],
+						  color: [255, 255, 255, 0.5],
 						  width: 4
 						}),
 						text : feature.participant.getCode(),
@@ -106,7 +208,7 @@ window.STYLES={
 						  color: feature.participant.color
 						}),
 						stroke: new ol.style.Stroke({
-						  color: [0, 0, 0, 0.5],
+						  color: [255, 255, 255, 0.5],
 						  width: 2
 						}),
 						text : etxt,

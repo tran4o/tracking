@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+
+    <link rel="stylesheet" href="js/ol3/ol.css" type="text/css"></link>
+    <link rel="stylesheet" href="js/ol3/ol3-popup.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/layout.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/site.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/dataTables.editor.min.css" type="text/css"></link>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.6/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/responsive/1.0.5/css/dataTables.responsive.css">
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/tabletools/2.2.4/css/dataTables.tableTools.css">
+    
+    <script src="js/ol3/ol-debug.js" type="text/javascript"></script>
+    <script src="js/ol3/ol3-popup.js" type="text/javascript"></script>
+    <script src="js/joose.js" type="text/javascript"></script>    
+	<script src="js/app/Styles.js" type="text/javascript"></script>
+	<script src="js/app/Utils.js" type="text/javascript"></script>
+	<script src="js/app/Config.js" type="text/javascript"></script>
+	<script src="js/app/GUI.js" type="text/javascript"></script>
+	<script src="js/app/Track.js" type="text/javascript"></script>
+    <script src="js/app/Participant.js" type="text/javascript"></script>
+	<script src="js/app/Simulator.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>	
+
+	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/1.10.6/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>
+    <title>TODO TITLE</title>
+    
+	<script>
+	var draw;
+	var modify;
+	var select;
+	
+	window.TRACK = new Track();
+	window.GUI = new GUI(
+	{
+			track		: TRACK,
+			initialZoom : 2
+			//initialPos  : [lon,lat],
+	});
+	function errorRoute(err) {
+		GUI.showError(err);
+	}
+
+	function initGUI() 
+	{
+		if (GUI.is_init) {
+			select.getFeatures().clear();
+			return;
+		}
+		GUI.is_init=1;
+		GUI.init({skipExtent:true});
+		//-------------------------------------------------
+		function store(forceClose) 
+		{
+			if (!GUI.getTrackLayer().getSource().getFeatures().length) {
+				return null;
+			}
+			var trackData=GUI.getTrackLayer().getSource().getFeatures()[0].getGeometry().getCoordinates();
+			if (forceClose) 
+			{
+				if (trackData[0][0] != trackData[trackData.length-1][0] || trackData[0][1] != trackData[trackData.length-1][1]) {
+					trackData.push(trackData[0]);
+					GUI.getTrackLayer().getSource().getFeatures()[0].getGeometry().setCoordinates(trackData);
+				}
+			}
+			for (var i=0;i<trackData.length;i++)
+				trackData[i]=ol.proj.transform(trackData[i], 'EPSG:3857','EPSG:4326');			
+			$("#route_text_area").val(JSON.stringify(trackData));
+			TRACK.setRoute(trackData);
+			return JSON.stringify(trackData);
+		}
+		//-------------------------------------------------
+		select = new ol.interaction.Select({
+			style: STYLES["trackselected"],
+			layers: [GUI.trackLayer]
+		});
+		modify = new ol.interaction.Modify({
+			features: select.getFeatures(),
+			layers: [GUI.trackLayer]
+		});
+		//-------------------------------------------------
+		draw = new ol.interaction.Draw({
+		      source: GUI.trackLayer.getSource(),
+		      type: "LineString"
+		});
+		draw.on('drawstart', function(e) {
+			GUI.trackLayer.getSource().clear();
+		});
+		draw.on('drawend', function(e) {
+			GUI.map.removeInteraction(draw);
+			GUI.map.addInteraction(select);
+			GUI.map.addInteraction(modify);
+			store();
+			if (!TRACK.feature)
+				TRACK.feature=GUI.getTrackLayer().getSource().getFeatures()[0];
+		});
+		//-------------------------------------------------
+		GUI.map.removeInteraction(select);
+		GUI.map.removeInteraction(modify);
+		GUI.map.addInteraction(draw);
+		//-------------------------------------------------
+		$("#button_erase").click(function(){
+			GUI.trackLayer.getSource().clear();
+			select.getFeatures().clear();
+			GUI.map.removeInteraction(select);
+			GUI.map.removeInteraction(modify);
+			GUI.map.addInteraction(draw);
+			store();
+		});
+		$("#button_navigate").click(function(){
+			TRACK.generateFromLocations(TRACK.getRoute(),function() {
+				TRACK.updateFeature();
+				store();
+			},function(msg) {
+				GUI.showError(msg);
+			},true);			
+		});
+		$("#button_join").click(function() {
+			store(true);
+		});
+		$("#button_submit").click(function() {
+			var data = store();
+			GUI.onEditSave(data);			
+			$(".fw-container").css("display","block");
+		});
+		$("#button_cancel").click(function() {
+			$("#map").css("display","none");
+			$(".fw-container").css("display","block");
+		});
+	}
+	//-------------------------------------------------
+	function mapEdit(id,json,onSubmit) 
+	{
+		console.log("ID : "+id+" | JSON : "+json);
+		$(".fw-container").css("display","none");
+		$("#map").css("display","block");
+		initGUI();
+		GUI.trackLayer.getSource().clear();
+		try {
+			var trackData = JSON.parse(json);
+			TRACK.setRoute(trackData);
+			if (json && json != "") 
+			{
+				$("#route_text_area").val(json);
+				GUI.addTrackFeature();
+				GUI.zoomToTrack();
+				GUI.map.removeInteraction(draw);
+				GUI.map.addInteraction(select);
+				GUI.map.addInteraction(modify);
+			}		
+		} catch (e) {
+			console.log("Unable to do mapEdit for "+json);
+			console.error("Exception on mapEdit "+e);
+		}		
+		GUI.onEditSave = function(data) {
+			$("#map").css("display","none");
+			onSubmit(data);
+		};
+	}
+
+	$(document).ready( function () 
+	{
+		$(".mobile-show i").click(function() {
+			$(".mobile-show").css("display","none"); 
+			$(".fw-nav").css("height","auto"); 
+		});
+		//----------------------------------------
+		window.EDITOR1 = new $.fn.dataTable.Editor( {
+			ajax: "script/participants-example.json",
+			table: "#table-participants",
+			idSrc: "id",
+			fields: [ {
+					label: "Code",
+					name: "code"
+				}, {
+					label: "Name",
+					name: "name"
+				}, {
+					label: "BIB",
+					name: "bib"
+				}, {
+					label: "Country",
+					name: "country"
+				}, {
+					label: "Age",
+					name: "age"
+				}, {
+					label: "Gender",
+					name: "gender"
+				}, {
+					label: "Occupation",
+					name: "occupation"
+				}, {
+					label: "Pulse",
+					name: "pulse"
+				}
+			]
+		} );
+
+		window.EDITOR2 = new $.fn.dataTable.Editor( {
+			ajax: "script/events-example.json",
+			table: "#table-events",
+			idSrc: "id",
+			fields: [ {
+					label: "Code",
+					name: "code"
+				}, {
+					label: "Name",
+					name: "name"
+				}, {
+					label: "Date",
+					name: "date",
+					dateFormat: "mm-dd-yyyy",
+					type: "date"
+				}, {
+					label: "Begin time",
+					name: "begin-time"
+				}, {
+					label: "End time",
+					name: "end-time"
+				},{
+		            label: "track JSON data",
+		            name:  "track"
+		        },{
+		            label: "track run count",
+		            name:  "run-count"
+		        },{
+		            label: "bike start km.",
+		            name:  "bike-start"
+		        },{
+		            label: "run start km.",
+		            name:  "run-start"
+		        }
+				]
+		} );
+
+		var tableParticipants = $('#table-participants').DataTable( {
+			dom: "Tfrtip",
+			ajax: "script/participants-example.json",
+			columns: [
+				{ data: "code" },
+				{ data: "name" },
+				{ data: "bib" ,className : "dt-body-right" },
+				{ data: "country" },
+				{ data: "age" ,className : "dt-body-right" },
+				{ 
+					// age GROUP
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						var age = parseInt(data.age);
+						for (var i=0;i<CONFIG.constants.ageGroups.length;i++) 
+						{
+							if (
+									(!CONFIG.constants.ageGroups[i].from || age >= CONFIG.constants.ageGroups[i].from) && 
+									(!CONFIG.constants.ageGroups[i].to || age <= CONFIG.constants.ageGroups[i].to)
+							   ) {
+								age = CONFIG.constants.ageGroups[i].code;
+								break;
+							}
+						} 
+						return age;
+					} 
+				},
+				{ data: "gender" },
+				{ data: "occupation" },
+				{ data: "pulse" , className : "dt-body-right" },
+			],
+			tableTools: {
+				sRowSelect: "os",
+				aButtons: [
+					{ sExtends: "editor_create", editor: EDITOR1 },
+					{ sExtends: "editor_edit",   editor: EDITOR1 },
+					{ sExtends: "editor_remove", editor: EDITOR1 }
+				]
+			}
+		} );	
+		
+		var tableEvents = $('#table-events').DataTable( {
+			dom: "Tfrtip",
+			ajax: "script/events-example.json",
+			columns: [
+				{ data: "code" },
+				{ data: "name" },
+				{ 
+					// date 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						var dt = data["date"];
+						if (!dt)
+							return "";
+						var res="";
+						try {
+							res = formatDate(new Date(dt));
+						} catch(e) {
+						}
+						return res;
+					} 
+				},
+				{ 
+					// track
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (!data["track"])
+							return "";
+						var tpos = JSON.parse(data["track"]);
+						var res;
+						if (!tpos || !tpos.length)
+							res="0 km";
+						else {
+							var tr = new Track();
+							tr.setRoute(tpos);
+							res = formatNumber2(tr.getTrackLength()/1000.0)+" km";
+						}
+						if (data["run-count"] && parseInt(data["run-count"]) > 1)
+							res="<b>"+data["run-count"]+"x</b> "+res;
+						if (data["begin-time"] && data["end-time"])
+							res=data["begin-time"]+"-"+data["end-time"]+" ("+res+")";
+						return res;
+					} 
+				}
+			],
+			tableTools: {
+				sRowSelect: "os",
+				aButtons: [
+					{ sExtends: "editor_create", editor: EDITOR2 },
+					{ sExtends: "editor_edit",   fnClick : function () {
+						EDITOR2
+                        .title( 'Edit track' )
+                        .buttons( [
+                                   { label: 'Save', fn: function() { this.submit(); } },
+                                   { label: 'Map', fn: function() {
+                                	   var dt = tableEvents.rows(".selected").data()[0];
+                                	   var that=this;
+                                	   mapEdit(dt.id,$("#DTE_Field_track").val(),function(data) {
+                                		   $("#DTE_Field_track").val(data);
+                                	   });
+                                    } }
+                        	] )
+                        .edit( tableEvents.row( '.selected' ).node() );
+						
+					} },
+					{ sExtends: "editor_remove", editor: EDITOR2 }
+	           ]
+			}
+		} );
+		//-----------------------------------------------
+		/*
+		$("#nav1").click(function() {
+			$("#nav1").addClass("active");
+			$("#nav2").removeClass("active");
+			$("#tab1").css("height","auto");
+			$("#tab2").css("height","0");
+		});
+		$("#nav2").click(function() {
+			$("#nav2").addClass("active");
+			$("#nav1").removeClass("active");
+			$("#tab2").css("height","auto");
+			$("#tab1").css("height","0");
+		});
+		*/
+		//-----------------------------------------------
+	});
+	</script>    
+ </head>
+<body class="editor wide">
+	<a name="top"></a>
+	<div class="fw-container">
+	<!-- 
+		<div class="fw-header">
+			<img src="/media/images/logo-fade.png" class="logo">
+			<div class="nav-master">
+				<ul>
+					<li class="active" id="nav1"><a>Athletes</a></li>
+					<li id="nav2"><a>Events</a></li>
+				</ul>
+			</div>
+		</div> 
+	 -->	
+		<div class="fw-body">
+			<div class="content" id="tab1">
+				<h1 class="page_title">Available Events</h1>
+				<div class="info">
+					<p>This example show Editor being used with the <a href="//datatables.net/extensions/responsive">Responsive extension for DataTables</a>. Responsive will
+					automatically adjust the visibility of columns in your tables so the the layout of information is nicely presented, regardless of screen size. When columns are
+					hidden, Responsive can add a show / hide button to allow the end user to see the information from the hidden columns.</p>
+					<p>Initialisation of Responsive on a table that also uses Editor is as simple as including the Responsive scripts and adding a <code>responsive</code> class to
+					the <code class="tag" title="HTML tag">table</code>, as shown in this example.</p>
+				</div>
+
+				<table id="table-events" class="display responsive nowrap" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>Code</th>
+							<th>Name</th>
+							<th>Date</th>
+							<th>Track</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th>Code</th>
+							<th>Name</th>
+							<th>Date</th>
+							<th>Track</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			<div class="content" id="tab2">
+				<h1 class="page_title">Available Athletes</h1>
+				<div class="info">
+					<p>This example show Editor being used with the <a href="//datatables.net/extensions/responsive">Responsive extension for DataTables</a>. Responsive will
+					automatically adjust the visibility of columns in your tables so the the layout of information is nicely presented, regardless of screen size. When columns are
+					hidden, Responsive can add a show / hide button to allow the end user to see the information from the hidden columns.</p>
+					<p>Initialisation of Responsive on a table that also uses Editor is as simple as including the Responsive scripts and adding a <code>responsive</code> class to
+					the <code class="tag" title="HTML tag">table</code>, as shown in this example.</p>
+				</div>
+
+				<table id="table-participants" class="display responsive nowrap" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>Code</th>
+							<th>Name</th>
+							<th>BIB</th>
+							<th>Country</th>
+							<th>Age</th>
+							<th>Age group</th>
+							<th>Gender</th>
+							<th>Occupation</th>
+							<th>Pulse</th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th>Code</th>
+							<th>Name</th>
+							<th>BIB</th>
+							<th>Country</th>
+							<th>Age</th>
+							<th>Age group</th>
+							<th>Gender</th>
+							<th>Occupation</th>
+							<th>Pulse</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div class="fw-footer">
+			<div class="copyright">
+				Copyright...
+			</div>
+		</div>
+	</div>
+	
+	<div id="map" class="map_fullscreen" style="display:none;z-index:9999;background-color:white;">		
+		<div class="map_buttons">
+		<div id="button_erase" class="map_button">
+			<img src="img/erase.png"/>
+		</div>
+		<div id="button_join" class="map_button">
+			<img src="img/join.png"/>
+		</div>
+		<div id="button_navigate" class="map_button">
+			<img src="img/navigate.png"/>
+		</div>
+		<div id="button_submit" class="map_button">
+			<img src="img/submit.png"/>
+		</div>
+		<div id="button_cancel" class="map_button">
+			<img src="img/cancel.png"/>
+		</div>
+		<textarea id="route_text_area" readonly></textarea>
+		</div>
+	</div>
+	
+</body>
+</html>

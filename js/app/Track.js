@@ -8,6 +8,9 @@ Class("Track",
         route : {
             is:   "rw"
         },
+        distances : {
+            is:   "rw"
+        },
 		totalLength : {
 			is : "rw"
 		},
@@ -18,8 +21,7 @@ Class("Track",
 		// in EPSG 3857
 		feature : {
 			is : "rw",
-			init : null
-		},
+			init : null		},
 		
 		isDirectionConstraint : {
 			is : "rw",
@@ -29,7 +31,19 @@ Class("Track",
 		debugParticipant : {
 			is : "rw",
 			init : null
-		}
+		},
+		bikeStartKM : {
+			is : "rw",
+			init : null
+		},
+		runStartKM : {
+			is : "rw",
+			init : null
+		},
+		laps : {
+			is : "re",
+			init : 1
+		} 
     },
     //--------------------------------------
 	methods: 
@@ -237,7 +251,21 @@ Class("Track",
 			GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
 		},
 		
-		updateFeature : function() {
+		updateFeature : function() 
+		{
+			this.distances=[];
+			var res=0.0;
+			var cc = this.route;
+			for (var i=0;i<cc.length-1;i++) 
+			{
+				var a = cc[i];
+				var b = cc[i+1];
+				var d = WGS84SPHERE.haversineDistance(a,b);
+				this.distances.push(res);
+				if (!isNaN(d) && d > 0) 
+					res+=d;
+			}
+			//--------------------------------------------------------------
 			var wkt = [];
 			for (var i=0;i<this.route.length;i++) {
 				wkt.push(this.route[i][0]+" "+this.route[i][1]);
@@ -249,6 +277,7 @@ Class("Track",
 			} else {
 				this.feature.setGeometry(format.readFeature(wkt).getGeometry());
 			}
+			this.feature.track=this;
 			this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
 		},
 		

@@ -64,6 +64,18 @@ Class("GUI",
 		popup : {
 			is : "rw",
 			init : null
+		},
+		isShowSwim : {
+			is : "rw",
+			init : true
+		},
+		isShowBike : {
+			is : "rw",
+			init : true
+		},
+		isShowRun : {
+			is : "rw",
+			init : true
 		}
     },
     //--------------------------------------
@@ -91,7 +103,7 @@ Class("GUI",
 			});
 			//--------------------------------------------------------------
 			var ints = [];
-			this.popup = new ol.Overlay.Popup({ani:false});
+			this.popup = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 			this.map = new ol.Map({
 			  renderer : "canvas",
 			  target: 'map',
@@ -99,7 +111,9 @@ Class("GUI",
 				new ol.layer.Tile({
 				  source: new ol.source.BingMaps({
 					key: this.bingMapKey,
-					imagerySet: 'AerialWithLabels'
+					imagerySet: 'Road'
+					//imagerySet: 'AerialWithLabels'
+					
 				  })
 				}),
 				this.trackLayer,this.participantsLayer
@@ -114,14 +128,11 @@ Class("GUI",
 			});
 			for (var i=0;i<ints.length;i++)
 				this.map.addInteraction(ints[i]);
-
-			
 			this.map.addOverlay(this.popup);
 			if (this.isDebug) 
 				this.map.addLayer(this.debugLayerGPS);
 			TRACK.init();
-			if (TRACK.feature)
-				this.trackLayer.getSource().addFeature(TRACK.feature);
+			this.addTrackFeature();
 			//----------------------------------------------------
 			this.map.on('click', function(event) 
 			{
@@ -149,6 +160,29 @@ Class("GUI",
 			}
         },
 		
+        
+        addTrackFeature : function() {
+        	TRACK.init();
+        	if (TRACK.feature) {
+        		var ft = this.trackLayer.getSource().getFeatures();
+        		var ok=false;
+        		for (var i=0;i<ft.length;i++) 
+        		{
+        			if (ft[i] == TRACK.feature)
+        			{
+        				ok=true;
+        				break;
+        			}
+        		}
+        		if (!ok)
+        			this.trackLayer.getSource().addFeature(TRACK.feature);
+        	}
+        },
+        zoomToTrack : function() {
+            var extent = TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
+            if (extent)
+            	this.map.getView().fitExtent(extent,this.map.getSize());
+        },
         
         getSelectedParticipantFromArrayCyclic : function(features) {
     		var arr = [];
@@ -222,8 +256,8 @@ Class("GUI",
 				    if (rr != this.popup.lastHTML) {
 				    	this.popup.lastHTML=rr;
 					    this.popup.content.innerHTML=rr; 
-				    }
-					this.popup.panIntoView_(spos);
+				    }					
+				    //this.popup.panIntoView_(spos);
 				}
 			}
 			//--------------------			
@@ -259,6 +293,11 @@ Class("GUI",
 					this.debugLayerGPS.getSource().removeFeature(todel[i]);
 			}
 			//-------------------------------------------------------------
+		},
+		
+		redraw : function() {
+			this.getTrack().getFeature().changed();
 		}
+		
     }
 });

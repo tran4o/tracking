@@ -1,0 +1,37 @@
+1) Admin interface for editing the TRACK/EVENT (GUI FORM WITH)
+	- ENABLE / DISABLE button
+	- EVENT BEGIN TIME / END TIME input fields
+	- CODE (short name) -> input field
+	- DESCRIPTION -> text field 
+	
+	REQUESTS :
+		> GET AJAX REQUEST API for JSON (current state)
+		> POST AJAX REQUEST API for JSON with the current track (route coordinates)
+2) Person DB 
+	- ID 
+	- MIKA LIVE RANK ID
+	- GPS TRACKING ID 
+	- CODE
+	- IMAGE (100x100 profile picture)
+	- ICON (map mark icon - template img/payer1.png) -> PREDIFINED ICONS DROPDOWN 
+		
+3) SYNC MIKA PERSON DB with local person DB
+	Scheduler every hour(?)
+	-> GET ALL ACTIVE USERS 
+	-> Update local user db
+	
+4) scheduler between EVENT begin / end time
+	-> get position every 10s for every MIKA person DB (possible to check only active persons?)
+	-> store (timestamp,current position / SOS / heart freq ) for the every user
+	
+5) LIVE user interface
+	-> 	Layout implementation
+	->	WIDGET for the GIS MAP part
+	->	TABLE for the MIKA liverank data
+
+	REQUESTS : 
+		> GET track/event info 
+		> GET local db tracking log data [BEGINTIME-ENDTIME)
+				
+6) EMAIL service when SOS tracking info is received
+		
