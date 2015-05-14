@@ -265,12 +265,27 @@ Class("GUI",
 				this.doDebugAnimation();
 		},
 		
-		setSelectedParticipant : function(part) 
+		setSelectedParticipant : function(part,center) 
 		{
+			if (!(part instanceof Participant)) {
+				var pp=part;
+				part=null;
+				for (var i=0;i<TRACK.participants.length;i++)
+					if (TRACK.participants[i].deviceId == pp) {
+						part=TRACK.participants[i];
+						break;
+					}
+			}
 			this.selectedParticipant=part;
 			if (!part) {
 				this.popup.hide();
 				delete this.popup.is_shown;
+			} else {
+				if (center && GUI.map && part.feature) {
+					var x = (part.feature.getGeometry().getExtent()[0]+part.feature.getGeometry().getExtent()[2])/2;
+					var y = (part.feature.getGeometry().getExtent()[1]+part.feature.getGeometry().getExtent()[3])/2;
+					GUI.map.getView().setCenter([x,y]);
+				}
 			} 
 		},
 		

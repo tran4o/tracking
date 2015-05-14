@@ -175,10 +175,20 @@
 		});
 		//----------------------------------------
 		window.EDITOR1 = new $.fn.dataTable.Editor( {
-			ajax: "script/participants-example.json",
+			ajax: 
+			{
+				url : CONFIG.server.prefix+"rest/participant/",
+				data: function ( d ) {
+				    return JSON.stringify( d.data );
+				}
+			},
 			table: "#table-participants",
 			idSrc: "id",
 			fields: [ {
+					label: "Id",
+					name: "id",
+					type : "readonly"
+				},{
 					label: "Code",
 					name: "code"
 				}, {
@@ -207,10 +217,24 @@
 		} );
 
 		window.EDITOR2 = new $.fn.dataTable.Editor( {
-			ajax: "script/events-example.json",
+			ajax: 
+			{
+				url : CONFIG.server.prefix+"rest/event/",
+				data: function ( d ) 
+				{
+				    return JSON.stringify( d.data );
+				}
+			},
+			data: function ( d ) {
+			    return JSON.stringify( d );
+			},
 			table: "#table-events",
 			idSrc: "id",
 			fields: [ {
+					label: "Id",
+					name: "id",
+					type : "readonly"
+				}, {
 					label: "Code",
 					name: "code"
 				}, {
@@ -245,7 +269,7 @@
 
 		var tableParticipants = $('#table-participants').DataTable( {
 			dom: "Tfrtip",
-			ajax: "script/participants-example.json",
+			ajax: CONFIG.server.prefix+"rest/participant/",
 			columns: [
 				{ data: "code" },
 				{ data: "name" },
@@ -287,7 +311,7 @@
 		
 		var tableEvents = $('#table-events').DataTable( {
 			dom: "Tfrtip",
-			ajax: "script/events-example.json",
+			ajax: CONFIG.server.prefix+"rest/event/",
 			columns: [
 				{ data: "code" },
 				{ data: "name" },
@@ -314,7 +338,11 @@
 					{
 						if (!data["track"])
 							return "";
-						var tpos = JSON.parse(data["track"]);
+						var tpos = null;
+						try {
+							tpos=JSON.parse(data["track"]);
+						} catch(e) {
+						}
 						var res;
 						if (!tpos || !tpos.length)
 							res="0 km";
@@ -334,7 +362,7 @@
 			tableTools: {
 				sRowSelect: "os",
 				aButtons: [
-					{ sExtends: "editor_create", editor: EDITOR2 },
+					{ sExtends: "editor_create", editor : EDITOR2 },
 					{ sExtends: "editor_edit",   fnClick : function () {
 						EDITOR2
                         .title( 'Edit track' )

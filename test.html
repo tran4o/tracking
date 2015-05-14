@@ -460,6 +460,11 @@ function showFavs()
 	           ]
 			}
 		} );
+		$('#table-favorites tbody').on( 'click', 'tr', function (e) {
+			//GUI.setSelectedParticipant("PART0008");//
+			if (tableFavorites.row( this ).data())
+				GUI.setSelectedParticipant(tableFavorites.row( this ).data().code,true);
+		} );
 	} else {
 		$("#table-favorites").resize();  
 	}
@@ -635,7 +640,7 @@ $("#tabcont .close").click(function() {
 	showMap();
 });
 
-showDetails();
+//showDetails();
 </script>	
 </body>
 </html>

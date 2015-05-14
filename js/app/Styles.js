@@ -11,7 +11,7 @@ window.STYLES={
 		var geombike;
 		var geomrun;
 		
-		if (track.bikeStartKM) {
+		if (track && track.bikeStartKM) {
 			for (var i=0;i<track.distances.length;i++) {
 				if (track.distances[i] >= track.bikeStartKM*1000)
 					break;

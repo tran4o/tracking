@@ -50,6 +50,11 @@ window.CONFIG=
 	},
 	event : {
 		beginTimestamp : (new Date()).getTime(),
-		duration : 60 //MINUTES 
+		duration : 60, //MINUTES
+		id : 3
+	},
+	
+	server : {
+		prefix : "http://ts2.hmsu.org/triathlon/"
 	}
 };
