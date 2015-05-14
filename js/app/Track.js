@@ -11,6 +11,9 @@ Class("Track",
         distances : {
             is:   "rw"
         },
+        distancesElapsed : {
+            is:   "rw"
+        },
 		totalLength : {
 			is : "rw"
 		},
@@ -43,6 +46,10 @@ Class("Track",
 		laps : {
 			is : "re",
 			init : 1
+		},
+		totalParticipants : {
+			is : "re",
+			init : 50
 		} 
     },
     //--------------------------------------
@@ -193,7 +200,6 @@ Class("Track",
 		getPositionFromElapsed : function(elapsed) {
 			elapsed*=this.getTrackLength();
 			var rr=null;
-			var res=0;
 			var cc = this.route;
 			for (var i=0;i<cc.length-1;i++) 
 			{
@@ -207,6 +213,28 @@ Class("Track",
 				elapsed-=ac;
 			}
 			return rr;
+		},
+
+		getRotationFromElapsed : function(elapsed) 
+		{
+			elapsed*=this.getTrackLength();
+			var rotation=null;
+			var cc = this.route;
+			for (var i=0;i<cc.length-1;i++) 
+			{
+				var a = cc[i];
+				var c = cc[i+1];
+				var ac = WGS84SPHERE.haversineDistance(a,c);
+				if (elapsed <= ac) 
+				{
+					var dx = c[0] - a[0];
+					var dy = c[1] - a[1];
+					rotation=Math.atan2(dy, dx);
+					break;
+				}
+				elapsed-=ac;
+			}
+			return rotation;
 		},
 		
 		getTrackLength : function() {
@@ -249,6 +277,16 @@ Class("Track",
 			// 1) calculate total route length in KM 
 			this.updateFeature();
 			GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
+		},
+		
+		getTrackPart : function(elapsed) {
+			var len = this.getTrackLength();
+			var em = (elapsed%1.0)*len;
+			if (em > this.runStartKM*1000) 
+				return 2;
+			if (em > this.bikeStartKM*1000) 
+				return 1;
+			return 0;
 		},
 		
 		updateFeature : function() 
@@ -295,7 +333,7 @@ Class("Track",
 			{
 				this.debugParticipant.onDebugClick(event);
 			}
-		}
+		},
 
     }
 });

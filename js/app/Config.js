@@ -47,5 +47,9 @@ window.CONFIG=
 			 code : "LastAgeGroup"
 		 }
 		]
+	},
+	event : {
+		beginTimestamp : (new Date()).getTime(),
+		duration : 60 //MINUTES 
 	}
 };

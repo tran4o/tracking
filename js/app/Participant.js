@@ -34,7 +34,23 @@ Class("ParticipantState",
 		acceleration : {
 			is : "rw",
 			init : 0
-		}
+		},
+		alt : {
+			is : "rw",
+			init : 0
+		},
+		overallRank : {
+			is : "rw",
+			init : 0
+		},
+		genderRank : {
+			is : "rw",
+			init : 0
+		},
+		groupRank : {
+			is : "rw",
+			init : 0
+		},
 	}
 });		
 //----------------------------------------		
@@ -103,7 +119,11 @@ Class("Participant",
 	    },
 	    age : {
 	    	is : "rw",
-	    	ini : "-"
+	    	init : "-"
+	    },
+	    rotation : {
+	    	is : "rw",
+	    	init : null 
 	    }
     },
     //--------------------------------------
@@ -123,10 +143,12 @@ Class("Participant",
 				return;
 			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/) 
 			{
-				var pos = this.states[this.states.length-1].gps;
+				var lstate=this.states[this.states.length-1];
+				var pos = lstate.gps;
 				if (pos[0] != this.getPosition()[0] || pos[1] != this.getPosition()[1]) 
 				{
-				    this.setPosition(pos); 
+				    this.setPosition(pos);
+				    this.setRotation(null);
 					this.updateFeature();
 				}
 				return;
@@ -139,10 +161,9 @@ Class("Participant",
 			var res = this.calculateElapsedAverage(ctime);
 			if (res) 
 			{
-				//console.log("T : "+ctime +" > "+res);
 				this.setPosition(TRACK.getPositionFromElapsed(res % 1.0));
+				this.setRotation(TRACK.getRotationFromElapsed(res % 1.0));
 				this.updateFeature();
-				
 			}
 		},
 		
@@ -181,11 +202,11 @@ Class("Participant",
 			return {elapsed : ssume,timestamp : ssumt};
 		},
 		
-		ping : function(pos,freq,isSOS,ctime) 
+		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank)
 		{
 			if (!ctime)
 				ctime=(new Date()).getTime();
-			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq});
+			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
 			if (isSOS) {
 				this.setIsSOS(true); 
 				this.addState(state);
@@ -217,6 +238,16 @@ Class("Participant",
 					bestomd=distance;
 				}
 			}
+			//-----------------------------------------------------------
+			if (bestm == null) 
+			{
+				// out of track
+				//this.setIsOnRoad(false);
+				state.setPosition(besto);
+			} else {
+				//this.setIsOnRoad(true);
+				state.setPosition(best);
+			}			
 			//-----------------------------------------------------------
 			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
 			var lstate = this.states.length ? this.states[this.states.length-1] : null;
@@ -252,15 +283,6 @@ Class("Participant",
 				state.setElapsed(nel);
 			}
 			//-----------------------------------------------------------
-			if (bestm == null) 
-			{
-				// out of track
-				//this.setIsOnRoad(false);
-				state.setPosition(besto);
-			} else {
-				//this.setIsOnRoad(true);
-				state.setPosition(best);
-			}			
 			this.addState(state);
 			if (GUI.isDebug) 
 			{
@@ -297,7 +319,7 @@ Class("Participant",
 			this.setFeature(feature);
 			GUI.participantsLayer.getSource().addFeature(feature);
 			this.setPosition(pos);
-			this.ping(pos,0,false,ctime);
+			this.ping(pos,0,false,ctime,0,0,0,0);
 		},
 		
 		getElapsed : function() 
@@ -313,17 +335,12 @@ Class("Participant",
 				return this.states[this.states.length-1].freq;
 			return 0;
 		},
-		
-		getRank : function() {
-			var el = this.getElapsed();
-			var c=1;
-			for (var i=0;i<TRACK.participants.length;i++) 
-			{
-				var p = TRACK.participants[i];
-				if (p != this && p.getElapsed() > el) 
-					c++;
-			}
-			return c;
+
+		getSpeed : function() 
+		{
+			if (this.states.length)
+				return this.states[this.states.length-1].speed;
+			return 0;
 		},
 
 		getGPS : function() 
@@ -336,7 +353,7 @@ Class("Participant",
 		onDebugClick : function(event) {
 			var hrate = 80+Math.round(Math.random()*20);
 			var cpos = ol.proj.transform(event.coordinate, 'EPSG:3857','EPSG:4326');
-			this.ping(cpos,hrate,false);
+			this.ping(cpos,hrate,false,Math.random()*500,parseInt(Math.random()*10),parseInt(Math.random()*10),parseInt(Math.random()*10));
 		},
 		
 		getPopupHTML : function() {
@@ -344,56 +361,87 @@ Class("Participant",
 			if (this.isSOS || this.isDiscarded) {
 				pos = this.getGPS();
 			}
-			var prettyCoord = ol.coordinate.toStringHDMS(this.getPosition(), 2);
-			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+"</div>"
+			
+			var prettyCoord=""; //ol.coordinate.toStringHDMS(this.getPosition(), 2);
+
+			var tpart = TRACK.getTrackPart(this.getElapsed());
+			if (tpart == 0)
+				tpart="Swim";
+			else if (tpart == 1)
+				tpart="Bike";
+			else if (tpart == 2)
+					tpart="Run";
+
+			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+"</div>";
 			var freq = Math.round(this.getFreq());
 			if (freq > 0) {
 				html+="<div class='popup_freq'>"+freq+"</div>";
 			}
-			var elkm = (this.lastInterpolateTimestamp ? this.calculateElapsedAverage(this.lastInterpolateTimestamp) : this.getElapsed())*TRACK.getTrackLength()/1000.0;
+			var elapsed = (this.lastInterpolateTimestamp ? this.calculateElapsedAverage(this.lastInterpolateTimestamp) : this.getElapsed());
+			var elkm = elapsed*TRACK.getTrackLength()/1000.0;
 			elkm = parseFloat(Math.round(elkm * 100) / 100).toFixed(2);			
+			
+			var rekm = elapsed%1.0;
+			rekm=(1.0-rekm)*TRACK.getTrackLength()/1000.0;
+			rekm = parseFloat(Math.round(rekm * 100) / 100).toFixed(2);			
+			//-----------------------------------------------------
 			
 			var etxt1=null;
 			var etxt2=null;
 			var lstate = null;
-			if (this.states.length) {
+			if (this.states.length) 
+			{
 				lstate = this.states[this.states.length-1];
-				if (lstate.getSpeed() > 0)
+				if (lstate.getSpeed() > 0) {
 					etxt1=parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";
+					var rot = -this.getRotation()*180/Math.PI; 
+					if (rot < 0)
+						rot+=360;
+					if (rot != null) 
+					{
+						if (rot <= 0) 
+							etxt1+=" E";
+						else if (rot <= 45)
+							etxt1+=" SE";
+						else if (rot <= 90)
+							etxt1+=" S";
+						else if (rot <= 135)
+							etxt1+=" SW";
+						else if (rot <= 180)
+							etxt1+=" W";
+						else if (rot <= 225)
+							etxt1+=" NW";
+						else if (rot <= 270)
+							etxt1+=" N";
+						else 
+							etxt1+=" NE";
+					}
+
+				}
 				if (lstate.getAcceleration() > 0)
 					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
 			}
-				
 			var pass = Math.round((new Date()).getTime()/3500) % 3;
-
 			html+="<table class='popup_table' style='background-image:url(\""+this.getImage()+"\")'>";
-			var isDummy=!(this.getElapsed() > 0);
-			if (pass == 0)
-				html+="<tr><td class='label'>Ovr rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
-			else if (pass == 1)
-					html+="<tr><td class='label'>Grp rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
-			else if (pass == 2)
-				html+="<tr><td class='label'>Gnd rank</td><td class='value'>"+(isDummy ? "-":this.getRank()+"/100")+"</td></tr>";
-			else
-				html+="<tr><td class='label'>Run</td><td class='value'>"+(isDummy ? "-":(1+Math.floor(elkm%1)))+"</td></tr>";
-			
-			if (pass == 0)
-				html+="<tr><td class='label'>Total</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
-			else if (pass == 1)
-				html+="<tr><td class='label'>Swim</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
-			else if (pass == 2)
-				html+="<tr><td class='label'>Bike</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
-			else 
-				html+="<tr><td class='label'>Run</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
-			
-			html+="<tr><td class='label'>Speed</td><td class='value'>"+(!isDummy && etxt1 ? etxt1 : "-") + "</td></tr>";
-			html+="<tr><td class='label'>Acceler.</td><td class='value'>"+(!isDummy && etxt2 ? etxt2 : "-") +"</td></tr>";
-			
+			var isDummy=!(elapsed > 0);
+			html+="<tr><td class='lbl'>Elapsed</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
+			html+="<tr><td class='lbl'>Finish after</td><td class='value'>"+(isDummy ? "-" : rekm+" km")+"</td></tr>";
+						
+			html+="<tr><td class='lbl'>Speed</td><td class='value'>"+(!isDummy && etxt1 ? etxt1 : "-") + "</td></tr>";
+			html+="<tr><td class='lbl'>Acceler.</td><td class='value'>"+(!isDummy && etxt2 ? etxt2 : "-") +"</td></tr>";
 			html+="<tr style='height:100%'><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			html+"</table>"
-			
 			html+="<div class='popup_shadow'>"+prettyCoord+"</div>";
 			html+="<img class='popup_pulse' src='data:image/gif;base64,R0lGODlhEQAPAPIFAP8oKP9KSP9KSf6qp/+rqDymszymszymsyH5BAkPAAcAIf4RQ3JlYXRlZCB3aXRoIEdJTVAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEQAPAAADOnhKTHrNPSiqcESALamtWbUB2GeKI3OaIxmuKPfCbQlr3HLj5DN/qYkHmBMOeR0jodUzTpZF55PhTAAAIfkECQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSACH5BAUPAAcALAAAAAARAA8AAAMyeLrc/lCNueZ4I+ibAbhMpm2a94VjGpigpI5sI6peW72xM691NJi9yOEXFA4pxqSSkQAAIfkEAQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSADs='/>"
+
+			var tpart = TRACK.getTrackPart(elapsed);
+			if (tpart == 0)
+				html+="<img class='popup_track_mode' src='img/swim.svg'/>"
+			else if (tpart == 1)
+				html+="<img class='popup_track_mode' src='img/bike.svg'/>"
+			else /*if (tpart == 2)*/
+				html+="<img class='popup_track_mode' src='img/run.svg'/>"
+	
 			return html;
 		}
 		

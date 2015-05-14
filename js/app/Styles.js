@@ -167,20 +167,39 @@ window.STYLES={
 			etxt=" "+parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";// | acc "+parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s";
 		}
 		var zIndex = Math.floor(feature.participant.getElapsed()*1000);
-		var styles=
-		[
-			new ol.style.Style({
+		var styles=[];
+		//-----------------------------------------------------------------------------------------------------------------------
+		var isDirection = (lstate && lstate.getSpeed() > 0 && !part.isSOS && !part.isDiscarded);
+		if (!isDirection || part.getRotation() == null) 
+		{
+	        styles.push(new ol.style.Style(
+	        {
+	        	image : new ol.style.Circle({
+	        		radius: 10,
+	        		fill: new ol.style.Fill({
+	        			color: part.color
+	        		}),
+	        		stroke: new ol.style.Stroke({
+	        			color: "#ffffff",//"rgba("+colorAlphaArray(this.getColor(),0.5).join(",")+")", // "#ffffff",
+	        			width: 3
+	        		})
+	        	})
+		    }));
+		} else {
+			styles.push(new ol.style.Style({
 					zIndex: zIndex,
 					image: new ol.style.Icon(({
-					  anchor: [0.5, 1],
+					  anchor: [0.5,0.5],
 					  anchorXUnits: 'fraction',
 					  anchorYUnits: 'fraction',
 					  opacity: 1,
-					  src : 
-						feature.participant.isSOS ? 'img/warning-red.png' : 
+					  src : renderArrowBase64(48,48,part.color), //"img/direction.png",
+						/*feature.participant.isSOS ? 'img/warning-red.png' : 
 						feature.participant.isDiscarded ? 'img/warning-yellow.png' : 
-						feature.participant.icon, 
-					  scale : 0.3
+						feature.participant.icon,*/ 
+					  scale : 0.55,
+					  rotation : -part.getRotation()
+					  //0.3
 					  //size : [22,16]
 				   })),
 				   text: new ol.style.Text({
@@ -194,12 +213,12 @@ window.STYLES={
 						}),
 						text : feature.participant.getCode(),
 						offsetX : 0,
-						offsetY : 5
+						offsetY : 25
 					  })
-				   })
-				   
-		];
-		if (lstate && lstate.getSpeed() > 0 && !feature.participant.isSOS && !feature.participant.isDiscarded) 
+				   }));
+		}
+		//----------------------------------------------------------------------------------------------------------
+		if (isDirection) 
 			styles.push(new ol.style.Style({
 				   zIndex: zIndex,
 				   text: new ol.style.Text({
@@ -213,10 +232,9 @@ window.STYLES={
 						}),
 						text : etxt,
 						offsetX : 0,
-						offsetY : 17
+						offsetY : 36
 					  })
 				   }));
-		
 		return styles;
 	},
 	//------------------------------------------------

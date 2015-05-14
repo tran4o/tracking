@@ -25,6 +25,14 @@ BODY
 	top : 4px;
 }
 
+.popup_track_mode {
+	width : 22px;
+	height : 22px;
+	position : absolute;
+	right : 25px;
+	top : 2px;
+}
+
 .popup_freq {
 	position : absolute;
 	right : 5px;
@@ -46,15 +54,16 @@ BODY
 	min-height : 100px;
 	height : 100px;
 	background-repeat : no-repeat;
+	border-collapse : separate;
 }
 
 .popup_table td {
 	padding : 0;
-	line-height : 1.1;
+	line-height : 1.3;
 	white-space:nowrap;
 }
 
-.popup_table td.label {
+.popup_table td.lbl {
 	color : #C0C0C0;
 	text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);	
 }
@@ -150,10 +159,10 @@ BODY
   	padding: 2px;	
 }	
 
-.toolbar_track{
+.toolbar_track {
 	z-index : 999999;
 	position:absolute;
-	bottom:0.25em;
+	top:0.25em;
 	left:0.25em;
 	background-color: #eee;
   	background-color: rgba(255,255,255,.4);
@@ -210,7 +219,6 @@ body.mobile .toolbar_button {
 	box-shadow: 0px 0px 9px 1px rgba(0,0,0,0.95);	
 }
 
-
 th.center {
 	text-align : center;	
 }
@@ -235,7 +243,7 @@ th.center {
 	background-color : transparent !important;
 }
 
-.map_participants .dataTables_length,.map_favorites .dataTables_length {
+.dataTables_length {
 	display : none;
 }
 
@@ -247,8 +255,14 @@ th.center {
 	border-bottom : 1px solid black;
 	margin-bottom : 10px;
 	text-shadow: 0px 0px 4px white;	
-	padding-bottom : 3px;
+	padding-bottom : 5px;
+	padding-top : 10px;
 }
+
+table.dataTable td {
+	vertical-align: middle !important;
+} 
+
 
 .table-favorite-add {
 	width : 32px;
@@ -278,7 +292,8 @@ th.center {
 
 .ol-zoom{
 	left : 0.25em;
-	top : 0.25em;
+	top : auto;
+	bottom : 0.25em;
 }
 
 .ol-attribution {
@@ -303,4 +318,14 @@ th.center {
 	left:0;
 	width:auto;
 	padding:5px;
+}
+
+
+#map {
+	padding : 0;
+}
+
+#left_pane {
+	overflow-x : hidden;
+	overflow-y : auto;
 }

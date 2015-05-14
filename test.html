@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+	<link rel='stylesheet' href='css/bootstrap.css' type='text/css' />
+
+    <link rel="stylesheet" href="js/ol3/ol.css" type="text/css"/>
+    <link rel="stylesheet" href="js/ol3/ol3-popup.css" type="text/css"/>
+    <link rel="stylesheet" href="css/layout.css" type="text/css"/>
+    <link rel="stylesheet" href="css/dataTables.editor.min.css" type="text/css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.6/css/jquery.dataTables.css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/responsive/1.0.5/css/dataTables.responsive.css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/tabletools/2.2.4/css/dataTables.tableTools.css"/>
+
+    <script src="js/ol3/ol-debug.js" type="text/javascript"></script>
+    <script src="js/ol3/ol3-popup.js" type="text/javascript"></script>
+    <script src="js/joose.js" type="text/javascript"></script>    
+	<script src="js/app/Utils.js" type="text/javascript"></script>
+	<script src="js/app/Styles.js" type="text/javascript"></script>
+	<script src="js/app/Config.js" type="text/javascript"></script>
+	<script src="js/app/GUI.js" type="text/javascript"></script>
+	<script src="js/app/Track.js" type="text/javascript"></script>
+    <script src="js/app/Participant.js" type="text/javascript"></script>
+	<script src="js/app/Simulator.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="//cdn.datatables.net/1.10.6/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+	
+	<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"> </script>
+	<script type="text/javascript" src="http://gabelerner.github.io/canvg/rgbcolor.js"></script> 
+	<script type="text/javascript" src="http://gabelerner.github.io/canvg/StackBlur.js"></script>
+	<script type="text/javascript" src="http://gabelerner.github.io/canvg/canvg.js"></script> 
+	<!-- https://github.com/stevenrskelton/flag-icon  -->
+	<script src="js/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+	<link rel="import" href="js/bower_components/flag-icon/flag-icon.html"/>
+	<!-- EXAMPLE data -->
+	<script src="js/example-data.js" type="text/javascript"></script>	
+	<style>
+			.container {
+				width: 100%;
+			}
+
+			.h100 {
+				height: 100vh;
+			}
+			
+			table.dataTable th,
+		    table.dataTable td {
+		        white-space: nowrap;
+		    }
+		    
+			.dtl_row {
+				text-align: center;
+			}
+
+			.dtl_container {
+				width: 95%;
+			}
+			.c1 {
+				background-color: #ffb08c
+			}
+			.c2 {
+				background-color: #8a5379
+			}
+			.c3 {
+				background-color: #8ce4ff
+			}
+			.c4 {
+				background-color: #d58cff
+			}
+			.c5 {
+				background-color: #ffea8c
+			}
+
+			.hei30 {
+				height: 6em;
+			}
+
+			.hei60 {
+				height: 12em;
+			}
+
+			.hei40 {
+				height: 8em;
+			}
+
+			.hei20 {
+				height: 4em;
+			}
+
+			.hei15 {
+				height: 3em;
+			}
+
+			.hei25 {
+				height: 5em;
+				margin-bottom: 0.15em;
+			}
+
+			.hei80 {
+				height: 8em;
+			}
+	</style>
+</head>
+<body>
+<div class='container'>
+	<div class="row">
+		<div class="col-sm-6 col-md-4 c1 h100 hide" id='left_pane'>
+			<div class="content" id="tabcont">
+				<div role="tabpanel" class="container" id="part">
+					<div class="caption-general">Available athletes</div>
+					<div class="close"></div>
+					<table id="table-participants" class="table table-striped table-hover dt-responsive nowrap" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th class="center">FAV</th>
+								<th>NAME</th>
+								<th class="center">BIB#</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th class="center">FAV</th>
+								<th>NAME</th>
+								<th class="center">BIB#</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+				<div role="tabpanel" class="container hide" id="favs">
+					<div class="caption-general">Favorites</div>
+					<div class="close"></div>
+					<table id="table-favorites" class="display responsive nowrap" cellspacing="0">
+						<thead>
+							<tr>
+								<th>NAME</th>
+								<th class="center">BIB</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>NAME</th>
+								<th class="center">BIB</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+				<div role="tabpanel" class="container hide" id="dtls">
+					<div class='dtl_row'>
+						<div class='hei30 col-xs-12 col-sm-6 col-md-6 col-lg-4 c1'>
+							<div class='dtl_row'>
+								<div class='col-xs-4 c2 hei30'>FLAG</div>
+								<div class='col-xs-8 c3 hei30'>Name</div>
+							</div>
+						</div>
+						<div class='col-xs-12 col-sm-6 col-lg-8 c4'>
+							<div class='dtl_row '>
+								<div class='col-xs-3 c5 hei30'>
+									<div class='dtl_row hei15'> Age </div>
+									<div class='dtl_row hei15'> 25 </div>
+								</div>
+								<div class='col-xs-3 c4 hei30'>Dist</div>
+								<div class='col-xs-3 c5 hei30'>Pace</div>
+								<div class='col-xs-3 c4 hei30'>Est. Fin</div>
+							</div>
+						</div>
+						<div class='col-xs-12 col-sm-6 col-md-4 col-lg-3 c1'>
+							<div class='dtl_row'>
+								<div class='col-xs-6 c2'>
+									<div class='dtl_row hei40 c2'>PHOTO</div>
+									<div class='dtl_row hei40 c5'>ADVERT</div>
+								</div>
+								<div class='col-xs-6 hei80 c3'>
+									<div class='dtl_row hei25 c1'>OVERALL RANK</div>
+									<div class='dtl_row hei25 c1'>GENDER RANK</div>
+									<div class='dtl_row hei25 c1'>GROUP RANK</div>
+								</div>
+							</div>
+						</div>
+						<div class='col-xs-12 col-sm-6 col-md-8 col-lg-9 c1'>
+							<div class='content'>
+								<div class='dtl_row hei20'>
+									<div class='col-xs-3'>SEGMENT</div>
+									<div class='col-xs-3'>TIME</div>
+									<div class='col-xs-3'>AVG</div>
+									<div class='col-xs-3'>PROGR</div>
+								</div>
+								<div class='dtl_row hei20 c2'>
+									<div class='col-xs-3'>SWIM</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>100%</div>
+								</div>
+								<div class='dtl_row hei20 c2'>
+									<div class='col-xs-3'>SWIM</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>100%</div>
+								</div>
+								<div class='dtl_row hei20 c2'>
+									<div class='col-xs-3'>SWIM</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>0.00</div>
+									<div class='col-xs-3'>100%</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div role="tabpanel" class="container hide" id="rank">
+					<div class="caption-general">Ranking</div>
+					<div class="close"></div>
+					<table id="table-ranking" class="display responsive nowrap" cellspacing="0">
+						<thead>
+							<tr>
+								<th>NAME</th>
+								<th class="center">OVR</th>
+								<th class="center">GRP</th>
+								<th class="center">GND</th>
+								<th class="center">BIB</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+								<th class="center">OCCUPAT</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>NAME</th>
+								<th class="center">OVR</th>
+								<th class="center">GRP</th>
+								<th class="center">GND</th>
+								<th class="center">BIB</th>
+								<th class="center">GEN</th>
+								<th class="center">CTRY</th>
+								<th class="center">AGE</th>
+								<th class="center">OCCUPAT</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div> <!-- end left pane content -->
+		</div>
+		<div class="col-sm-12 c2 h100 " id='map'>
+			<div class="content">
+			</div>
+			<div class="toolbar_map">
+				<div id="button_places" class="toolbar_button">
+					<img src="img/place.svg"/>
+				</div>
+				<div id="button_rank" class="toolbar_button">
+					<img src="img/peadestal.svg"/>
+				</div>
+				<div id="button_favorites" class="toolbar_button">
+					<img src="img/favorites.svg"/>
+				</div>
+				<div id="button_participants" class="toolbar_button">
+					<img src="img/participants.svg"/>
+				</div>
+			</div>
+			<div class="toolbar_track">
+				<!--  <div id="button_event" class="toolbar_button">
+					<img src="img/event.svg"/>
+				</div> -->
+				<div id="button_run" class="toolbar_button">
+					<img src="img/run.svg"/>
+				</div>
+				<div id="button_bike" class="toolbar_button">
+					<img src="img/bike.svg"/>
+				</div>
+				<div id="button_swim" class="toolbar_button">
+					<img src="img/swim.svg"/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+var tableFavorites=null;
+var tableParticipants=null;
+var tableRank=null;
+
+function showMap() {
+	$("#left_pane").addClass('hide');
+	$("#map").removeClass('col-sm-6').removeClass('col-md-8').removeClass('hidden-xs').addClass('col-sm-12');
+	$(window).resize();
+	if (GUI.map)
+		GUI.map.updateSize();
+}
+function showLeftPane() {
+	$("#map").addClass('col-sm-6 col-md-8 hidden-xs').removeClass('col-sm-12');
+	$("#left_pane").removeClass('hide');
+	$(window).resize();
+	if (GUI.map)
+		GUI.map.updateSize();
+}
+
+function isTabVisible(tabname) {
+	if ($("#left_pane").hasClass("hide"))
+		return false;			
+	if (tabname.indexOf('#') == -1) {
+		tabname = '#' + tabname;
+	}
+	return !($(tabname).hasClass('hide'));
+}
+function showTab( tabname ) {
+	$('#tabcont div[role="tabpanel"]').addClass('hide');
+	if (tabname.indexOf('#') == -1) {
+		tabname = '#' + tabname;
+	}
+	$(tabname).removeClass('hide');
+}
+
+function showParticipants() {
+	showLeftPane();
+	showTab("part");
+	if (!tableParticipants) 
+	{
+		tableParticipants = $('#table-participants').DataTable( {
+			"iDisplayLength" : 50,
+			"bAutoWidth": false,
+			"aaSorting": [[2,'asc']],
+			//ajax: "script/participants-example.json",
+			data : PARTICIPANTS,	
+			columns: [
+				{ 
+					//follow
+					className : "dt-body-center", 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (data.follow == 1)
+							return "<div class='invisible'>1</div><img src='img/favorite.png' class='table-favorite-add'/>"
+						return "<div class='invisible'>0</div><img src='img/favorite-add.png' class='table-favorite-add'/>"
+					} 
+							
+				},
+				{ data: "name" },
+				{ data: "bib",className : "dt-body-center" },
+				{ data: "gender",className : "dt-body-center" },
+				{ 
+					className : "dt-body-center", 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (!data.country)
+							return "";
+						return '<div class="invisible">'+data.country+'</div><flag-icon key="'+data.country+'" width="42"></flag-icon>';
+					} 					
+				},
+				{ 
+					// age + GROUP
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						var age = parseInt(data.age);
+						var ok=false;
+						for (var i=0;i<CONFIG.constants.ageGroups.length;i++) 
+						{
+							if (
+									(!CONFIG.constants.ageGroups[i].from || age >= CONFIG.constants.ageGroups[i].from) && 
+									(!CONFIG.constants.ageGroups[i].to || age <= CONFIG.constants.ageGroups[i].to)
+							   ) {
+								age = CONFIG.constants.ageGroups[i].code;
+								ok=true;
+								break;
+							}
+						} 
+						if (!ok)
+							return age;
+						return age+" ("+data.age+")";
+					}
+					,className : "dt-body-right"
+				}
+	
+			],
+			tableTools: {
+				sRowSelect: "os",
+				aButtons: [			           
+	           ]
+			}
+		} );
+	} else {
+		$("#table-participants").resize();  
+	}
+}
+
+function showFavs() 
+{
+	showLeftPane();
+	showTab("favs");
+	if (!tableFavorites) 
+	{
+		tableFavorites = $('#table-favorites').DataTable( {
+			"iDisplayLength" : 50,
+			"bAutoWidth": false,
+			"aaSorting": [[1,'asc']],
+			//ajax: "script/participants-example.json",
+			data : FAVORITES,	
+			columns: [
+				{ data: "name" },
+				{ data: "bib",className : "dt-body-center" },
+				{ data: "gender",className : "dt-body-center" },
+							{ 
+					className : "dt-body-center", 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (!data.country)
+							return "";
+						return '<div class="invisible">'+data.country+'</div><flag-icon key="'+data.country+'" width="42"></flag-icon>';
+					} 
+				},
+				{ 
+					// age + GROUP
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						var age = parseInt(data.age);
+						var ok=false;
+						for (var i=0;i<CONFIG.constants.ageGroups.length;i++) 
+						{
+							if (
+									(!CONFIG.constants.ageGroups[i].from || age >= CONFIG.constants.ageGroups[i].from) && 
+									(!CONFIG.constants.ageGroups[i].to || age <= CONFIG.constants.ageGroups[i].to)
+							   ) {
+								age = CONFIG.constants.ageGroups[i].code;
+								ok=true;
+								break;
+							}
+						} 
+						if (!ok)
+							return age;
+						return age+" ("+data.age+")";
+					} 
+					,className : "dt-body-right"
+
+				}
+			],
+			tableTools: {
+				sRowSelect: "os",
+				aButtons: [			           
+	           ]
+			}
+		} );
+	} else {
+		$("#table-favorites").resize();  
+	}
+}
+
+function showRank() 
+{
+	showLeftPane();
+	showTab("rank");
+	if (!tableRank) 
+	{
+		tableRank = $('#table-ranking').DataTable( {
+			"iDisplayLength" : 50,
+			"bAutoWidth": false,
+			"aaSorting": [[1,'asc']],
+			//ajax: "script/participants-example.json",
+			data : PARTICIPANTS,	
+			columns: [
+				{ data: "name" },
+				{ data: "overall-rank",className : "dt-body-center" },
+				{ data: "group-rank",className : "dt-body-center" },
+				{ data: "gender-rank",className : "dt-body-center" },
+				{ data: "bib",className : "dt-body-center" },
+				{ data: "gender",className : "dt-body-center" },
+							{ 
+					className : "dt-body-center", 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (!data.country)
+							return "";
+						return '<div class="invisible">'+data.country+'</div><flag-icon key="'+data.country+'" width="42"></flag-icon>';
+					} 
+				},
+				{ 
+					// age + GROUP
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						var age = parseInt(data.age);
+						var ok=false;
+						for (var i=0;i<CONFIG.constants.ageGroups.length;i++) 
+						{
+							if (
+									(!CONFIG.constants.ageGroups[i].from || age >= CONFIG.constants.ageGroups[i].from) && 
+									(!CONFIG.constants.ageGroups[i].to || age <= CONFIG.constants.ageGroups[i].to)
+							   ) {
+								age = CONFIG.constants.ageGroups[i].code;
+								ok=true;
+								break;
+							}
+						} 
+						if (!ok)
+							return age;
+						return age+" ("+data.age+")";
+					} 
+				},
+				{ data: "occupation",className : "dt-body-center" }
+			],
+			tableTools: {
+				sRowSelect: "os",
+				aButtons: [			           
+	           ]
+			}
+		} );
+	} else {
+		$("#table-favorites").resize();  
+	}
+}
+
+function showDetails() {
+	showLeftPane();
+	showTab("dtls");
+}
+<!-- ---------------------------------------------------------------- -->	
+window.TRACK = new Track();
+window.GUI = new GUI({ track : TRACK });
+function errorRoute(err) {
+	GUI.showError(err);
+}
+//--------------------------------------------------------------------------
+function initGUI() 
+{
+	GUI.init({skipExtent:true});
+	window.PARTS=[];
+	var scoef = 6;//*3;//*3;//4.729;
+	for (var i=0;i<FAVORITES.length;i++) 
+	{
+		var p1 = TRACK.newParticipant(FAVORITES[i].id,FAVORITES[i].code,FAVORITES[i].name);
+		p1.setIcon("img/player"+(i%5+1)+".png");
+		p1.setImage("img/profile"+(i%5+1)+".png");
+		p1.setColor(rainbow(FAVORITES.length,i));
+		p1.setAge(FAVORITES[i].age);
+		//---------------------------------------------------------------
+		var sim1 = new Simulator();
+		sim1.simulateParticipantSimple(p1,30*scoef/(0.8+Math.random()*0.2));
+		PARTS.push(p1);
+		//break;
+	}
+}
+//--------------------------------------------------------------------------
+$(document).ready( function () 
+{
+	if (MOBILE)
+		$("body").addClass("mobile");
+	//--------------------------------------------------------------------------
+	var trackData = [[0.410292,49.32911200000001],[0.41086,49.32934800000004],[0.412641,49.33065099999999],[0.414798,49.33197100000001],[0.415291,49.33204100000003],[0.41731899999999994,49.332340999999985],[0.418311,49.33284000000003],[0.418639,49.33302800000001],[0.419089,49.33385900000002],[0.419669,49.33449200000001],[0.41987800000000003,49.334588999999994],[0.420581,49.334588999999994],[0.421691,49.33492100000004],[0.422109,49.33508800000001],[0.42242100000000005,49.33527000000001],[0.422641,49.335522],[0.422941,49.335650999999984],[0.423338,49.335650999999984],[0.424711,49.33523199999999],[0.425291,49.33574199999998],[0.425688,49.33592999999999],[0.42906,49.336985],[0.432999,49.33815099999998],[0.434201,49.33843000000002],[0.435987,49.33843999999996],[0.43868,49.338279],[0.440021,49.33754999999999],[0.441679,49.336118],[0.4424779999999999,49.335290999999955],[0.44351900000000005,49.334727999999984],[0.44407099999999994,49.33411100000001],[0.44472,49.33354800000001],[0.44580699999999995,49.33292900000001],[0.447022,49.33224999999999],[0.447939,49.33162200000001],[0.448191,49.33135899999999],[0.44828200000000007,49.33102099999999],[0.448181,49.330667000000005],[0.44769200000000003,49.329890000000006],[0.447698,49.32941199999999],[0.447832,49.329229999999995],[0.447778,49.32897199999999],[0.44765999999999995,49.328801],[0.447129,49.32842999999997],[0.44705900000000004,49.32789900000003],[0.446872,49.327410999999984],[0.44703799999999994,49.32739000000001],[0.447231,49.327518],[0.44725800000000004,49.327770999999956],[0.44753100000000007,49.328081999999995],[0.448063,49.32817800000001],[0.449017,49.32815099999999],[0.450021,49.32784000000001],[0.449908,49.327657999999985],[0.449479,49.32740000000001],[0.44920000000000004,49.32706200000004],[0.44891,49.326558000000006],[0.448679,49.325829],[0.44821800000000006,49.322078999999974],[0.448202,49.32105999999999],[0.44836800000000004,49.320318999999955],[0.44799799999999995,49.319530999999984],[0.448138,49.31940700000001],[0.44943,49.31920900000003],[0.4505620000000001,49.31885],[0.450042,49.31844700000002],[0.44769200000000003,49.3168],[0.441899,49.31204699999998],[0.43714100000000006,49.308306000000016],[0.43126099999999995,49.30369000000002],[0.431159,49.30382900000001],[0.43088,49.304081],[0.4300010000000001,49.30450999999999],[0.428391,49.305127],[0.427431,49.305679999999995],[0.426321,49.306071],[0.424448,49.306431],[0.42448099999999994,49.306678000000005],[0.424368,49.306757999999974],[0.423671,49.30678999999998],[0.42286,49.306940999999995],[0.422378,49.30717099999998],[0.4217020000000001,49.30767000000003],[0.4213799999999999,49.30777699999999],[0.42101999999999995,49.30797100000001],[0.420312,49.308840000000004],[0.42023699999999997,49.30894100000003],[0.419207,49.310861999999986],[0.418231,49.312139],[0.418258,49.31263200000001],[0.417271,49.31281999999999],[0.41616,49.31317899999999],[0.415908,49.31323800000001],[0.415678,49.313297000000006],[0.415372,49.31359800000001],[0.415329,49.31447800000001],[0.414867,49.31433799999999],[0.414658,49.31425200000001],[0.41415900000000005,49.313957000000016],[0.414009,49.31385],[0.41409,49.31408099999999],[0.41407900000000003,49.31431100000003],[0.41395,49.31454199999999],[0.413022,49.31495000000001],[0.412711,49.315089],[0.412067,49.315132000000034],[0.41118199999999994,49.314998],[0.410721,49.31489099999999],[0.40997,49.31476700000002],[0.408929,49.31418800000003],[0.408269,49.31396799999999],[0.406558,49.31377999999998],[0.406338,49.31361900000002],[0.405989,49.31348000000003],[0.40551700000000007,49.31344200000001],[0.40488999999999997,49.313142],[0.404267,49.313131],[0.40335000000000004,49.312321],[0.402942,49.31224099999997],[0.401671,49.31245000000001],[0.398962,49.313142],[0.398941,49.31410199999999],[0.39903200000000005,49.31449900000001],[0.400078,49.31663900000001],[0.40102699999999997,49.31761],[0.4016390000000001,49.318618999999984],[0.40208900000000003,49.31955199999996],[0.4025079999999999,49.32016899999999],[0.404069,49.32186999999996],[0.40471799999999997,49.32273900000004],[0.404788,49.32290999999998],[0.405609,49.32436999999999],[0.40644,49.326279],[0.406649,49.327030000000036],[0.406928,49.32754],[0.4085,49.32889199999997],[0.409128,49.329267000000016],[0.40918099999999996,49.329251]];
+	TRACK.setBikeStartKM(5);
+	TRACK.setRunStartKM(8);
+	TRACK.setRoute(trackData);
+	//--------------------------------------------------------------------------
+	initGUI();
+});
+//--------------------------------------------------------------------------
+$("#button_swim").click(function() {
+	if ($(this).hasClass("inactive")) 
+	{
+		$(this).removeClass("inactive");
+		GUI.isShowSwim=true;
+	} else {
+		$(this).addClass("inactive");
+		GUI.isShowSwim=false;
+	}
+	GUI.redraw();
+});
+
+$("#button_bike").click(function() {
+	if ($(this).hasClass("inactive")) 
+	{
+		$(this).removeClass("inactive");
+		GUI.isShowBike=true;
+	} else {
+		$(this).addClass("inactive");
+		GUI.isShowBike=false;
+	}
+	GUI.redraw();
+});
+
+$("#button_run").click(function() {
+	if ($(this).hasClass("inactive")) 
+	{
+		$(this).removeClass("inactive");
+		GUI.isShowRun=true;
+	} else {
+		$(this).addClass("inactive");
+		GUI.isShowRun=false;
+	}
+	GUI.redraw();
+});
+
+$("#button_participants").click(function() {
+	if (isTabVisible("part"))
+		showMap();
+	else
+		showParticipants();
+});
+
+$("#button_favorites").click(function() {
+	if (isTabVisible("favs"))
+		showMap();
+	else
+		showFavs();
+});
+
+$("#button_rank").click(function() {
+	if (isTabVisible("rank"))
+		showMap();
+	else
+		showRank();
+});
+
+$("#tabcont .close").click(function() {
+	showMap();
+});
+
+showDetails();
+</script>	
+</body>
+</html>
