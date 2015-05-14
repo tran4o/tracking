@@ -179,6 +179,8 @@
 			{
 				url : CONFIG.server.prefix+"rest/participant/",
 				data: function ( d ) {
+					if (d.action == "remove") 
+					    return JSON.stringify({"delete":d.id});
 				    return JSON.stringify( d.data );
 				}
 			},
@@ -222,6 +224,8 @@
 				url : CONFIG.server.prefix+"rest/event/",
 				data: function ( d ) 
 				{
+					if (d.action == "remove") 
+					    return JSON.stringify({"delete":d.id});
 				    return JSON.stringify( d.data );
 				}
 			},
