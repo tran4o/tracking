@@ -32,7 +32,7 @@
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>
-    <title>TODO TITLE</title>
+    <title>System configuration</title>
     
 	<script>
 	var draw;
@@ -211,9 +211,6 @@
 				}, {
 					label: "Occupation",
 					name: "occupation"
-				}, {
-					label: "Pulse",
-					name: "pulse"
 				}
 			]
 		} );
@@ -300,8 +297,7 @@
 					} 
 				},
 				{ data: "gender" },
-				{ data: "occupation" },
-				{ data: "pulse" , className : "dt-body-right" },
+				{ data: "occupation" }
 			],
 			tableTools: {
 				sRowSelect: "os",
@@ -471,7 +467,6 @@
 							<th>Age group</th>
 							<th>Gender</th>
 							<th>Occupation</th>
-							<th>Pulse</th>
 						</tr>
 					</thead>
 					<tfoot>
@@ -484,7 +479,6 @@
 							<th>Age group</th>
 							<th>Gender</th>
 							<th>Occupation</th>
-							<th>Pulse</th>
 						</tr>
 					</tfoot>
 				</table>

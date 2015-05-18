@@ -180,6 +180,18 @@ function formatDate(d) {
     return dd+'.'+mm+'.'+yyyy;
 }
 
+function formatTime(d) {
+    var hh = d.getHours();
+    if(hh<10){
+    	hh='0'+hh
+    } 
+    var mm = d.getMinutes();
+    if(mm<10){
+        mm='0'+mm
+    } 
+    return hh+":"+mm;
+}
+
 function rainbow(numOfSteps, step) {
     // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
     // Adam Cole, 2011-Sept-14
@@ -223,6 +235,54 @@ function renderArrowBase64(width,height,color)
     canvas.height = height;
     canvg(canvas, svg,{ ignoreMouse: true, ignoreAnimation: true });
     return RENDEREDARROWS[key]=canvas.toDataURL();
+}
+
+var RENDEREDDIRECTIONS={};
+function renderDirectionBase64(width,height,color) 
+{
+	var key = width+"x"+height+":"+color;
+	if (RENDEREDDIRECTIONS[key])
+		return RENDEREDDIRECTIONS[key];
+
+	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+	+'<g id="#ffffffff">'
+	+'<path fill="#ffffff" opacity="1.00" d=" M 167.56 23.47 C 181.01 9.21 200.50 1.16 220.01 0.80 C 234.04 0.78 248.07 4.76 259.98 12.21 C 275.72 21.97 287.22 38.10 291.84 56.00 C 296.56 73.49 293.73 92.27 285.99 108.46 C 324.99 108.47 363.98 108.46 402.98 108.47 C 417.88 108.69 432.70 113.53 444.81 122.22 C 459.39 132.54 469.82 148.47 473.67 165.90 C 478.22 184.82 474.33 205.45 463.82 221.74 C 451.03 241.95 427.85 255.02 403.94 255.47 C 309.29 255.46 214.64 255.47 119.99 255.47 C 101.55 254.95 84.09 246.65 70.03 235.08 C 55.75 223.40 46.11 206.24 43.81 187.92 C 40.47 164.71 49.46 140.40 66.56 124.48 C 100.25 90.83 133.91 57.15 167.56 23.47 M 208.72 46.71 C 197.04 58.04 185.71 69.71 174.21 81.22 C 170.13 84.52 167.55 89.22 163.63 92.68 C 150.10 106.13 136.56 119.56 123.24 133.23 C 120.44 135.75 117.78 138.42 115.58 141.50 C 108.21 149.14 100.70 156.65 93.10 164.06 C 87.92 168.89 85.13 176.05 85.00 183.06 C 85.70 187.91 86.61 193.02 89.72 196.98 C 95.16 204.74 104.79 208.42 113.95 209.00 C 208.96 209.01 303.97 208.98 398.98 209.01 C 406.07 208.92 413.45 206.73 418.37 201.37 C 427.64 192.56 428.37 176.57 419.75 167.08 C 415.04 161.11 407.45 158.33 400.04 158.00 C 323.34 157.98 246.63 158.04 169.92 157.97 C 183.64 144.02 197.51 130.21 211.24 116.27 C 214.95 112.33 219.30 109.00 222.39 104.49 C 229.88 96.28 238.34 88.96 245.65 80.58 C 249.49 74.25 251.33 66.20 248.68 59.07 C 245.67 47.98 234.19 40.45 222.90 41.07 C 217.90 42.00 212.57 43.14 208.72 46.71 Z" />'
+	+'</g>'
+	+'<g id="#000000ff">'
+	+'<path fill="#000000" opacity="1.00" d=" M 208.72 46.71 C 212.57 43.14 217.90 42.00 222.90 41.07 C 234.19 40.45 245.67 47.98 248.68 59.07 C 251.33 66.20 249.49 74.25 245.65 80.58 C 238.34 88.96 229.88 96.28 222.39 104.49 C 219.30 109.00 214.95 112.33 211.24 116.27 C 197.51 130.21 183.64 144.02 169.92 157.97 C 246.63 158.04 323.34 157.98 400.04 158.00 C 407.45 158.33 415.04 161.11 419.75 167.08 C 428.37 176.57 427.64 192.56 418.37 201.37 C 413.45 206.73 406.07 208.92 398.98 209.01 C 303.97 208.98 208.96 209.01 113.95 209.00 C 104.79 208.42 95.16 204.74 89.72 196.98 C 86.61 193.02 85.70 187.91 85.00 183.06 C 85.13 176.05 87.92 168.89 93.10 164.06 C 100.70 156.65 108.21 149.14 115.58 141.50 C 117.78 138.42 120.44 135.75 123.24 133.23 C 136.56 119.56 150.10 106.13 163.63 92.68 C 167.55 89.22 170.13 84.52 174.21 81.22 C 185.71 69.71 197.04 58.04 208.72 46.71 Z" />'
+	+'</g>'
+	+'</svg>';
+
+	var svg=svg.split("#000000").join(color);
+	var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvg(canvas, svg,{ ignoreMouse: true, ignoreAnimation: true });
+    return RENDEREDDIRECTIONS[key]=canvas.toDataURL();
+}
+
+var RENDEREBOXES={};
+function renderBoxBase64(width,height,color) 
+{
+	var key = width+"x"+height+":"+color;
+	if (RENDEREBOXES[key])
+		return RENDEREBOXES[key];
+
+	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">'
+	+'<g id="#ffffffff">'
+	+'<path fill="#ffffff" opacity="1.00" d=" M 55.50 0.00 L 458.45 0.00 C 472.44 0.99 486.03 7.09 495.78 17.23 C 505.34 26.88 511.01 40.04 512.00 53.55 L 512.00 458.44 C 510.99 472.43 504.90 486.01 494.77 495.77 C 485.11 505.32 471.96 511.01 458.45 512.00 L 53.56 512.00 C 39.57 510.99 25.97 504.91 16.22 494.78 C 6.67 485.12 0.97 471.97 0.00 458.45 L 0.00 55.50 C 0.40 41.07 6.45 26.89 16.74 16.73 C 26.89 6.45 41.07 0.41 55.50 0.00 M 56.90 56.90 C 56.87 189.63 56.86 322.36 56.90 455.09 C 189.63 455.12 322.36 455.12 455.09 455.09 C 455.12 322.36 455.12 189.63 455.09 56.90 C 322.36 56.86 189.63 56.87 56.90 56.90 Z" />'
+	+'</g>'
+	+'<g id="#000000ff">'
+	+'<path fill="#000000" opacity="1.00" d=" M 56.90 56.90 C 189.63 56.87 322.36 56.86 455.09 56.90 C 455.12 189.63 455.12 322.36 455.09 455.09 C 322.36 455.12 189.63 455.12 56.90 455.09 C 56.86 322.36 56.87 189.63 56.90 56.90 Z" />'
+	+'</g>'
+	+'</svg>';
+
+	var svg=svg.split("#000000").join(color);
+	var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvg(canvas, svg,{ ignoreMouse: true, ignoreAnimation: true });
+    return RENDEREBOXES[key]=canvas.toDataURL();
 }
 
 window.MOBILE=mobileAndTabletCheck();

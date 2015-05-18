@@ -151,6 +151,12 @@ Class("Track",
             });
 		},
 		
+		setRoute : function(val) {
+			this.route=val;
+			delete this._lentmp1;
+			delete this._lentmp2;
+		},
+		
 		getBoundingBox : function() {
 			var minx=null,miny=null,maxx=null,maxy=null;
 			for (var i=0;i<this.route.length;i++)
@@ -238,6 +244,8 @@ Class("Track",
 		},
 		
 		getTrackLength : function() {
+			if (this._lentmp1)
+				return this._lentmp1;
 			var res=0.0;
 			var cc = this.route;
 			for (var i=0;i<cc.length-1;i++) 
@@ -248,10 +256,13 @@ Class("Track",
 				if (!isNaN(d) && d > 0) 
 					res+=d;
 			}
+			this._lentmp1=res;
 			return res;
 		},
 
 		getTrackLengthInWGS84 : function() {
+			if (this._lentmp2)
+				return this._lentmp2;
 			var res=0.0;
 			var cc = this.route;
 			for (var i=0;i<cc.length-1;i++) 
@@ -262,6 +273,7 @@ Class("Track",
 				if (!isNaN(d) && d > 0) 
 					res+=d;
 			}
+			this._lentmp2=res;
 			return res;
 		},
 
@@ -282,9 +294,9 @@ Class("Track",
 		getTrackPart : function(elapsed) {
 			var len = this.getTrackLength();
 			var em = (elapsed%1.0)*len;
-			if (em > this.runStartKM*1000) 
+			if (em >= this.runStartKM*1000) 
 				return 2;
-			if (em > this.bikeStartKM*1000) 
+			if (em >= this.bikeStartKM*1000) 
 				return 1;
 			return 0;
 		},

@@ -21,7 +21,8 @@ window.CONFIG=
 	math : {
 		speedAndAccelerationAverageDegree : 4,	// caclulation based on N states (average) (MIN 2)
 		displayDelay : 30,	// display delay in SECONDS
-		interpolateGPSAverage : 3 // number of recent values to caclulate average gps for position (smooting the curve.min 0 = NO,1 = 2 values (current and last))
+		interpolateGPSAverage : 3, // number of recent values to caclulate average gps for position (smooting the curve.min 0 = NO,1 = 2 values (current and last))
+		roadDistanceBestPointCalulcationCoef : 0.2 // TODO EXPLAIN
 	},
 	simulation : {
 		pingInterval : 10, // interval in secods to ping with gps data
@@ -48,13 +49,21 @@ window.CONFIG=
 		 }
 		]
 	},
+	
 	event : {
 		beginTimestamp : (new Date()).getTime(),
 		duration : 60, //MINUTES
 		id : 3
 	},
-	
+
 	server : {
 		prefix : "http://ts2.hmsu.org/triathlon/"
+	},
+	
+	appearance : {
+		trackColorSwim : '#FF4040',
+		trackColorBike : '#00BF00',
+		trackColorRun :  '#4040FF',
+		directionIconBetween : 100	/* pixels */
 	}
 };

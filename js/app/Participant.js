@@ -18,11 +18,6 @@ Class("ParticipantState",
 	    	is:   "rw",
 	        init: [0,0]	//lon lat world mercator
 	    },
-	    position : 
-		{
-	        is:   "rw",
-	        init: [0,0]	//lon lat world mercator
-	    },
 		freq : {
 			is : "rw",
 			init : 0
@@ -50,7 +45,7 @@ Class("ParticipantState",
 		groupRank : {
 			is : "rw",
 			init : 0
-		},
+		}
 	}
 });		
 //----------------------------------------		
@@ -124,7 +119,12 @@ Class("Participant",
 	    rotation : {
 	    	is : "rw",
 	    	init : null 
-	    }
+	    }, 
+	    elapsed : {
+	    	is : "rw",
+	    	init : 0
+	    }, 
+	    
     },
     //--------------------------------------
 	methods: 
@@ -150,6 +150,10 @@ Class("Participant",
 				    this.setPosition(pos);
 				    this.setRotation(null);
 					this.updateFeature();
+				} else {
+					if (this.isDiscarded) {
+						this.updateFeature();
+					}
 				}
 				return;
 			}
@@ -161,10 +165,16 @@ Class("Participant",
 			var res = this.calculateElapsedAverage(ctime);
 			if (res) 
 			{
-				this.setPosition(TRACK.getPositionFromElapsed(res % 1.0));
-				this.setRotation(TRACK.getRotationFromElapsed(res % 1.0));
+				var tres=res;
+				if (tres == TRACK.laps)
+					tres=1.0;
+				else
+					tres=tres%1;
+				this.setPosition(TRACK.getPositionFromElapsed(tres));
+				this.setRotation(TRACK.getRotationFromElapsed(tres));
 				this.updateFeature();
-			}
+				this.setElapsed(res);
+			} 
 		},
 		
 		calculateElapsedAverage : function(ctime) {
@@ -201,9 +211,10 @@ Class("Participant",
 			ssumt/=cc;
 			return {elapsed : ssume,timestamp : ssumt};
 		},
-		
+
 		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank)
 		{
+			
 			if (!ctime)
 				ctime=(new Date()).getTime();
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
@@ -213,11 +224,14 @@ Class("Participant",
 				return;
 			}
 			//----------------------------------------------------------
+			var tracklen = TRACK.getTrackLength();
+			var tracklen1 = TRACK.getTrackLengthInWGS84();
+			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
+			var lstate = this.states.length ? this.states[this.states.length-1] : null;
+			//----------------------------------------------------------
 			var best;
 			var bestm=null;
-			var besto;
-			var bestom=null;
-			var bestomd;
+			var lelp = lstate ? lstate.getElapsed() : 0;
 			//----------------------------------------------------------
 			var tg = TRACK.route;
 			for (var i=0;i<tg.length-1;i++) 
@@ -225,33 +239,19 @@ Class("Participant",
 				var seg=[tg[i],tg[i+1]];
 				var res = closestProjectionOfPointOnLine(pos[0],pos[1],seg[0][0],seg[0][1],seg[1][0],seg[1][1]);
 				var distance = WGS84SPHERE.haversineDistance(res.pos,[res.pos[0]+res.min,res.pos[1]]);
-				if (distance <= CONFIG.distances.stayOnRoadTolerance) 
+				if (distance <= CONFIG.distances.stayOnRoadTolerance && (bestm == null || bestm >= res.min)) 
 				{
+					var nel = TRACK.getElapsedFromPoint(res.pos);
+					if (nel > lelp) 
+						res.min+=((nel-lelp) * tracklen1 * CONFIG.math.roadDistanceBestPointCalulcationCoef);
 					if (bestm == null || res.min < bestm) {
 						bestm=res.min;
 						best=res.pos;
 					}				
 				}
-				if (bestom == null || res.min < bestom) {
-					bestom=res.min;
-					besto=res.pos;
-					bestomd=distance;
-				}
 			}
 			//-----------------------------------------------------------
-			if (bestm == null) 
-			{
-				// out of track
-				//this.setIsOnRoad(false);
-				state.setPosition(besto);
-			} else {
-				//this.setIsOnRoad(true);
-				state.setPosition(best);
-			}			
-			//-----------------------------------------------------------
-			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
-			var lstate = this.states.length ? this.states[this.states.length-1] : null;
-			if (bestom != null) 
+			if (bestm != null) 
 			{
 				var nel = TRACK.getElapsedFromPoint(best);
 				if (lstate) 
@@ -259,7 +259,7 @@ Class("Participant",
 					if (nel < lstate.getElapsed()) 
 					{
 						// WRONG DIRECTION OR GPS DATA WRONG? SKIP..
-						if ((lstate.getElapsed()-nel)*TRACK.getTrackLength() < CONFIG.constraints.backwardsEpsilonInMeter) 
+						if ((lstate.getElapsed()-nel)*tracklen < CONFIG.constraints.backwardsEpsilonInMeter) 
 							return;
 						do  
 						{
@@ -274,17 +274,23 @@ Class("Participant",
 					llstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree*2 ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree*2] : null;
 					lstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree] : null;
 					if (lstate)  {
-						state.setSpeed( TRACK.getTrackLength() * (nel-lstate.getElapsed()) * 1000 / (ctime-lstate.timestamp));
+						state.setSpeed( tracklen * (nel-lstate.getElapsed()) * 1000 / (ctime-lstate.timestamp));
 						if (llstate) 
 							state.setAcceleration( (state.getSpeed()-lstate.getSpeed()) * 1000 / (ctime-lstate.timestamp));
 					}
 					//--------------------------------------------------------------
 				}
 				state.setElapsed(nel);
+			} else {
+				if (lstate)
+					state.setElapsed(lstate.getElapsed());
+				if (lstate.getElapsed() != TRACK.laps) {
+					this.setIsDiscarded(true);
+				}
 			}
 			//-----------------------------------------------------------
 			this.addState(state);
-			if (GUI.isDebug) 
+			if (GUI.isDebug && !this.getIsDiscarded()) 
 			{
 				var feature = new ol.Feature();
 				var geom = new ol.geom.Point(state.gps);
@@ -306,11 +312,10 @@ Class("Participant",
 		{
 			var ctime = (new Date()).getTime();
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:TRACK.getElapsedFromPoint(pos)});			
+			this.setElapsed(state.elapsed);
 			this.setStates([state]);
 			this.setIsSOS(false);
 			this.setIsDiscarded(false);
-			//this.setIsOnRoad(true);
-
 			var feature = new ol.Feature();
 			var geom = new ol.geom.Point(pos);
 			geom.transform('EPSG:4326', 'EPSG:3857');									
@@ -322,13 +327,6 @@ Class("Participant",
 			this.ping(pos,0,false,ctime,0,0,0,0);
 		},
 		
-		getElapsed : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].elapsed;
-			return 0;
-		},
-
 		getFreq : function() 
 		{
 			if (this.states.length)
@@ -361,39 +359,53 @@ Class("Participant",
 			if (this.isSOS || this.isDiscarded) {
 				pos = this.getGPS();
 			}
-			
-			var prettyCoord=""; //ol.coordinate.toStringHDMS(this.getPosition(), 2);
-
-			var tpart = TRACK.getTrackPart(this.getElapsed());
-			if (tpart == 0)
-				tpart="Swim";
-			else if (tpart == 1)
-				tpart="Bike";
-			else if (tpart == 2)
-					tpart="Run";
-
-			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+"</div>";
+			var tlen = TRACK.getTrackLength();
+			var ctime = (new Date()).getTime();
+			var elapsed = this.calculateElapsedAverage(ctime);
+			var tpart = TRACK.getTrackPart(elapsed);
+			var targetKM;
+			var partStart;
+			var tpartMore;
+			if (tpart == 0) {
+				tparts="Swim";
+				targetKM=TRACK.bikeStartKM;
+				partStart=0;
+				tpartMore="swim";
+			} else if (tpart == 1) {
+				tparts="Bike";
+				targetKM=TRACK.runStartKM;
+				partStart=TRACK.bikeStartKM;
+				tpartMore="ride";
+			} else if (tpart == 2) { 
+				tparts="Run";
+				targetKM=tlen/1000.0;
+				partStart=TRACK.runStartKM;
+				tpartMore="run";
+			}
+			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+" (1)</div>";
 			var freq = Math.round(this.getFreq());
 			if (freq > 0) {
-				html+="<div class='popup_freq'>"+freq+"</div>";
+				html+="<div class" +
+						"='popup_freq'>"+freq+"</div>";
 			}
-			var elapsed = (this.lastInterpolateTimestamp ? this.calculateElapsedAverage(this.lastInterpolateTimestamp) : this.getElapsed());
-			var elkm = elapsed*TRACK.getTrackLength()/1000.0;
-			elkm = parseFloat(Math.round(elkm * 100) / 100).toFixed(2);			
-			
-			var rekm = elapsed%1.0;
-			rekm=(1.0-rekm)*TRACK.getTrackLength()/1000.0;
-			rekm = parseFloat(Math.round(rekm * 100) / 100).toFixed(2);			
+			var elkm = elapsed*tlen/1000.0;
+			var elkms = parseFloat(Math.round(elkm * 100) / 100).toFixed(2);			
+
+			/*var rekm = elapsed%1.0;
+			rekm=(1.0-rekm)*tlen/1000.0;
+			rekm = parseFloat(Math.round(rekm * 100) / 100).toFixed(2);*/			
 			//-----------------------------------------------------
-			
+			var estf=null;
 			var etxt1=null;
 			var etxt2=null;
-			var lstate = null;
+			var lstate = null; 
 			if (this.states.length) 
 			{
 				lstate = this.states[this.states.length-1];
-				if (lstate.getSpeed() > 0) {
-					etxt1=parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";
+				if (lstate.getSpeed() > 0) 
+				{
+					var spms = Math.ceil(lstate.getSpeed() * 100) / 100;
+					etxt1=parseFloat(spms).toFixed(2)+" m/s";
 					var rot = -this.getRotation()*180/Math.PI; 
 					if (rot < 0)
 						rot+=360;
@@ -416,32 +428,42 @@ Class("Participant",
 						else 
 							etxt1+=" NE";
 					}
-
+					estf=formatTime(new Date( ctime + targetKM*1000 / spms*1000 ));  
 				}
 				if (lstate.getAcceleration() > 0)
 					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
 			}
+			//-------------------------------------------------------------------------------------------------
+			var p1 = 100*TRACK.bikeStartKM/(tlen/1000.0);
+			var p2 = 100*(TRACK.runStartKM-TRACK.bikeStartKM)/(tlen/1000.0);
+			var p3 = 100*(tlen/1000.0 - TRACK.runStartKM)/(tlen/1000.0);
+			var prettyCoord=
+				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p1+"%;background-color:"+CONFIG.appearance.trackColorSwim+"'>"+Math.round(TRACK.bikeStartKM)+" km</div>"+
+				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p2+"%;background-color:"+CONFIG.appearance.trackColorBike+"'>"+Math.round(TRACK.runStartKM-TRACK.bikeStartKM)+" km</div>"+
+				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p3+"%;background-color:"+CONFIG.appearance.trackColorRun+"'>"+Math.round(tlen/1000.0 - TRACK.runStartKM)+" km</div>"
+				; //ol.coordinate.toStringHDMS(this.getPosition(), 2);
+
+			var imgdiv;
+			if (tpart == 0)
+				imgdiv="<img class='popup_track_mode' style='left:"+elapsed*100+"%' src='img/swim.svg'/>"
+			else if (tpart == 1)
+				imgdiv="<img class='popup_track_mode' style='left:"+elapsed*100+"%' src='img/bike.svg'/>"
+			else /*if (tpart == 2)*/
+				imgdiv="<img class='popup_track_mode' style='left:"+elapsed*100+"%' src='img/run.svg'/>"
+	
+
 			var pass = Math.round((new Date()).getTime()/3500) % 3;
 			html+="<table class='popup_table' style='background-image:url(\""+this.getImage()+"\")'>";
 			var isDummy=!(elapsed > 0);
-			html+="<tr><td class='lbl'>Elapsed</td><td class='value'>"+(isDummy ? "-" : elkm+" km")+"</td></tr>";
-			html+="<tr><td class='lbl'>Finish after</td><td class='value'>"+(isDummy ? "-" : rekm+" km")+"</td></tr>";
-						
+			html+="<tr><td class='lbl'>Elapsed</td><td class='value'>"+(isDummy ? "-" : elkms+" km")+"</td></tr>";
+			html+="<tr><td class='lbl'>More to "+tpartMore+"</td><td class='value'>"+(isDummy ? "-" : parseFloat(Math.round((targetKM-elkm) * 100) / 100).toFixed(2) /* rekm */ +" km")+"</td></tr>";
+			html+="<tr><td class='lbl'>Finish "+ tparts.toLowerCase() +"</td><td class='value'>"+(!estf ? "-" : estf)+"</td></tr>";					
 			html+="<tr><td class='lbl'>Speed</td><td class='value'>"+(!isDummy && etxt1 ? etxt1 : "-") + "</td></tr>";
 			html+="<tr><td class='lbl'>Acceler.</td><td class='value'>"+(!isDummy && etxt2 ? etxt2 : "-") +"</td></tr>";
 			html+="<tr style='height:100%'><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			html+"</table>"
-			html+="<div class='popup_shadow'>"+prettyCoord+"</div>";
+			html+="<div class='popup_shadow'>"+prettyCoord+imgdiv+"</div>";
 			html+="<img class='popup_pulse' src='data:image/gif;base64,R0lGODlhEQAPAPIFAP8oKP9KSP9KSf6qp/+rqDymszymszymsyH5BAkPAAcAIf4RQ3JlYXRlZCB3aXRoIEdJTVAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEQAPAAADOnhKTHrNPSiqcESALamtWbUB2GeKI3OaIxmuKPfCbQlr3HLj5DN/qYkHmBMOeR0jodUzTpZF55PhTAAAIfkECQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSACH5BAUPAAcALAAAAAARAA8AAAMyeLrc/lCNueZ4I+ibAbhMpm2a94VjGpigpI5sI6peW72xM691NJi9yOEXFA4pxqSSkQAAIfkEAQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSADs='/>"
-
-			var tpart = TRACK.getTrackPart(elapsed);
-			if (tpart == 0)
-				html+="<img class='popup_track_mode' src='img/swim.svg'/>"
-			else if (tpart == 1)
-				html+="<img class='popup_track_mode' src='img/bike.svg'/>"
-			else /*if (tpart == 2)*/
-				html+="<img class='popup_track_mode' src='img/run.svg'/>"
-	
 			return html;
 		}
 		

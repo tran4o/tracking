@@ -7,7 +7,7 @@ Class("GUI",
 	{
     	isDebug : {
     		is : "rw",
-    		init : true
+    		init : !MOBILE
     	},
 		receiverOnMapClick : {
 			is : "rw",
@@ -237,6 +237,8 @@ Class("GUI",
 				onCloseCallback();
 		},
 		
+		
+		
 		onAnimation : function() 
 		{
 			for (var ip=0;ip<TRACK.participants.length;ip++) 
@@ -244,7 +246,8 @@ Class("GUI",
 				var p = TRACK.participants[ip];
 				p.interpolate();
 			}
-			if (this.selectedParticipant) {
+			if (this.selectedParticipant) 
+			{
 				var spos = this.selectedParticipant.getFeature().getGeometry().getCoordinates();
 				if (!this.popup.is_shown) {
 				    this.popup.show(spos, this.popup.lastHTML=this.selectedParticipant.getPopupHTML());
@@ -252,11 +255,16 @@ Class("GUI",
 				} else {
 					if (!this.popup.getPosition() || this.popup.getPosition()[0] != spos[0] || this.popup.getPosition()[1] != spos[1])
 					    this.popup.setPosition(spos);
-				    var rr = this.selectedParticipant.getPopupHTML();
-				    if (rr != this.popup.lastHTML) {
-				    	this.popup.lastHTML=rr;
-					    this.popup.content.innerHTML=rr; 
-				    }					
+					var ctime = (new Date()).getTime();			 
+					if (!this.lastPopupReferesh || ctime - this.lastPopupReferesh > 2000) 
+					{
+						this.lastPopupReferesh=ctime;
+					    var rr = this.selectedParticipant.getPopupHTML();
+					    if (rr != this.popup.lastHTML) {
+					    	this.popup.lastHTML=rr;
+						    this.popup.content.innerHTML=rr; 
+					    }					
+					}
 				    //this.popup.panIntoView_(spos);
 				}
 			}

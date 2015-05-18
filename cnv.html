@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>GPX to JSON converter</title>
+</head>    
+<body>
+<script>
+function cnv() 
+{
+	var txt = document.getElementById("t1").value;
+	var parser=new DOMParser();
+	var doc=parser.parseFromString(txt,"text/xml");
+	var pts = doc.getElementsByTagName("trkpt");
+	var data = [];
+	for (var i=0;i<pts.length;i++)
+		data.push([parseFloat(pts[i].attributes.lon.value),parseFloat(pts[i].attributes.lat.value)]);
+	document.getElementById("t2").value=JSON.stringify(data);
+}
+</script>
+<textarea id="t1" rows="20" cols="100">
+PASTE YOUR GPX XML CODE HERE
+</textarea>
+
+<textarea id="t2" rows="20" cols="100">
+RESULT GOES HERE
+</textarea>
+
+<br/>
+<a onclick="cnv()" href="#">CALCULATE</a>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
-window.STYLES={
-
+window.STYLES=
+{
+	//------------------------------------------------
 	// style function for track
 	//------------------------------------------------
 	"track" : function(feature,resolution) 
@@ -10,14 +11,48 @@ window.STYLES={
 		var geomswim=coords;
 		var geombike;
 		var geomrun;
-		
-		if (track && track.bikeStartKM) {
+		//-------------------------------------
+		function genDirection(pts,color) 
+		{
+			var cnt=0;
+			var icn = renderDirectionBase64(16,16,color); //renderArrowBase64(48,48,color);
+			var res=0.0;
+			for (var i=0;i<pts.length-1;i++) 
+			{
+				var start = pts[i+1];
+				var end = pts[i];
+				var len = Math.sqrt((start[0]-start[0])*(end[0]-start[0])+(end[1]-start[1])*(end[1]-start[1])) / resolution;
+				res+=len;
+				if (i == 0 || res >= CONFIG.appearance.directionIconBetween) { 
+					res=0;
+					var dx = end[0] - start[0];
+					var dy = end[1] - start[1];
+					var rotation = Math.atan2(dy, dx);
+					styles.push(new ol.style.Style(
+					{
+					  geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
+					  image: new ol.style.Icon({
+						src: icn,
+						scale : 1,
+						anchor: [0.5, 0.5],
+						rotateWithView: true,
+						rotation: -rotation,
+						opacity : 1
+					  })
+					}));
+					cnt++;
+				}
+			}
+		}
+		//-------------------------------------
+		if (track && !isNaN(track.bikeStartKM)) 
+		{
 			for (var i=0;i<track.distances.length;i++) {
 				if (track.distances[i] >= track.bikeStartKM*1000)
 					break;
 			}
 			var j;
-			if (track.runStartKM) {
+			if (!isNaN(track.runStartKM)) {
 				for (j=i;j<track.distances.length;j++) {
 					if (track.distances[j] >= track.runStartKM*1000)
 						break;
@@ -26,9 +61,9 @@ window.STYLES={
 				j=track.distances.length;
 			}
 			geomswim=coords.slice(0,i);
-			geombike=coords.slice(i-1,j);
+			geombike=coords.slice(i < 1 ? i : i-1,j);
 			if (j < track.distances.length)
-				geomrun=coords.slice(j-1,track.distances.length);
+				geomrun=coords.slice(j < 1 ? j : j-1,track.distances.length);
 			if (!geomswim.length)
 				geomswim=null;
 			if (!geombike.length)
@@ -37,17 +72,19 @@ window.STYLES={
 				geomswim=null;
 			
 		}
-		if (geomswim && GUI.isShowSwim) {
+		if (geomrun && GUI.isShowRun) 
+		{
 			styles.push
 			(					
 					new ol.style.Style({
-						geometry: new ol.geom.LineString(geomswim),
+						geometry: new ol.geom.LineString(geomrun),
 						stroke: new ol.style.Stroke({
-						color: '#ff4040',
-						width: 4
+						color: CONFIG.appearance.trackColorRun,
+						width: 3
 					  })
 					})
-			);
+			);			
+			genDirection(geomrun,CONFIG.appearance.trackColorRun);
 		}
 		if (geombike && GUI.isShowBike) 
 		{
@@ -56,32 +93,32 @@ window.STYLES={
 					new ol.style.Style({
 						geometry: new ol.geom.LineString(geombike),
 						stroke: new ol.style.Stroke({
-						color: '#40ff40',
-						width: 4
+						color: CONFIG.appearance.trackColorBike,
+						width: 3
 					  })
 					})
 			);
+			genDirection(geombike,CONFIG.appearance.trackColorBike);
 		}
-		if (geomrun && GUI.isShowRun) 
-		{
+		if (geomswim && GUI.isShowSwim) {
 			styles.push
 			(					
 					new ol.style.Style({
-						geometry: new ol.geom.LineString(geomrun),
+						geometry: new ol.geom.LineString(geomswim),
 						stroke: new ol.style.Stroke({
-						color: '#ffff40',
-						width: 4
+						color: CONFIG.appearance.trackColorSwim,
+						width: 3
 					  })
 					})
 			);
+			genDirection(geomswim,CONFIG.appearance.trackColorSwim);
 		}
-		
 		//-------------------------------------
 		if (coords && coords.length >= 2) 
 		{
-			var end = coords[1];
 			var start = coords[0];
-			var dx = end[0] - start[0];
+			var end = coords[1];
+			/*var dx = end[0] - start[0];
 			var dy = end[1] - start[1];
 			var rotation = Math.atan2(dy, dx);
 			styles.push(new ol.style.Style(
@@ -91,11 +128,11 @@ window.STYLES={
 				src: 'img/begin-end-arrow.png',
 				scale : 0.45,
 				anchor: [0.0, 0.5],
-				rotateWithView: false,
+				rotateWithView: true,
 				rotation: -rotation,
-				opacity : 1,
+				opacity : 1
 			  })
-			}));
+			}));*/
 
 			// loop?
 			end = coords[coords.length-1];
@@ -112,9 +149,9 @@ window.STYLES={
 					src: 'img/finish.png',
 					scale : 0.65,
 					anchor: [0.2, 0.8],
-					rotateWithView: false,
+					rotateWithView: true,
 					//rotation: -rotation,
-					opacity : 1,
+					opacity : 1
 				  })
 				}));
 			}
@@ -128,12 +165,70 @@ window.STYLES={
 						src: 'img/direction-small.png',
 						scale : 0.7,
 						anchor: [0.5, 0.5],
-						rotateWithView: false,
+						rotateWithView: true,
 						rotation: -rotation,
-						opacity : 0.5,
+						opacity : 0.5
 					  })
 					}));*/
 
+		}
+		// CHECKPOINTS --------------------------
+		if (geomrun) 
+		{
+			var end = geomrun[1];
+			var start = geomrun[0];
+			var dx = end[0] - start[0];
+			var dy = end[1] - start[1];
+			var rotation = Math.atan2(dy, dx);
+			styles.push(new ol.style.Style({
+				  geometry: new ol.geom.Point(start),
+				  image: new ol.style.Icon({
+					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorRun),
+					scale : 1,
+					anchor: [0.92, 0.5],
+					rotateWithView: true,
+					rotation: -rotation,
+					opacity : 0.65
+				  })
+			}));
+		}
+		if (geombike && GUI.isShowBike) 
+		{
+			var end = geombike[1];
+			var start = geombike[0];
+			var dx = end[0] - start[0];
+			var dy = end[1] - start[1];
+			var rotation = Math.atan2(dy, dx);
+			styles.push(new ol.style.Style({
+				  geometry: new ol.geom.Point(start),
+				  image: new ol.style.Icon({
+					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorBike),
+					scale : 1,
+					anchor: [0.92, 0.5],
+					rotateWithView: true,
+					rotation: -rotation,
+					opacity : 0.65
+				  })
+			}));
+		}
+		if (geomswim && GUI.isShowSwim) 
+		{
+			var end = geomswim[1];
+			var start = geomswim[0];
+			var dx = end[0] - start[0];
+			var dy = end[1] - start[1];
+			var rotation = Math.atan2(dy, dx);
+			styles.push(new ol.style.Style({
+				  geometry: new ol.geom.Point(start),
+				  image: new ol.style.Icon({
+					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorSwim),
+					scale : 1,
+					anchor: [0.92, 0.5],
+					rotateWithView: true,
+					rotation: -rotation,
+					opacity : 0.65
+				  })
+			}));
 		}
 		return styles;
 	},
@@ -166,21 +261,26 @@ window.STYLES={
 			lstate = part.states[part.states.length-1];
 			etxt=" "+parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";// | acc "+parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s";
 		}
-		var zIndex = Math.floor(feature.participant.getElapsed()*1000);
+		var zIndex = Math.round(part.getElapsed()*100000);
+		/*if (part == GUI.getSelectedParticipant()) {
+			zIndex=1e20;
+		}*/
 		var styles=[];
 		//-----------------------------------------------------------------------------------------------------------------------
 		var isDirection = (lstate && lstate.getSpeed() > 0 && !part.isSOS && !part.isDiscarded);
+		var animFrame = ((new Date()).getTime()%3000)*Math.PI*2/3000.0;
+			
 		if (!isDirection || part.getRotation() == null) 
 		{
 	        styles.push(new ol.style.Style(
 	        {
 	        	image : new ol.style.Circle({
-	        		radius: 10,
+	        		radius: 8,
 	        		fill: new ol.style.Fill({
-	        			color: part.color
+	        			color: part.isDiscarded || part.isSOS ? "rgba(192,0,0,"+(Math.sin(animFrame)*0.7+0.3)+")" : part.color
 	        		}),
 	        		stroke: new ol.style.Stroke({
-	        			color: "#ffffff",//"rgba("+colorAlphaArray(this.getColor(),0.5).join(",")+")", // "#ffffff",
+	        			color: part.isDiscarded || part.isSOS ? "rgba(255,0,0,"+(1.0-(Math.sin(animFrame)*0.7+0.3))+")" : "#ffffff", 
 	        			width: 3
 	        		})
 	        	})
