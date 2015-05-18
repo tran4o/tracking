@@ -108,15 +108,10 @@ Class("GUI",
 			  renderer : "canvas",
 			  target: 'map',
 			  layers: [
-				new ol.layer.Tile({
-				  source: new ol.source.BingMaps({
-					key: this.bingMapKey,
-					imagerySet: 'Road'
-					//imagerySet: 'AerialWithLabels'
-					
-				  })
-				}),
-				this.trackLayer,this.participantsLayer
+			           new ol.layer.Tile({
+			               source: new ol.source.OSM()
+			           }),
+			           this.trackLayer,this.participantsLayer
 			  ],
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
