@@ -88,10 +88,11 @@ function getMillis(id,def)
 
 function style(feature,resolution) 
 {
-	var isSOS = feature.data.SOS ? true : false;
+	var isSOS = feature.data.type == "ECALL" ? true : false;
 	var styles=[];
 	styles.push(new ol.style.Style(
 	{
+		zIndex : feature.data.EPOCH, 
 		image : new ol.style.Circle({
 			radius: 5,
 			fill: new ol.style.Fill({
@@ -111,7 +112,7 @@ function style(feature,resolution)
 				  color: [255, 255, 255, 0.5],
 				  width: 4
 				}),
-				text : formatDate(new Date(feature.data.TS)),
+				text : formatDate(new Date(feature.data.EPOCH)),
 				offsetX : 0,
 				offsetY : -12
 		})
@@ -119,6 +120,7 @@ function style(feature,resolution)
 
 	styles.push(new ol.style.Style(
 	{
+		zIndex : feature.data.EPOCH, 
 		text: new ol.style.Text({
 				font: 'bold 9px Arial,Lucida Grande,Tahoma,Verdana',
 				fill: new ol.style.Fill({
@@ -128,7 +130,7 @@ function style(feature,resolution)
 				  color: [255, 255, 255, 0.5],
 				  width: 4
 				}),
-				text : formatTime(new Date(feature.data.TS)),
+				text : formatTime(new Date(feature.data.EPOCH)),
 				offsetX : 0,
 				offsetY : 12
 		})
@@ -145,14 +147,16 @@ function onData(data)
 	gps.getSource().clear();
 	if (!data.length)
 		return;
-	var minx,miny,maxx,maxy;
+	var minx,miny,maxx,maxy;	
 	for (var i=0;i<data.length;i++) 
 	{
 		var e = data[i];		
 		//----------------------------------
 		delete e._id;
-		e.LON=parseFloat(e.LON);
-		e.LAT=parseFloat(e.LAT);
+		delete e.TS;
+		
+		e.LON=parseInt(e.LON);
+		e.LAT=parseInt(e.LAT);
 		if (isNaN(e.LON) || isNaN(e.LAT))
 			continue;
 		if (e.ALT)
@@ -163,10 +167,8 @@ function onData(data)
 			e.HRT=parseInt(e.HRT);
 		if (e.LON == 0 && e.LAT == 0)
 			continue;
-		if (e.TS) 
-			e.TS=parseInt(e.TS);
 		//----------------------------------
-		var c = ol.proj.transform([e.LON,e.LAT], 'EPSG:4326', 'EPSG:3857');		
+		var c = ol.proj.transform([e.LON / 1000000.0,e.LAT / 1000000.0], 'EPSG:4326', 'EPSG:3857');		
 		if (i == 0 || c[0] < minx)
 			minx=c[0];
 		if (i == 0 || c[1] < miny)
@@ -192,7 +194,6 @@ function saveState() {
 
 function doGet() 
 {
-	
 	var from = getMillis("from",0);
 	var to = getMillis("to",(new Date()).getTime() + 31556952000*100 /* 100 years */);
 	console.log("GET DATA FOR ["+from+" > "+to+"]");
@@ -204,21 +205,20 @@ function doGet()
 		var lat = 50.998475+(Math.random()*2-1)*2;
 		var rate = parseInt(Math.random()*100);
 		var alt = Math.random()*1000;
-		var sos = Math.random() > 0.85 ? true : false;
+		var type = Math.random() > 0.85 ? "ECALL" : "RACEDATA";
 		var timestamp = parseInt(Math.random()*1000000000000);
 		data.push(
 		{
-			LON : lon,
-			LAT : lat,
+			LON : parseInt(Math.round(lon*1000000)),
+			LAT : parseInt(Math.round(lat*1000000)),
 			HRT : rate,
 			ALT : alt,
 			SOS : sos,
-			TS : timestamp
+			EPOCH : timestamp
 		});
 	}	
 	onData(data);*/
 	var url = "/triathlon/rest/raceRecord/"+$("#imei").val();   //?from="+from+"&to="+to;
-	console.log("GET URL : "+url);
 	$.getJSON(url, function(result) 
 	{
 		console.log(result);
