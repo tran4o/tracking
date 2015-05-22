@@ -221,10 +221,13 @@ function doGet()
 	var url = "/triathlon/rest/raceRecord/"+$("#imei").val();   //?from="+from+"&to="+to;
 	$.getJSON(url, function(result) 	
 	{
-		if (!(result instanceof Array))
+		if (!(result instanceof Array) && result.data)
 			result=result.data;			
-		console.log(result);
-		onData(result);
+		if (result instanceof Array)		
+			onData(result);
+		else{
+			alert("ERROR : "+JSON.stringify(result));
+		}
     });
 }
 
