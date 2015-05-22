@@ -187,7 +187,7 @@ function doGet()
 		});
 	}	
 	var url = "rest/participant/";
-	$.getJSON(url+'&jsonp=?', function(result) 
+	$.getJSON(url, function(result) 
 	{
 		if (result.statusCode != 200) {
 			var msg="Unknown error";
