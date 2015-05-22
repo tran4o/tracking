@@ -21,10 +21,19 @@
 </div>
 <input id="from" type="text" style="position:absolute;top:5px;left:5px;width:150px;"/>
 <input id="to" type="text" style="position:absolute;top:5px;left:160px;width:150px;"/>
+<input id="imei" type="text" value="000000000000" style="position:absolute;top:5px;right:5px;width:150px;"/>
 <div id="go" style="position:absolute;top:5px;left:315px;width:auto;background-color:white;border:1px solid black;line-height:1.5em;padding-left:5px;padding-right:5px;cursor:pointer;"/>Show</div>
-
+<div style="position:absolute;top:5px;right:155px;width:auto;line-height:1.5em;"/>IMEI</div>
 <script>
 $('#from,#to').datetimepicker({format:'d.m.Y h:m'});
+
+if (localStorage.getItem("from"))
+	$("#from").val(localStorage.getItem("from"));
+if (localStorage.getItem("to"))
+	$("#to").val(localStorage.getItem("to"));
+if (localStorage.getItem("from"))
+	$("#imei").val(localStorage.getItem("imei"));
+	
 var map;
 var popup;
 
@@ -139,9 +148,20 @@ function onData(data)
 	var minx,miny,maxx,maxy;
 	for (var i=0;i<data.length;i++) 
 	{
-		var e = data[i];
+		var e = data[i];		
+		//----------------------------------
+		delete e._id;
+		e.lon=parseFloat(e.lon);
+		e.lat=parseFloat(e.lat);
+		if (isNaN(e.lon) || isNaN(e.lat))
+			continue;
+		if (e.alt)
+			e.alt=parseFloat(e.alt);
+		if (e.time)
+			e.time=parseFloat(e.time);		
 		if (e.lon == 0 && e.lat == 0)
 			continue;
+		//----------------------------------
 		var c = ol.proj.transform([e.lon,e.lat], 'EPSG:4326', 'EPSG:3857');		
 		if (i == 0 || c[0] < minx)
 			minx=c[0];
@@ -162,10 +182,13 @@ function onData(data)
 
 function doGet() 
 {
+	localStorage.setItem("from",$("#from").val());
+	localStorage.setItem("to",$("#to").val());
+	localStorage.setItem("imei",$("#imei").val());
+	
 	var from = getMillis("from",0);
 	var to = getMillis("to",(new Date()).getTime() + 31556952000*100 /* 100 years */);
 	console.log("GET DATA FOR ["+from+" > "+to+"]");
-	
 	// RANDOM
 	var data = [];
 	for (var i=0;i<20;i++) 
@@ -186,7 +209,8 @@ function doGet()
 			tstamp : timestamp
 		});
 	}	
-	var url = "/triathlon/rest/participant/";
+	var url = "/triathlon/rest/raceRecord/"+$("#imei").val();   //?from="+from+"&to="+to;
+	console.log("GET URL : "+url);
 	$.getJSON(url, function(result) 
 	{
 		console.log(result);
