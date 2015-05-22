@@ -184,17 +184,20 @@ function onData(data)
 	map.getView().fitExtent([minx,miny,maxx,maxy],map.getSize());
 }
 
-function doGet() 
-{
+function saveState() {
 	localStorage.setItem("from",$("#from").val());
 	localStorage.setItem("to",$("#to").val());
 	localStorage.setItem("imei",$("#imei").val());
+}
+
+function doGet() 
+{
 	
 	var from = getMillis("from",0);
 	var to = getMillis("to",(new Date()).getTime() + 31556952000*100 /* 100 years */);
 	console.log("GET DATA FOR ["+from+" > "+to+"]");
 	// RANDOM
-	var data = [];
+	/*var data = [];
 	for (var i=0;i<20;i++) 
 	{
 		var lon = 10.366229+(Math.random()*2-1)*2;
@@ -213,7 +216,7 @@ function doGet()
 			TS : timestamp
 		});
 	}	
-	onData(data);
+	onData(data);*/
 	var url = "/triathlon/rest/raceRecord/"+$("#imei").val();   //?from="+from+"&to="+to;
 	console.log("GET URL : "+url);
 	$.getJSON(url, function(result) 
@@ -263,6 +266,7 @@ $(document).ready(function() {
 	map.addOverlay(popup);
 });
 $("#go").click(doGet);
+$("input").change(saveState);
 </script>	
 </body>
 </html>
