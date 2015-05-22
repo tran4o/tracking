@@ -189,14 +189,7 @@ function doGet()
 	var url = "/triathlon/rest/participant/";
 	$.getJSON(url, function(result) 
 	{
-		if (result.statusCode != 200) {
-			var msg="Unknown error";
-			if (result.errorDetails) 
-				msg=result.errorDetails.join("\n");
-			alert(msg);
-		} else {
-		   comsole.log(result);
-		}
+		comsole.log(result);
     });
 	onData(data);
 }
