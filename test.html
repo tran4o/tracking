@@ -79,7 +79,7 @@ function getMillis(id,def)
 
 function style(feature,resolution) 
 {
-	var isSOS = false;
+	var isSOS = feature.data.sos ? true : false;
 	var styles=[];
 	styles.push(new ol.style.Style(
 	{
