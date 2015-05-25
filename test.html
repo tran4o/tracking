@@ -147,14 +147,13 @@ function onData(data)
 	gps.getSource().clear();
 	if (!data.length)
 		return;
-	var minx,miny,maxx,maxy;	
+	var minx=null,miny=null,maxx=null,maxy=null;	
 	for (var i=0;i<data.length;i++) 
 	{
 		var e = data[i];		
 		//----------------------------------
 		delete e._id;
-		delete e.TS;
-		
+		delete e.TS;		
 		e.LON=parseInt(e.LON);
 		e.LAT=parseInt(e.LAT);
 		if (isNaN(e.LON) || isNaN(e.LAT))
@@ -169,13 +168,13 @@ function onData(data)
 			continue;
 		//----------------------------------
 		var c = ol.proj.transform([e.LON / 1000000.0,e.LAT / 1000000.0], 'EPSG:4326', 'EPSG:3857');		
-		if (i == 0 || c[0] < minx)
+		if (minx == null || c[0] < minx)
 			minx=c[0];
-		if (i == 0 || c[1] < miny)
+		if (miny == null || c[1] < miny)
 			miny=c[1];
-		if (i == 0 || c[0] > maxx)
+		if (maxx == null || c[0] > maxx)
 			maxx=c[0];
-		if (i == 0 || c[1] > maxy)
+		if (maxy == null || c[1] > maxy)
 			maxy=c[1];
 		var geom = new ol.geom.Point(c);
 		var feature = new ol.Feature();
