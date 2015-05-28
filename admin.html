@@ -85,7 +85,7 @@
 			$("#route_text_area").val(JSON.stringify(trackData));
 			TRACK.setRoute(trackData);
 			
-			var str = TRACK.getTrackLength()/1000.0+" km";
+			var str = (TRACK.getTrackLength()/1000.0)+" km";
 			$("#route_info").val(str);
 			return JSON.stringify(trackData);
 		}
@@ -151,7 +151,7 @@
 	//-------------------------------------------------
 	function mapEdit(id,json,valBikeStart,valRunStart,onSubmit) 
 	{		
-		console.log("ID : "+id+" | JSON : "+json);
+		//console.log("ID : "+id+" | JSON : "+json);
 		$(".fw-container").css("display","none");
 		$("#map").css("display","block");
 		initGUI();
