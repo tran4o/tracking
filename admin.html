@@ -168,6 +168,10 @@
 			if (json && json != "") 
 			{
 				$("#route_text_area").val(json);
+
+				var str = (TRACK.getTrackLength()/1000.0)+" km";
+				$("#route_info").val(str);
+
 				GUI.addTrackFeature();
 				GUI.zoomToTrack();
 				GUI.map.removeInteraction(draw);
