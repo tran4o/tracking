@@ -260,7 +260,7 @@ Class("GUI",
 						    this.popup.content.innerHTML=rr; 
 					    }					
 					}
-				    //this.popup.panIntoView_(spos);
+				    this.popup.panIntoView_(spos);
 				}
 			}
 			//--------------------			

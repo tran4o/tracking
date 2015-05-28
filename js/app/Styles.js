@@ -72,6 +72,11 @@ window.STYLES=
 				geomswim=null;
 			
 		}
+		
+		var ww = 8.0/resolution;
+		if (ww < 2.0)
+			ww=2.0;
+		
 		if (geomrun && GUI.isShowRun) 
 		{
 			styles.push
@@ -80,7 +85,7 @@ window.STYLES=
 						geometry: new ol.geom.LineString(geomrun),
 						stroke: new ol.style.Stroke({
 						color: CONFIG.appearance.trackColorRun,
-						width: 3
+						width: ww
 					  })
 					})
 			);			
@@ -94,7 +99,7 @@ window.STYLES=
 						geometry: new ol.geom.LineString(geombike),
 						stroke: new ol.style.Stroke({
 						color: CONFIG.appearance.trackColorBike,
-						width: 3
+						width: ww
 					  })
 					})
 			);
@@ -107,7 +112,7 @@ window.STYLES=
 						geometry: new ol.geom.LineString(geomswim),
 						stroke: new ol.style.Stroke({
 						color: CONFIG.appearance.trackColorSwim,
-						width: 3
+						width: ww
 					  })
 					})
 			);

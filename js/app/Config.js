@@ -57,7 +57,7 @@ window.CONFIG=
 	},
 
 	server : {
-		prefix : "http://ts2.hmsu.org/triathlon/"
+		prefix : "/triathlon/"
 	},
 	
 	appearance : {
