@@ -304,6 +304,7 @@ Class("GUI",
 				this.popup.hide();
 				delete this.popup.is_shown;
 			} else {
+				this.lastPopupReferesh=0;
 				if (center && GUI.map && part.feature) {
 					var x = (part.feature.getGeometry().getExtent()[0]+part.feature.getGeometry().getExtent()[2])/2;
 					var y = (part.feature.getGeometry().getExtent()[1]+part.feature.getGeometry().getExtent()[3])/2;
