@@ -15,7 +15,6 @@ BODY
 	font-family: 'Lato-Regular', Fallback, "Arial", "Lucida Grande", Tahoma", Verdana";
     font-size: 13px;
 	background-color : white;
-	overflow:hidden;
 }
 
 .map {
