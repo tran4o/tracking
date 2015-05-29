@@ -161,12 +161,14 @@ Class("GUI",
 							this.setSelectedParticipant1(feat.participant);
 						else
 							this.setSelectedParticipant1(null);
+						this.selectNum=0;
 					} else if (this.selectedParticipant2 == null) {
 						var feat = this.getSelectedParticipantFromArrayCyclic(res);
 						if (feat)
 							this.setSelectedParticipant2(feat.participant);
 						else
 							this.setSelectedParticipant2(null);
+						this.selectNum=1;
 					} else {
 						this.selectNum=(this.selectNum+1)%2;
 						if (this.selectNum == 0) {
