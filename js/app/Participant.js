@@ -127,8 +127,11 @@ Class("Participant",
 		seqId : {
 			is : "rw",
 			init : 0
+		},
+		country : {
+			is : "rw",
+			init : "Germany"
 		}
-	    
     },
     //--------------------------------------
 	methods: 
@@ -496,12 +499,12 @@ Class("Participant",
 			
 			
 			html="<div class='popup_content_prg'><div style='width:"+p1+"%;height:6px;background-color:"+CONFIG.appearance.trackColorSwim+";float:left;'></div><div style='width:"+p2+"%;height:6px;background-color:"+CONFIG.appearance.trackColorBike+";float:left;'></div><div style='width:"+p3+"%;height:6px;background-color:"+CONFIG.appearance.trackColorRun+";float:left;'></div>";
-			html+="<div class='popup_track_pos'><div class='popup_track_pos_1' style='left:"+elapsed*90+"%'></div></div>";
+			html+="<div class='popup_track_pos'><div class='popup_track_pos_1' style='left:"+(elapsed*90)+"%'></div></div>";
 			html+="</div>";
 			html+="<img class='popup_content_img' src='"+this.getImage()+"'/>";
 			html+="<div class='popup_content_1'>";
 			html+="<div class='popup_content_name'>"+escapeHTML(this.getCode())+"</div>";
-			html+="<div class='popup_content_l1'>GER | Pos: "+rank+" | Speed: "+(!isDummy && etxt1 ? etxt1 : "-")+"</div>";
+			html+="<div class='popup_content_l1'>"+this.getCountry().substring(0,3).toUpperCase()+" | Pos: "+rank+" | Speed: "+(!isDummy && etxt1 ? etxt1 : "-")+"</div>";
 			var pass = Math.round(((new Date()).getTime() / 1000 / 4))%2;
 			if (pass == 0) {
 				if (this.__pos != undefined) 

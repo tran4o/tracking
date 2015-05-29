@@ -23,17 +23,17 @@ var EVENTS = [
 
 var PARTICIPANTS=
 [
-	{"code" : "PART0001", "name" : "Timo Bracht",  "follow" : "1", "bib" : 10,"country" : "Germany","age" : 22,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0002", "name" : "Michael Phelps", "follow" : "1", "bib" : 12,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0003", "name" : "Paavo Nurmi", "follow" : "1", "bib" : 9,"country" : "Finland","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0001", "name" : "Timo Bracht",  "follow" : "1", "bib" : 1,"country" : "Germany","age" : 22,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0002", "name" : "Matty Ried", "follow" : "1", "bib" : 2,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0003", "name" : "Felipe Bastos", "follow" : "1", "bib" : 3,"country" : "Brazil","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 	
-	{"code" : "PART0004", "name" : "Birgit Fischer",  "follow" : "1", "bib" : 10,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0005", "name" : "Thomas Größe ", "follow" : "0", "bib" : 12,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0006", "name" : "Albert Müller", "follow" : "1", "bib" : 9,"country" : "Germany","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0004", "name" : "Birgit Fischer",  "follow" : "0", "bib" : 4,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0005", "name" : "Thomas Größe ", "follow" : "0", "bib" : 5,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0006", "name" : "Albert Müller", "follow" : "0", "bib" : 6,"country" : "Germany","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 	
-	{"code" : "PART0007", "name" : "Herr Mann",  "follow" : "0", "bib" : 1,"country" : "Bulgaria","age" : 390,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0008", "name" : "Leo Dor", "follow" : "0", "bib" : 2,"country" : "Canada","age" : 42,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-	{"code" : "PART0009", "name" : "Oshte Bira", "follow" : "0", "bib" : 3,"country" : "Canada","age" : 29,"gender" : "M","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0007", "name" : "Herr Mann",  "follow" : "0", "bib" : 7,"country" : "Bulgaria","age" : 390,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0008", "name" : "Leo Dor", "follow" : "0", "bib" : 8,"country" : "Canada","age" : 42,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+	{"code" : "PART0009", "name" : "Oshte Bira", "follow" : "0", "bib" : 9,"country" : "Canada","age" : 29,"gender" : "M","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 	
 	{"code" : "PART0010", "name" : "Bahurji Baren",  "follow" : "0", "bib" : 7,"country" : "Spain","age" : 32,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 	{"code" : "PART0011", "name" : "Klaus Anonymous", "follow" : "0", "bib" : 13,"country" : "USA","age" : 62,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},

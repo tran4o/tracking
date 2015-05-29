@@ -535,13 +535,15 @@ function initGUI()
 	GUI.init({skipExtent:true});
 	window.PARTS=[];
 	var scoef = 6*5*5*3; //5*4;//*3;//*3;//4.729;
+	var images=["img/timo_bracht.png","img/matty_ried.png","img/felipe_bastos.png"]
 	for (var i=0;i<FAVORITES.length;i++) 
 	{
 		var p1 = TRACK.newParticipant(FAVORITES[i].id,FAVORITES[i].code,FAVORITES[i].name);
-		p1.setIcon("img/player"+((i+1)%4+1)+".png");
-		p1.setImage("img/profile"+((i+1)%4+1)+".png");
+		p1.setIcon(images[i]);
+		p1.setImage(images[i]);
 		p1.setColor(rainbow(FAVORITES.length,i));
 		p1.setAge(FAVORITES[i].age);
+		p1.setCountry(FAVORITES[i].country);
 		//---------------------------------------------------------------
 		var sim1 = new Simulator();
 		sim1.simulateParticipantSimple(p1,30*scoef*(1+i/7.0));
