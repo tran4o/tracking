@@ -446,8 +446,10 @@ function showFavs()
 		} );
 		$('#table-favorites tbody').on( 'click', 'tr', function (e) {
 			//GUI.setSelectedParticipant("PART0008");//
-			if (tableFavorites.row( this ).data())
-				GUI.setSelectedParticipant(tableFavorites.row( this ).data().code,true);
+			if (tableFavorites.row( this ).data()) {
+				GUI.setSelectedParticipant1(tableFavorites.row( this ).data().code,true);
+				GUI.setSelectedParticipant2(null);
+			}
 		} );
 	} else {
 		$("#table-favorites").resize();  

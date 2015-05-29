@@ -57,11 +57,19 @@ Class("GUI",
 			is : "rw",
 			init : null
 		},	
-		selectedParticipant : {
+		selectedParticipant1 : {
 			is : "rw",
 			init : null
 		},
-		popup : {
+		selectedParticipant2 : {
+			is : "rw",
+			init : null
+		},
+		popup1 : {
+			is : "rw",
+			init : null
+		},
+		popup2 : {
 			is : "rw",
 			init : null
 		},
@@ -76,6 +84,10 @@ Class("GUI",
 		isShowRun : {
 			is : "rw",
 			init : true
+		},
+		selectNum : {
+			is : "rw",
+			init : 1
 		}
     },
     //--------------------------------------
@@ -103,7 +115,9 @@ Class("GUI",
 			});
 			//--------------------------------------------------------------
 			var ints = [];
-			this.popup = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
+			this.popup1 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
+			this.popup2 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
+			this.popup2.setOffset([0,175]);
 			this.map = new ol.Map({
 			  renderer : "canvas",
 			  target: 'map',
@@ -121,9 +135,11 @@ Class("GUI",
 				extent : extent ? extent : undefined
 			  })
 			});
+			
 			for (var i=0;i<ints.length;i++)
 				this.map.addInteraction(ints[i]);
-			this.map.addOverlay(this.popup);
+			this.map.addOverlay(this.popup1);
+			this.map.addOverlay(this.popup2);
 			if (this.isDebug) 
 				this.map.addLayer(this.debugLayerGPS);
 			TRACK.init();
@@ -139,13 +155,37 @@ Class("GUI",
 				},this);
 				if (res.length) 
 				{
-					var feat = this.getSelectedParticipantFromArrayCyclic(res);
-					if (feat)
-						this.setSelectedParticipant(feat.participant);
-					else
-						this.setSelectedParticipant(null);
+					if (this.selectedParticipant1 == null) {
+						var feat = this.getSelectedParticipantFromArrayCyclic(res);
+						if (feat)
+							this.setSelectedParticipant1(feat.participant);
+						else
+							this.setSelectedParticipant1(null);
+					} else if (this.selectedParticipant2 == null) {
+						var feat = this.getSelectedParticipantFromArrayCyclic(res);
+						if (feat)
+							this.setSelectedParticipant2(feat.participant);
+						else
+							this.setSelectedParticipant2(null);
+					} else {
+						this.selectNum=(this.selectNum+1)%2;
+						if (this.selectNum == 0) {
+							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+							if (feat)
+								this.setSelectedParticipant1(feat.participant);
+							else
+								this.setSelectedParticipant1(null);
+						} else {
+							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+							if (feat)
+								this.setSelectedParticipant2(feat.participant);
+							else
+								this.setSelectedParticipant2(null);
+						}
+					}
 				} else {
-					this.setSelectedParticipant(null);
+					this.setSelectedParticipant1(null);
+					this.setSelectedParticipant2(null);
 				}
 			},this);
 			//-----------------------------------------------------
@@ -260,27 +300,48 @@ Class("GUI",
 					TRACK.participants[arr[ip]].__next=TRACK.participants[arr[ip+1]];
 			}
 			//-------------------------------------------------------
-			
-			if (this.selectedParticipant) 
+			if (this.selectedParticipant1) 
 			{
-				var spos = this.selectedParticipant.getFeature().getGeometry().getCoordinates();
-				if (!this.popup.is_shown) {
-				    this.popup.show(spos, this.popup.lastHTML=this.selectedParticipant.getPopupHTML());
-				    this.popup.is_shown=1;
+				var spos = this.selectedParticipant1.getFeature().getGeometry().getCoordinates();
+				if (!this.popup1.is_shown) {
+				    this.popup1.show(spos, this.popup1.lastHTML=this.selectedParticipant1.getPopupHTML());
+				    this.popup1.is_shown=1;
 				} else {
-					if (!this.popup.getPosition() || this.popup.getPosition()[0] != spos[0] || this.popup.getPosition()[1] != spos[1])
-					    this.popup.setPosition(spos);
+					if (!this.popup1.getPosition() || this.popup1.getPosition()[0] != spos[0] || this.popup1.getPosition()[1] != spos[1])
+					    this.popup1.setPosition(spos);
 					var ctime = (new Date()).getTime();			 
-					if (!this.lastPopupReferesh || ctime - this.lastPopupReferesh > 2000) 
+					if (!this.lastPopupReferesh1 || ctime - this.lastPopupReferesh1 > 2000) 
 					{
-						this.lastPopupReferesh=ctime;
-					    var rr = this.selectedParticipant.getPopupHTML();
-					    if (rr != this.popup.lastHTML) {
-					    	this.popup.lastHTML=rr;
-						    this.popup.content.innerHTML=rr; 
+						this.lastPopupReferesh1=ctime;
+					    var rr = this.selectedParticipant1.getPopupHTML();
+					    if (rr != this.popup1.lastHTML) {
+					    	this.popup1.lastHTML=rr;
+						    this.popup1.content.innerHTML=rr; 
 					    }					
 					}
-				    this.popup.panIntoView_(spos);
+				    this.popup1.panIntoView_(spos);
+				}
+			}
+			if (this.selectedParticipant2) 
+			{
+				var spos = this.selectedParticipant2.getFeature().getGeometry().getCoordinates();
+				if (!this.popup2.is_shown) {
+				    this.popup2.show(spos, this.popup2.lastHTML=this.selectedParticipant2.getPopupHTML());
+				    this.popup2.is_shown=1;
+				} else {
+					if (!this.popup2.getPosition() || this.popup2.getPosition()[0] != spos[0] || this.popup2.getPosition()[1] != spos[1])
+					    this.popup2.setPosition(spos);
+					var ctime = (new Date()).getTime();			 
+					if (!this.lastPopupReferesh2 || ctime - this.lastPopupReferesh2 > 2000) 
+					{
+						this.lastPopupReferesh2=ctime;
+					    var rr = this.selectedParticipant2.getPopupHTML();
+					    if (rr != this.popup2.lastHTML) {
+					    	this.popup2.lastHTML=rr;
+						    this.popup2.content.innerHTML=rr; 
+					    }					
+					}
+				    this.popup2.panIntoView_(spos);
 				}
 			}
 			//--------------------			
@@ -288,7 +349,7 @@ Class("GUI",
 				this.doDebugAnimation();
 		},
 		
-		setSelectedParticipant : function(part,center) 
+		setSelectedParticipant1 : function(part,center) 
 		{
 			if (!(part instanceof Participant)) {
 				var pp=part;
@@ -299,12 +360,12 @@ Class("GUI",
 						break;
 					}
 			}
-			this.selectedParticipant=part;
+			this.selectedParticipant1=part;
 			if (!part) {
-				this.popup.hide();
-				delete this.popup.is_shown;
+				this.popup1.hide();
+				delete this.popup1.is_shown;
 			} else {
-				this.lastPopupReferesh=0;
+				this.lastPopupReferesh1=0;
 				if (center && GUI.map && part.feature) {
 					var x = (part.feature.getGeometry().getExtent()[0]+part.feature.getGeometry().getExtent()[2])/2;
 					var y = (part.feature.getGeometry().getExtent()[1]+part.feature.getGeometry().getExtent()[3])/2;
@@ -312,7 +373,32 @@ Class("GUI",
 				}
 			} 
 		},
-		
+
+		setSelectedParticipant2 : function(part,center) 
+		{
+			if (!(part instanceof Participant)) {
+				var pp=part;
+				part=null;
+				for (var i=0;i<TRACK.participants.length;i++)
+					if (TRACK.participants[i].deviceId == pp) {
+						part=TRACK.participants[i];
+						break;
+					}
+			}
+			this.selectedParticipant2=part;
+			if (!part) {
+				this.popup2.hide();
+				delete this.popup2.is_shown;
+			} else {
+				this.lastPopupReferesh2=0;
+				if (center && GUI.map && part.feature) {
+					var x = (part.feature.getGeometry().getExtent()[0]+part.feature.getGeometry().getExtent()[2])/2;
+					var y = (part.feature.getGeometry().getExtent()[1]+part.feature.getGeometry().getExtent()[3])/2;
+					GUI.map.getView().setCenter([x,y]);
+				}
+			} 
+		},
+
 		doDebugAnimation : function() 
 		{
 			var ctime = (new Date()).getTime();
