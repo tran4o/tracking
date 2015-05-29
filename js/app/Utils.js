@@ -226,10 +226,14 @@ function renderArrowBase64(width,height,color)
 	if (RENDEREDARROWS[key])
 		return RENDEREDARROWS[key];
 	var brdcol = "#fefefe"; //increaseBrightness(color,99);
-	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 167 167" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-	+'<g><path fill="#ffffff" opacity="1.00" d=" M 0.00 0.00 L 4.54 0.00 C 2.24 0.59 0.49 2.28 0.00 4.63 L 0.00 0.00 Z" /><path fill="#ffffff" opacity="1.00" d=" M 32.36 28.90 C 67.38 45.97 102.14 63.61 137.08 80.86 C 138.64 81.62 140.17 82.45 141.69 83.30 C 105.07 101.49 68.54 119.87 32.04 138.31 C 42.56 121.80 53.53 105.56 64.23 89.16 C 65.65 86.88 68.27 84.32 66.71 81.44 C 55.37 63.86 43.61 46.54 32.36 28.90 Z" /><path fill="#ffffff" opacity="1.00" d=" M 0.00 162.56 C 0.65 164.75 2.29 166.43 4.52 167.00 L 0.00 167.00 L 0.00 162.56 Z" /></g><g><path fill="'+brdcol+'" opacity="1.00" d=" M 4.54 0.00 L 5.70 0.00 C 9.32 1.20 12.62 3.14 16.03 4.81 C 63.64 28.61 111.23 52.42 158.85 76.20 C 161.91 77.82 165.89 78.91 167.00 82.64 L 167.00 84.21 C 166.07 88.06 161.95 89.12 158.89 90.77 C 111.28 114.55 63.67 138.38 16.06 162.18 C 12.64 163.84 9.34 165.79 5.71 167.00 L 4.52 167.00 C 2.29 166.43 0.65 164.75 0.00 162.56 L 0.00 160.96 C 0.99 158.72 2.31 156.66 3.70 154.65 C 19.53 130.95 35.33 107.23 51.15 83.52 C 35.50 59.96 19.77 36.45 4.09 12.91 C 2.61 10.75 1.17 8.55 0.00 6.20 L 0.00 4.63 C 0.49 2.28 2.24 0.59 4.54 0.00 M 32.36 28.90 C 43.61 46.54 55.37 63.86 66.71 81.44 C 68.27 84.32 65.65 86.88 64.23 89.16 C 53.53 105.56 42.56 121.80 32.04 138.31 C 68.54 119.87 105.07 101.49 141.69 83.30 C 140.17 82.45 138.64 81.62 137.08 80.86 C 102.14 63.61 67.38 45.97 32.36 28.90 Z" /></g>'
-	+'</svg>';
-	var svg=svg.split("#ffffff").join(color);
+	
+	var svg='<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="'+width+'pt" height="'+height+'pt" '	
+	+'viewBox="137.834 -82.833 114 91.333" enable-background="new 137.834 -82.833 114 91.333" xml:space="preserve">'
+	+'<path fill="none" d="M-51-2.167h48v48h-48V-2.167z"/>'
+	+'<circle display="none" fill="#605CC9" cx="51.286" cy="-35.286" r="88.786"/>'
+	+'<path fill="#605CC9" stroke="#FFFFFF" stroke-width="4" stroke-miterlimit="10" d="M239.5-36.8l-92.558-35.69 c5.216,11.304,8.13,23.887,8.13,37.153c0,12.17-2.451,23.767-6.883,34.327L239.5-36.8z"/>'
+	+'</svg>'
+	var svg=svg.split("#605CC9").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -244,13 +248,12 @@ function renderDirectionBase64(width,height,color)
 	if (RENDEREDDIRECTIONS[key])
 		return RENDEREDDIRECTIONS[key];
 
-	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">'
-	+'<g id="#ffffffff">'
-	+'<path fill="#ffffff" opacity="1.00" d=" M 167.56 23.47 C 181.01 9.21 200.50 1.16 220.01 0.80 C 234.04 0.78 248.07 4.76 259.98 12.21 C 275.72 21.97 287.22 38.10 291.84 56.00 C 296.56 73.49 293.73 92.27 285.99 108.46 C 324.99 108.47 363.98 108.46 402.98 108.47 C 417.88 108.69 432.70 113.53 444.81 122.22 C 459.39 132.54 469.82 148.47 473.67 165.90 C 478.22 184.82 474.33 205.45 463.82 221.74 C 451.03 241.95 427.85 255.02 403.94 255.47 C 309.29 255.46 214.64 255.47 119.99 255.47 C 101.55 254.95 84.09 246.65 70.03 235.08 C 55.75 223.40 46.11 206.24 43.81 187.92 C 40.47 164.71 49.46 140.40 66.56 124.48 C 100.25 90.83 133.91 57.15 167.56 23.47 M 208.72 46.71 C 197.04 58.04 185.71 69.71 174.21 81.22 C 170.13 84.52 167.55 89.22 163.63 92.68 C 150.10 106.13 136.56 119.56 123.24 133.23 C 120.44 135.75 117.78 138.42 115.58 141.50 C 108.21 149.14 100.70 156.65 93.10 164.06 C 87.92 168.89 85.13 176.05 85.00 183.06 C 85.70 187.91 86.61 193.02 89.72 196.98 C 95.16 204.74 104.79 208.42 113.95 209.00 C 208.96 209.01 303.97 208.98 398.98 209.01 C 406.07 208.92 413.45 206.73 418.37 201.37 C 427.64 192.56 428.37 176.57 419.75 167.08 C 415.04 161.11 407.45 158.33 400.04 158.00 C 323.34 157.98 246.63 158.04 169.92 157.97 C 183.64 144.02 197.51 130.21 211.24 116.27 C 214.95 112.33 219.30 109.00 222.39 104.49 C 229.88 96.28 238.34 88.96 245.65 80.58 C 249.49 74.25 251.33 66.20 248.68 59.07 C 245.67 47.98 234.19 40.45 222.90 41.07 C 217.90 42.00 212.57 43.14 208.72 46.71 Z" />'
-	+'</g>'
-	+'<g id="#000000ff">'
-	+'<path fill="#000000" opacity="1.00" d=" M 208.72 46.71 C 212.57 43.14 217.90 42.00 222.90 41.07 C 234.19 40.45 245.67 47.98 248.68 59.07 C 251.33 66.20 249.49 74.25 245.65 80.58 C 238.34 88.96 229.88 96.28 222.39 104.49 C 219.30 109.00 214.95 112.33 211.24 116.27 C 197.51 130.21 183.64 144.02 169.92 157.97 C 246.63 158.04 323.34 157.98 400.04 158.00 C 407.45 158.33 415.04 161.11 419.75 167.08 C 428.37 176.57 427.64 192.56 418.37 201.37 C 413.45 206.73 406.07 208.92 398.98 209.01 C 303.97 208.98 208.96 209.01 113.95 209.00 C 104.79 208.42 95.16 204.74 89.72 196.98 C 86.61 193.02 85.70 187.91 85.00 183.06 C 85.13 176.05 87.92 168.89 93.10 164.06 C 100.70 156.65 108.21 149.14 115.58 141.50 C 117.78 138.42 120.44 135.75 123.24 133.23 C 136.56 119.56 150.10 106.13 163.63 92.68 C 167.55 89.22 170.13 84.52 174.21 81.22 C 185.71 69.71 197.04 58.04 208.72 46.71 Z" />'
-	+'</g>'
+	var svg='<svg width="'+width+'pt" height="'+height+'pt" '
+
+		+'viewBox="15 9 19.75 29.5" enable-background="new 15 9 19.75 29.5" xml:space="preserve">'
+		+'<path fill="#FFFEFF" d="M17.17,32.92l9.17-9.17l-9.17-9.17L20,11.75l12,12l-12,12L17.17,32.92z"/>'
+		+'<path fill="none" d="M0-0.25h48v48H0V-0.25z"/>'
+
 	+'</svg>';
 
 	var svg=svg.split("#000000").join(color);
@@ -285,6 +288,77 @@ function renderBoxBase64(width,height,color)
     return RENDEREBOXES[key]=canvas.toDataURL();
 }
 
+function interceptOnCircle(a,b,c,r) {
+	return _getIntersections(a,b,[c[0],c[1],r]);
+	
+}
+function _getIntersections(a, b, c) {
+	// Calculate the euclidean distance between a & b
+	var eDistAtoB = Math.sqrt( Math.pow(b[0]-a[0], 2) + Math.pow(b[1]-a[1], 2) );
+
+	// compute the direction vector d from a to b
+	var d = [ (b[0]-a[0])/eDistAtoB, (b[1]-a[1])/eDistAtoB ];
+
+	// Now the line equation is x = dx*t + ax, y = dy*t + ay with 0 <= t <= 1.
+
+	// compute the value t of the closest point to the circle center (cx, cy)
+	var t = (d[0] * (c[0]-a[0])) + (d[1] * (c[1]-a[1]));
+
+	// compute the coordinates of the point e on line and closest to c
+    var e = {coords:[], onLine:false};
+	e.coords[0] = (t * d[0]) + a[0];
+	e.coords[1] = (t * d[1]) + a[1];
+
+	// Calculate the euclidean distance between c & e
+	eDistCtoE = Math.sqrt( Math.pow(e.coords[0]-c[0], 2) + Math.pow(e.coords[1]-c[1], 2) );
+
+	// test if the line intersects the circle
+	if( eDistCtoE < c[2] ) {
+		// compute distance from t to circle intersection point
+	    dt = Math.sqrt( Math.pow(c[2], 2) - Math.pow(eDistCtoE, 2));
+
+	    // compute first intersection point
+	    var f = {coords:[], onLine:false};
+	    f.coords[0] = ((t-dt) * d[0]) + a[0];
+	    f.coords[1] = ((t-dt) * d[1]) + a[1];
+	    // check if f lies on the line
+	    f.onLine = is_on(a,b,f.coords);
+
+	    // compute second intersection point
+	    var g = {coords:[], onLine:false};
+	    g.coords[0] = ((t+dt) * d[0]) + a[0];
+	    g.coords[1] = ((t+dt) * d[1]) + a[1];
+	    // check if g lies on the line
+	    g.onLine = is_on(a,b,g.coords);
+		return [f.coords, g.coords];
+	} else if (parseInt(eDistCtoE) === parseInt(c[2])) {
+		return false;
+	} else {
+		// console.log("No intersection");
+		return false;
+	}
+}
+
+// BASIC GEOMETRIC functions
+function distance(a,b) {
+	return Math.sqrt( Math.pow(a[0]-b[0], 2) + Math.pow(a[1]-b[1], 2) )
+}
+function is_on(a, b, c) {
+	return distance(a,c) + distance(c,b) == distance(a,b);
+}
+
+function getAngles(a, b, c) {
+	// calculate the angle between ab and ac
+	angleAB = Math.atan2( b[1] - a[1], b[0] - a[0] );
+	angleAC = Math.atan2( c[1] - a[1], c[0] - a[0] );
+	angleBC = Math.atan2( b[1] - c[1], b[0] - c[0] );
+	angleA = Math.abs((angleAB - angleAC) * (180/Math.PI));
+	angleB = Math.abs((angleAB - angleBC) * (180/Math.PI));
+	return [angleA, angleB];
+}
 window.MOBILE=mobileAndTabletCheck();
 window.WGS84SPHERE = new ol.Sphere(6378137);
+
+
+
 

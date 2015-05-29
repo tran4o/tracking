@@ -12,6 +12,12 @@ window.STYLES=
 		var geombike;
 		var geomrun;
 		//-------------------------------------
+		
+		/*var ww = 8.0/resolution;
+		if (ww < 6.0)
+			ww=6.0;*/
+		var ww=10.0;
+
 		function genDirection(pts,color) 
 		{
 			var cnt=0;
@@ -24,7 +30,8 @@ window.STYLES=
 				var len = Math.sqrt((start[0]-start[0])*(end[0]-start[0])+(end[1]-start[1])*(end[1]-start[1])) / resolution;
 				res+=len;
 				if (i == 0 || res >= CONFIG.appearance.directionIconBetween) { 
-					res=0;
+					if (res >= CONFIG.appearance.directionIconBetween) 
+						res-=CONFIG.appearance.directionIconBetween;
 					var dx = end[0] - start[0];
 					var dy = end[1] - start[1];
 					var rotation = Math.atan2(dy, dx);
@@ -33,7 +40,7 @@ window.STYLES=
 					  geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
 					  image: new ol.style.Icon({
 						src: icn,
-						scale : 1,
+						scale : ww/12.0,
 						anchor: [0.5, 0.5],
 						rotateWithView: true,
 						rotation: -rotation,
@@ -72,10 +79,6 @@ window.STYLES=
 				geomswim=null;
 			
 		}
-		
-		var ww = 8.0/resolution;
-		if (ww < 2.0)
-			ww=2.0;
 		
 		if (geomrun && GUI.isShowRun) 
 		{
@@ -153,7 +156,7 @@ window.STYLES=
 				  image: new ol.style.Icon({
 					src: 'img/finish.png',
 					scale : 0.65,
-					anchor: [0.2, 0.8],
+					anchor: [0.5, 0.5],
 					rotateWithView: true,
 					//rotation: -rotation,
 					opacity : 1
@@ -266,7 +269,7 @@ window.STYLES=
 			lstate = part.states[part.states.length-1];
 			etxt=" "+parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";// | acc "+parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s";
 		}
-		var zIndex = Math.round(part.getElapsed()*100000);
+		var zIndex = Math.round(part.getElapsed()*1000000)*1000+part.seqId;
 		/*if (part == GUI.getSelectedParticipant()) {
 			zIndex=1e20;
 		}*/
@@ -274,27 +277,37 @@ window.STYLES=
 		//-----------------------------------------------------------------------------------------------------------------------
 		var isDirection = (lstate && lstate.getSpeed() > 0 && !part.isSOS && !part.isDiscarded);
 		var animFrame = ((new Date()).getTime()%3000)*Math.PI*2/3000.0;
-			
-		if (!isDirection || part.getRotation() == null) 
+
+        styles.push(new ol.style.Style(
+    	        {
+    	        	zIndex: zIndex,
+    	        	image : new ol.style.Circle({
+    	        		radius: 17,
+    	        		fill: new ol.style.Fill({
+    	        			color: part.isDiscarded || part.isSOS ? "rgba(192,0,0,"+(Math.sin(animFrame)*0.7+0.3)+")" : part.color
+    	        		}),
+    	        		stroke: new ol.style.Stroke({
+    	        			color: part.isDiscarded || part.isSOS ? "rgba(255,0,0,"+(1.0-(Math.sin(animFrame)*0.7+0.3))+")" : "#ffffff", 
+    	        			width: 3
+    	        		})
+    	        	}),
+    				text: new ol.style.Text({
+    					font: 'normal 13px Lato-Regular',
+    					fill: new ol.style.Fill({
+    					  color: '#FFFFFF'
+    					}),
+    					text : part.getInitials(),
+    					offsetX : 0,
+    					offsetY : 0
+    				  })
+    		    }));
+
+		if (isDirection && part.getRotation() != null) 
 		{
-	        styles.push(new ol.style.Style(
-	        {
-	        	image : new ol.style.Circle({
-	        		radius: 8,
-	        		fill: new ol.style.Fill({
-	        			color: part.isDiscarded || part.isSOS ? "rgba(192,0,0,"+(Math.sin(animFrame)*0.7+0.3)+")" : part.color
-	        		}),
-	        		stroke: new ol.style.Stroke({
-	        			color: part.isDiscarded || part.isSOS ? "rgba(255,0,0,"+(1.0-(Math.sin(animFrame)*0.7+0.3))+")" : "#ffffff", 
-	        			width: 3
-	        		})
-	        	})
-		    }));
-		} else {
 			styles.push(new ol.style.Style({
 					zIndex: zIndex,
 					image: new ol.style.Icon(({
-					  anchor: [0.5,0.5],
+					  anchor: [-0.5,0.5],
 					  anchorXUnits: 'fraction',
 					  anchorYUnits: 'fraction',
 					  opacity: 1,
@@ -306,40 +319,9 @@ window.STYLES=
 					  rotation : -part.getRotation()
 					  //0.3
 					  //size : [22,16]
-				   })),
-				   text: new ol.style.Text({
-						font: 'bold 13px Arial,Lucida Grande,Tahoma,Verdana',
-						fill: new ol.style.Fill({
-						  color: feature.participant.color
-						}),
-						stroke: new ol.style.Stroke({
-						  color: [255, 255, 255, 0.5],
-						  width: 4
-						}),
-						text : feature.participant.getCode(),
-						offsetX : 0,
-						offsetY : 25
-					  })
-				   }));
+				   }))
+			}));
 		}
-		//----------------------------------------------------------------------------------------------------------
-		if (isDirection) 
-			styles.push(new ol.style.Style({
-				   zIndex: zIndex,
-				   text: new ol.style.Text({
-						font: 'bold 10px Arial,Lucida Grande,Tahoma,Verdana',
-						fill: new ol.style.Fill({
-						  color: feature.participant.color
-						}),
-						stroke: new ol.style.Stroke({
-						  color: [255, 255, 255, 0.5],
-						  width: 2
-						}),
-						text : etxt,
-						offsetX : 0,
-						offsetY : 36
-					  })
-				   }));
 		return styles;
 	},
 	//------------------------------------------------

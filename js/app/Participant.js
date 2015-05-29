@@ -123,12 +123,25 @@ Class("Participant",
 	    elapsed : {
 	    	is : "rw",
 	    	init : 0
-	    }, 
+	    },
+		seqId : {
+			is : "rw",
+			init : 0
+		}
 	    
     },
     //--------------------------------------
 	methods: 
 	{
+		getInitials : function() {
+			var tt = this.getCode().split(" ");
+			if (tt.length >= 2) {
+				return tt[0][0]+tt[1][0];
+			}
+			if (tt.lenght == 1)
+				return tt[0][0];
+			return "?";
+		},
 		//----------------------------------------------------------
 		// main function call > 
 		//----------------------------------------------------------
@@ -212,7 +225,7 @@ Class("Participant",
 			return {elapsed : ssume,timestamp : ssumt};
 		},
 
-		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank)
+		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
 		{
 			
 			if (!ctime)
@@ -234,29 +247,46 @@ Class("Participant",
 			var lelp = lstate ? lstate.getElapsed() : 0;
 			//----------------------------------------------------------
 			var tg = TRACK.route;
-			for (var i=0;i<tg.length-1;i++) 
+			//----------------------------------------------------------
+			/*var i;
+			var ok=false;
+			for (var i=0;i<tg.length-1;i++) if (lelp >= TRACK.distancesElapsed[i] && lelp <= TRACK.distancesElapsed[i+1]) {
+				ok=true;
+				break;
+			}
+			console.log("START WITH "+i+" | "+lelp);
+			var coef = TRACK.getTrackLengthInWGS84()/TRACK.getTrackLength();
+			if (ok)
+			for (;i<tg.length-1;i++) 
 			{
 				var seg=[tg[i],tg[i+1]];
-				var res = closestProjectionOfPointOnLine(pos[0],pos[1],seg[0][0],seg[0][1],seg[1][0],seg[1][1]);
-				var distance = WGS84SPHERE.haversineDistance(res.pos,[res.pos[0]+res.min,res.pos[1]]);
-				if (distance <= CONFIG.distances.stayOnRoadTolerance && (bestm == null || bestm >= res.min)) 
+				var res = interceptOnCircle(tg[i],tg[i+1],pos,CONFIG.math.gpsInaccuracy*coef);
+				if (res) 
 				{
-					var nel = TRACK.getElapsedFromPoint(res.pos);
-					if (nel > lelp) 
-						res.min+=((nel-lelp) * tracklen1 * CONFIG.math.roadDistanceBestPointCalulcationCoef);
-					if (bestm == null || res.min < bestm) {
-						bestm=res.min;
-						best=res.pos;
-					}				
-				}
-			}
+					var p1 = TRACK.getElapsedFromPoint(res[0]);
+					var p2 = TRACK.getElapsedFromPoint(res[1]);
+					if (p2 < p1) {
+						res[0]=res[1];
+						p1=p2;
+					}
+					if (p1 < lelp)
+						continue;
+					if (bestm == null || bestm > p1) 
+					{
+						bestm=p1;
+						best=p1;
+					}
+				}	
+			}*/
+			bestm = _ELAPSED;
+			
 			//-----------------------------------------------------------
 			if (bestm != null) 
 			{
-				var nel = TRACK.getElapsedFromPoint(best);
+				var nel = bestm; //TRACK.getElapsedFromPoint(best);
 				if (lstate) 
 				{
-					if (nel < lstate.getElapsed()) 
+					/*if (nel < lstate.getElapsed()) 
 					{
 						// WRONG DIRECTION OR GPS DATA WRONG? SKIP..
 						if ((lstate.getElapsed()-nel)*tracklen < CONFIG.constraints.backwardsEpsilonInMeter) 
@@ -265,7 +295,7 @@ Class("Participant",
 						{
 							nel+=1.0;
 						} while (nel < lstate.getElapsed());
-					}
+					}*/
 					//--------------------------------------------------------------
 					if (nel > TRACK.laps) {
 						nel=TRACK.laps;
@@ -324,7 +354,7 @@ Class("Participant",
 			this.setFeature(feature);
 			GUI.participantsLayer.getSource().addFeature(feature);
 			this.setPosition(pos);
-			this.ping(pos,0,false,ctime,0,0,0,0);
+			this.ping(pos,0,false,ctime,0,0,0,0,0);
 		},
 		
 		getFreq : function() 
@@ -348,12 +378,6 @@ Class("Participant",
 			return this.getPosition();
 		},
 
-		onDebugClick : function(event) {
-			var hrate = 80+Math.round(Math.random()*20);
-			var cpos = ol.proj.transform(event.coordinate, 'EPSG:3857','EPSG:4326');
-			this.ping(cpos,hrate,false,Math.random()*500,parseInt(Math.random()*10),parseInt(Math.random()*10),parseInt(Math.random()*10));
-		},
-		
 		getPopupHTML : function() {
 			var pos = this.getPosition();
 			if (this.isSOS || this.isDiscarded) {
@@ -367,20 +391,20 @@ Class("Participant",
 			var partStart;
 			var tpartMore;
 			if (tpart == 0) {
-				tparts="Swim";
+				tparts="SWIM";
 				targetKM=TRACK.bikeStartKM;
 				partStart=0;
-				tpartMore="swim";
+				tpartMore="SWIM";
 			} else if (tpart == 1) {
-				tparts="Bike";
+				tparts="BIKE";
 				targetKM=TRACK.runStartKM;
 				partStart=TRACK.bikeStartKM;
-				tpartMore="ride";
+				tpartMore="RIDE";
 			} else if (tpart == 2) { 
-				tparts="Run";
+				tparts="RUN";
 				targetKM=tlen/1000.0;
 				partStart=TRACK.runStartKM;
-				tpartMore="run";
+				tpartMore="RUN";
 			}
 			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+" (1)</div>";
 			var freq = Math.round(this.getFreq());
@@ -405,7 +429,9 @@ Class("Participant",
 				if (lstate.getSpeed() > 0) 
 				{
 					var spms = Math.ceil(lstate.getSpeed() * 100) / 100;
-					etxt1=parseFloat(spms).toFixed(2)+" m/s";
+					spms/=1000.0;
+					spms*=60*60;
+					etxt1=parseFloat(spms).toFixed(2)+" km/h";
 					var rot = -this.getRotation()*180/Math.PI; 
 					if (rot < 0)
 						rot+=360;
@@ -438,9 +464,9 @@ Class("Participant",
 			var p2 = 100*(TRACK.runStartKM-TRACK.bikeStartKM)/(tlen/1000.0);
 			var p3 = 100*(tlen/1000.0 - TRACK.runStartKM)/(tlen/1000.0);
 			var prettyCoord=
-				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p1+"%;background-color:"+CONFIG.appearance.trackColorSwim+"'>"+Math.round(TRACK.bikeStartKM)+" km</div>"+
-				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p2+"%;background-color:"+CONFIG.appearance.trackColorBike+"'>"+Math.round(TRACK.runStartKM-TRACK.bikeStartKM)+" km</div>"+
-				"<div style='opacity:0.7;float:left;text-align:center;overflow:hidden;height:20px;width:"+p3+"%;background-color:"+CONFIG.appearance.trackColorRun+"'>"+Math.round(tlen/1000.0 - TRACK.runStartKM)+" km</div>"
+				"<div style='opacity:0.7;float:left;overflow:hidden;height:7px;width:"+p1+"%;background-color:"+CONFIG.appearance.trackColorSwim+"'/>"+
+				"<div style='opacity:0.7;float:left;overflow:hidden;height:7px;width:"+p2+"%;background-color:"+CONFIG.appearance.trackColorBike+"'/>"+
+				"<div style='opacity:0.7;float:left;overflow:hidden;height:7px;width:"+p3+"%;background-color:"+CONFIG.appearance.trackColorRun+"'/>"
 				; //ol.coordinate.toStringHDMS(this.getPosition(), 2);
 
 			var imgdiv;
@@ -462,8 +488,50 @@ Class("Participant",
 			html+="<tr><td class='lbl'>Acceler.</td><td class='value'>"+(!isDummy && etxt2 ? etxt2 : "-") +"</td></tr>";
 			html+="<tr style='height:100%'><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			html+"</table>"
-			html+="<div class='popup_shadow'>"+prettyCoord+imgdiv+"</div>";
-			html+="<img class='popup_pulse' src='data:image/gif;base64,R0lGODlhEQAPAPIFAP8oKP9KSP9KSf6qp/+rqDymszymszymsyH5BAkPAAcAIf4RQ3JlYXRlZCB3aXRoIEdJTVAAIf8LTkVUU0NBUEUyLjADAQAAACwAAAAAEQAPAAADOnhKTHrNPSiqcESALamtWbUB2GeKI3OaIxmuKPfCbQlr3HLj5DN/qYkHmBMOeR0jodUzTpZF55PhTAAAIfkECQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSACH5BAUPAAcALAAAAAARAA8AAAMyeLrc/lCNueZ4I+ibAbhMpm2a94VjGpigpI5sI6peW72xM691NJi9yOEXFA4pxqSSkQAAIfkEAQ8ABwAsAAAAABEADwAAAzR4utw+cMHhzgiYXgAou1gWcp4VniOpgGjare3JvXAcqJI9lzWKN6zb7zEbVga7yiOibDoSADs='/>"
+			//html+="<div class='popup_shadow'>"+prettyCoord+imgdiv+"</div>";
+			
+			var rank="-";
+			if (this.__pos != undefined)
+				rank=TRACK.participants.length-this.__pos;
+			
+			
+			html="<div class='popup_content_prg'><div style='width:"+p1+"%;height:6px;background-color:"+CONFIG.appearance.trackColorSwim+";float:left;'></div><div style='width:"+p2+"%;height:6px;background-color:"+CONFIG.appearance.trackColorBike+";float:left;'></div><div style='width:"+p3+"%;height:6px;background-color:"+CONFIG.appearance.trackColorRun+";float:left;'></div>";
+			html+="<div class='popup_track_pos'><div class='popup_track_pos_1' style='left:"+elapsed*90+"%'></div></div>";
+			html+="</div>";
+			html+="<img class='popup_content_img' src='"+this.getImage()+"'/>";
+			html+="<div class='popup_content_1'>";
+			html+="<div class='popup_content_name'>"+escapeHTML(this.getCode())+"</div>";
+			html+="<div class='popup_content_l1'>GER | Pos: "+rank+" | Speed: "+(!isDummy && etxt1 ? etxt1 : "-")+"</div>";
+			var pass = Math.round(((new Date()).getTime() / 1000 / 4))%2;
+			if (pass == 0) {
+				if (this.__pos != undefined) 
+				{
+					parseFloat(Math.round(elkm * 100) / 100).toFixed(2)
+
+					if (this.__next && this.getSpeed()) {
+						var pel = this.__next.calculateElapsedAverage(ctime);
+						var dnext = ((pel-elapsed)*TRACK.getTrackLength() / this.getSpeed())/60.0;
+						dnext = parseFloat(Math.round(dnext * 100) / 100).toFixed(2);
+						html+="<div class='popup_content_l3'>GAP P"+(TRACK.participants.length-this.__next.__pos)+" : "+dnext+" Min</div>";
+					} else {
+						html+="<div class='popup_content_l2'>&nbsp;</div>";
+					}
+					
+					if (this.__prev && this.__prev.getSpeed()) {
+						var pel = this.__prev.calculateElapsedAverage(ctime);
+						var dprev = ((elapsed-pel)*TRACK.getTrackLength() / this.__prev.getSpeed())/60.0;
+						dprev = parseFloat(Math.round(dprev * 100) / 100).toFixed(2);
+						html+="<div class='popup_content_l2'>GAP P"+(TRACK.participants.length-this.__prev.__pos)+" : "+dprev+" Min</div>";
+					} else {
+						html+="<div class='popup_content_l2'>&nbsp;</div>";
+					} 
+					
+				}
+			} else {
+				html+="<div class='popup_content_l2'>MORE TO  "+tpartMore+": "+(isDummy ? "-" : parseFloat(Math.round((targetKM-elkm) * 100) / 100).toFixed(2) /* rekm */ +" km")+"</div>";
+				html+="<div class='popup_content_l3'>FINISH "+ tparts +": "+(!estf ? "-" : estf)+"</div>";
+			}
+			html+="</div>";
 			return html;
 		}
 		

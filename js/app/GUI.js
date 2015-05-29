@@ -116,8 +116,8 @@ Class("GUI",
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
 				zoom: this.getInitialZoom(),
-				minZoom: 0,
-				maxZoom: 19,
+				minZoom: 10,
+				maxZoom: 17,
 				extent : extent ? extent : undefined
 			  })
 			});
@@ -236,11 +236,31 @@ Class("GUI",
 		
 		onAnimation : function() 
 		{
+			var arr=[]; 
 			for (var ip=0;ip<TRACK.participants.length;ip++) 
 			{
 				var p = TRACK.participants[ip];
 				p.interpolate();
+				arr.push(ip);
 			}
+			//-------------------------------------------------------
+			arr.sort(function(a, b){
+				return TRACK.participants[a].getElapsed()-TRACK.participants[b].getElapsed();
+			});
+			for (var ip=0;ip<TRACK.participants.length;ip++) 
+			{
+				TRACK.participants[arr[ip]].__pos=ip;
+				if (ip == 0)
+					delete TRACK.participants[arr[ip]].__prev;
+				else
+					TRACK.participants[arr[ip]].__prev=TRACK.participants[arr[ip-1]];
+				if (ip == TRACK.participants.length-1)
+					delete  TRACK.participants[arr[ip]].__next;
+				else
+					TRACK.participants[arr[ip]].__next=TRACK.participants[arr[ip+1]];
+			}
+			//-------------------------------------------------------
+			
 			if (this.selectedParticipant) 
 			{
 				var spos = this.selectedParticipant.getFeature().getGeometry().getCoordinates();

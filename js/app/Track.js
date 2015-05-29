@@ -171,12 +171,14 @@ Class("Track",
 		},
 		
 		// return [0..1]		
-		getElapsedFromPoint : function(point) 
+		getElapsedFromPoint : function(point,start) 
 		{
 			var res=0.0;
 			var brk=false;
 			var cc = this.route;
-			for (var i=0;i<cc.length-1;i++) 
+			if (!start)
+				start=0;
+			for (var i=start;i<cc.length-1;i++) 
 			{
 				var a = cc[i];
 				var c = cc[i+1];
@@ -315,6 +317,12 @@ Class("Track",
 				if (!isNaN(d) && d > 0) 
 					res+=d;
 			}
+			this.distances.push(res);
+			this.distancesElapsed=[];
+			var tl = this.getTrackLength();
+			for (var i=0;i<cc.length;i++) {
+				this.distancesElapsed.push(this.distances[i]/tl);
+			}
 			//--------------------------------------------------------------
 			var wkt = [];
 			for (var i=0;i<this.route.length;i++) {
@@ -335,6 +343,7 @@ Class("Track",
 		{
 			var part = new Participant({id:id,deviceId:deviceId,code:code});
 			part.init(this.route[0]);
+			part.setSeqId(this.participants.length);
 			this.participants.push(part);
 			return part;
 		},

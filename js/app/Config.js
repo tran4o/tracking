@@ -19,6 +19,7 @@ window.CONFIG=
 		popupEnsureVisibleHeight: 120,
 	},
 	math : {
+		gpsInaccuracy : 40,
 		speedAndAccelerationAverageDegree : 4,	// caclulation based on N states (average) (MIN 2)
 		displayDelay : 30,	// display delay in SECONDS
 		interpolateGPSAverage : 3, // number of recent values to caclulate average gps for position (smooting the curve.min 0 = NO,1 = 2 values (current and last))
@@ -61,9 +62,9 @@ window.CONFIG=
 	},
 	
 	appearance : {
-		trackColorSwim : '#FF4040',
-		trackColorBike : '#00BF00',
-		trackColorRun :  '#4040FF',
-		directionIconBetween : 100	/* pixels */
+		trackColorSwim : '#00a54f',
+		trackColorBike : '#ff00ff',
+		trackColorRun :  '#00aeef',
+		directionIconBetween : 200	/* pixels */
 	}
 };
