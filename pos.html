@@ -19,24 +19,10 @@
 <body>
 <div id='map' style='position:absolute;top:0;left:0;right:0;bottom:0;background-color:white;'>
 </div>
-<input id="from" type="text" style="position:absolute;top:5px;left:5px;width:150px;"/>
-<input id="to" type="text" style="position:absolute;top:5px;left:160px;width:150px;"/>
-<input id="imei" type="text" value="000000000000" style="position:absolute;top:5px;right:5px;width:150px;text-align:right;"/>
-<div id="go" style="position:absolute;top:5px;left:315px;width:auto;background-color:white;border:1px solid black;line-height:1.5em;padding-left:5px;padding-right:5px;cursor:pointer;"/>Show</div>
 <div style="position:absolute;top:6px;right:165px;width:auto;line-height:1.5em;background-color: white;padding-left:5px;padding-right:5px;"/>IMEI</div>
 <script>
-$('#from,#to').datetimepicker({format:'d.m.Y h:m'});
-
-if (localStorage.getItem("from"))
-	$("#from").val(localStorage.getItem("from"));
-if (localStorage.getItem("to"))
-	$("#to").val(localStorage.getItem("to"));
-if (localStorage.getItem("imei"))
-	$("#imei").val(localStorage.getItem("imei"));
-	
 var map;
 var popup;
-
 function formatDate(d) {
  	var dd = d.getDate();
     var mm = d.getMonth()+1; //January is 0!
@@ -185,39 +171,10 @@ function onData(data)
 	map.getView().fitExtent([minx,miny,maxx,maxy],map.getSize());
 }
 
-function saveState() {
-	localStorage.setItem("from",$("#from").val());
-	localStorage.setItem("to",$("#to").val());
-	localStorage.setItem("imei",$("#imei").val());
-}
 
 function doGet() 
 {
-	var from = getMillis("from",0);
-	var to = getMillis("to",(new Date()).getTime() + 31556952000*100 /* 100 years */);
-	console.log("GET DATA FOR ["+from+" > "+to+"]");
-	// RANDOM
-	/*var data = [];
-	for (var i=0;i<20;i++) 
-	{
-		var lon = 10.366229+(Math.random()*2-1)*2;
-		var lat = 50.998475+(Math.random()*2-1)*2;
-		var rate = parseInt(Math.random()*100);
-		var alt = Math.random()*1000;
-		var type = Math.random() > 0.85 ? "ECALL" : "RACEDATA";
-		var timestamp = parseInt(Math.random()*1000000000000);
-		data.push(
-		{
-			LON : parseInt(Math.round(lon*1000000)),
-			LAT : parseInt(Math.round(lat*1000000)),
-			HRT : rate,
-			ALT : alt,
-			SOS : sos,
-			EPOCH : timestamp
-		});
-	}	
-	onData(data);*/
-	var url = "/triathlon/rest/raceRecord/"+$("#imei").val()+"?from="+from+"&to="+to;
+	var url = "/triathlon/rest/seen/all";
 	$.getJSON(url, function(result) 	
 	{
 		if (!(result instanceof Array) && result.data)
@@ -269,9 +226,8 @@ $(document).ready(function() {
 			popup.hide();
 	});
 	map.addOverlay(popup);
+	doGet();
 });
-$("#go").click(doGet);
-$("input").change(saveState);
 </script>	
 </body>
 </html>
