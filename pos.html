@@ -178,16 +178,22 @@ function onData(data)
 }
 
 
+var inGET = false;
 function doGet() 
 {
+	if (inGET)
+		return;
+	inGET=true;
 	var url = "/triathlon/rest/seen/all";
 	$.getJSON(url, function(result) 	
 	{
+		inGET=false;
 		if (!(result instanceof Array) && result.data)
 			result=result.data;			
 		if (result instanceof Array)		
 			onData(result);
 		else{
+			inGET=true;
 			alert("ERROR : "+JSON.stringify(result));
 		}
     });
@@ -231,8 +237,7 @@ $(document).ready(function() {
 		if (!ok)
 			popup.hide();
 	});
-	map.addOverlay(popup);
-	doGet();
+	setInterval(doGet,10000);
 });
 </script>	
 </body>
