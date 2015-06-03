@@ -237,7 +237,6 @@ function doGet()
 }
 
 $(document).ready(function() {
-	popup = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 	map = new ol.Map({
 	  renderer : "canvas",
 	  target: 'map',
@@ -257,6 +256,7 @@ $(document).ready(function() {
 		//,extent : extent ? extent : undefined
 	  })
 	});
+	popup = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 	map.on('click', function(event) 
 	{
 		var ok=false;
