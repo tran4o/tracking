@@ -134,6 +134,8 @@ var gps = new ol.layer.Vector({
 	source: new ol.source.Vector()
 	,style : style
 });
+
+var firstOnData=true;
 function onData(data) 
 {
 	gps.getSource().clear();
@@ -174,7 +176,10 @@ function onData(data)
 		feature.setGeometry(geom);
 		gps.getSource().addFeature(feature);
 	}
-	map.getView().fitExtent([minx,miny,maxx,maxy],map.getSize());
+	if (firstOnData) {
+		map.getView().fitExtent([minx,miny,maxx,maxy],map.getSize());
+		firstOnData=false;
+	}
 }
 
 
