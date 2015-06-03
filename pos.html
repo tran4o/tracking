@@ -241,6 +241,7 @@ $(document).ready(function() {
 		if (!ok)
 			popup.hide();
 	});
+	map.addOverlay(popup);
 	doGet();
 	setInterval(doGet,10000);
 });
