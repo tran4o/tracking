@@ -50,7 +50,7 @@ window.CONFIG=
 		 }
 		]
 	},
-	
+
 	event : {
 		beginTimestamp : (new Date()).getTime(),
 		duration : 60, //MINUTES
