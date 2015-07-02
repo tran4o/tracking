@@ -16,17 +16,17 @@ window.CONFIG=
 		maxSpeed : 20,	//kmh
 		maxParticipantStateHistory : 10000, // number of elements
 		popupEnsureVisibleWidth : 200,
-		popupEnsureVisibleHeight: 120,
+		popupEnsureVisibleHeight: 120
 	},
 	math : {
 		gpsInaccuracy : 40,
-		speedAndAccelerationAverageDegree : 4,	// caclulation based on N states (average) (MIN 2)
+		speedAndAccelerationAverageDegree : 4,	// calculation based on N states (average) (MIN 2)
 		displayDelay : 30,	// display delay in SECONDS
-		interpolateGPSAverage : 3, // number of recent values to caclulate average gps for position (smooting the curve.min 0 = NO,1 = 2 values (current and last))
+		interpolateGPSAverage : 3, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
 		roadDistanceBestPointCalulcationCoef : 0.2 // TODO EXPLAIN
 	},
 	simulation : {
-		pingInterval : 10, // interval in secods to ping with gps data
+		pingInterval : 10, // interval in seconds to ping with gps data
 		gpsInaccuracy : 30 	// error simulation in METER
 	},	
 	constants : 
@@ -65,6 +65,9 @@ window.CONFIG=
 		trackColorSwim : '#00a54f',
 		trackColorBike : '#ff00ff',
 		trackColorRun :  '#00aeef',
-		directionIconBetween : 200	/* pixels */
+        // the distance between the direction icons - in pixels,
+        // if set non-positive value (0 or less) then don't show them at all
+		//directionIconBetween : 200
+		directionIconBetween : -1
 	}
 };
