@@ -1,3 +1,38 @@
+/**
+ * Checks whether object is not null and not undefined
+ * @param {*} obj object to be checked
+ * @return {boolean}
+ */
+function isDefined(obj) {
+    return null != obj && undefined != obj;
+}
+
+function isNumeric(wh) {
+    return !isNaN(parseFloat(wh)) && isFinite(wh);
+}
+
+function isFunction(wh) {
+    if (!wh) {
+        return false;
+    }
+    return (wh instanceof Function || typeof wh == "function");
+}
+
+function isStringNotEmpty(wh) {
+    if (!wh) {
+        return false;
+    }
+    return (wh instanceof String || typeof wh == "string");
+}
+
+function isStr(wh) {
+    return (wh instanceof String || typeof wh === "string");
+}
+
+function isBoolean(wh) {
+    return (wh instanceof Boolean || typeof wh == "boolean");
+}
+
 function myTrim(x) {
     return x.replace(/^\s+|\s+$/gm,'');
 }
