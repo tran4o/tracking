@@ -71,8 +71,9 @@ window.CONFIG=
 		directionIconBetween : -1
 	},
 
-    liveStream : {
-        maxStreams : 8,
-        streams : ["url1", "url2", "url3"]
-    }
+    liveStreams : [
+		{id : 0, url : "XXX"},
+		{id : 1, url : "YYY"},
+		{id : 2, url : "ZZZ"}
+	]
 };

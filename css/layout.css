@@ -296,6 +296,9 @@ BODY
 	left : 50%;
 	margin-left : -25px;
 }
+#button_livestream.inactive {
+	opacity: 1;
+}
 
 #toolbar_track {
 	left : 50%;
@@ -550,4 +553,38 @@ table.dataTable td {
     width: 650px;
     z-index: 999999;
 
+	background: white;
+	border-radius: 0 0 40px 40px;
+	border: solid 3px;
+	border-top: none;
+	padding: 0 2px;
+
+    height: 350px;   /* 269 (the third-party player) + 1 row of thumbs + some bottom padding */
+}
+
+.liveStreamPlayer {
+
+}
+
+.liveStreamThumbs {
+	position: absolute;
+	bottom: 30px
+}
+
+/* Center the Third-party player */
+#wowza_player .player {
+	margin: 0 auto;
+}
+
+.liveStreamThumb {
+	display: inline-block;
+	background-color: red;
+	width: 100px;
+	height: 40px;
+}
+.liveStreamThumb.inactve {
+
+}
+.liveStreamThumb.valid {
+	cursor: pointer;
 }
