@@ -1,12 +1,12 @@
 @font-face {
 	font-family: 'Lato-Regular';
-    src : url('/font/Lato-Regular.woff') format('woff'), 
-          url('/font/Lato-Regular.ttf')  format('truetype');
+    src : url('../font/Lato-Regular.woff') format('woff'),
+          url('../font/Lato-Regular.ttf')  format('truetype');
 }
 
 @font-face {
 	font-family: 'HarabaraMaisBold';
-    src : url('/font/HarabaraMaisBold.woff') format('woff');
+    src : url('../font/HarabaraMaisBold.woff') format('woff');
 }
 
 
@@ -207,7 +207,7 @@ BODY
  	border-bottom : 3px solid black;
  	font-family : HarabaraMaisBold;
  	font-size : 22px;
-	background-image: url('/img/roth.jpg');
+	background-image: url('../img/roth.jpg');
     background-repeat: no-repeat;
     background-position: left center;  	
 }
@@ -400,13 +400,13 @@ table.dataTable td {
 	top : 0.4em;
 	width : 22px;
 	height : 22px;
-	background-image:url("/img/close.png");
+	background-image:url("../img/close.png");
 	background-repeat:no-repeat;
 	cursor:pointer;
 }
 
 .close:hover {
-	background-image:url("/img/close-hover.png");
+	background-image:url("../img/close-hover.png");
 }
 
 .ol-zoom{
