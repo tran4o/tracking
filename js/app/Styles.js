@@ -18,39 +18,6 @@ window.STYLES=
 			ww=6.0;*/
 		var ww=10.0;
 
-		function genDirection(pts,color) 
-		{
-			var cnt=0;
-			var icn = renderDirectionBase64(16,16,color); //renderArrowBase64(48,48,color);
-			var res=0.0;
-			for (var i=0;i<pts.length-1;i++) 
-			{
-				var start = pts[i+1];
-				var end = pts[i];
-				var len = Math.sqrt((start[0]-start[0])*(end[0]-start[0])+(end[1]-start[1])*(end[1]-start[1])) / resolution;
-				res+=len;
-				if (i == 0 || res >= CONFIG.appearance.directionIconBetween) { 
-					if (res >= CONFIG.appearance.directionIconBetween) 
-						res-=CONFIG.appearance.directionIconBetween;
-					var dx = end[0] - start[0];
-					var dy = end[1] - start[1];
-					var rotation = Math.atan2(dy, dx);
-					styles.push(new ol.style.Style(
-					{
-					  geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
-					  image: new ol.style.Icon({
-						src: icn,
-						scale : ww/12.0,
-						anchor: [0.5, 0.5],
-						rotateWithView: true,
-						rotation: -rotation,
-						opacity : 1
-					  })
-					}));
-					cnt++;
-				}
-			}
-		}
 		//-------------------------------------
 		if (track && !isNaN(track.bikeStartKM)) 
 		{
@@ -91,8 +58,8 @@ window.STYLES=
 						width: ww
 					  })
 					})
-			);			
-			genDirection(geomrun,CONFIG.appearance.trackColorRun);
+			);
+            STYLES._genDirection(geomrun, ww, CONFIG.appearance.trackColorRun, resolution, styles);
 		}
 		if (geombike && GUI.isShowBike) 
 		{
@@ -106,7 +73,7 @@ window.STYLES=
 					  })
 					})
 			);
-			genDirection(geombike,CONFIG.appearance.trackColorBike);
+            STYLES._genDirection(geombike, ww, CONFIG.appearance.trackColorBike, resolution, styles);
 		}
 		if (geomswim && GUI.isShowSwim) {
 			styles.push
@@ -119,7 +86,7 @@ window.STYLES=
 					  })
 					})
 			);
-			genDirection(geomswim,CONFIG.appearance.trackColorSwim);
+            STYLES._genDirection(geomswim, ww, CONFIG.appearance.trackColorSwim, resolution, styles);
 		}
 		//-------------------------------------
 		if (coords && coords.length >= 2) 
@@ -332,4 +299,43 @@ window.STYLES=
 			width: 4.5
 		})
 	})
+};
+// Static private function
+STYLES._genDirection = function(pts, ww, resolution, color, styles)
+{
+    if (CONFIG.appearance.directionIconBetween <= 0) {
+        // this means no need to shw the directions
+        return;
+    }
+
+    var cnt=0;
+    var icn = renderDirectionBase64(16,16,color); //renderArrowBase64(48,48,color);
+    var res=0.0;
+    for (var i=0;i<pts.length-1;i++)
+    {
+        var start = pts[i+1];
+        var end = pts[i];
+        var len = Math.sqrt((start[0]-start[0])*(end[0]-start[0])+(end[1]-start[1])*(end[1]-start[1])) / resolution;
+        res+=len;
+        if (i == 0 || res >= CONFIG.appearance.directionIconBetween) {
+            if (res >= CONFIG.appearance.directionIconBetween)
+                res-=CONFIG.appearance.directionIconBetween;
+            var dx = end[0] - start[0];
+            var dy = end[1] - start[1];
+            var rotation = Math.atan2(dy, dx);
+            styles.push(new ol.style.Style(
+                {
+                    geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
+                    image: new ol.style.Icon({
+                        src: icn,
+                        scale : ww/12.0,
+                        anchor: [0.5, 0.5],
+                        rotateWithView: true,
+                        rotation: -rotation,
+                        opacity : 1
+                    })
+                }));
+            cnt++;
+        }
+    }
 };
