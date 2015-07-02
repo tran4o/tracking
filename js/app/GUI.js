@@ -88,7 +88,10 @@ Class("GUI",
 		selectNum : {
 			is : "rw",
 			init : 1
-		}
+		},
+        liveStream : {
+            init: null
+        }
     },
     //--------------------------------------
 	methods: 
@@ -195,6 +198,9 @@ Class("GUI",
 				this._animationInit=true;
 				setInterval(this.onAnimation.bind(this), 1000*CONFIG.timeouts.animationFrame );
 			}
+
+            // pass the id of the DOM element
+            this.liveStream = new LiveStream({id : "liveStream"});
         },
 		
         
@@ -424,7 +430,22 @@ Class("GUI",
 		
 		redraw : function() {
 			this.getTrack().getFeature().changed();
-		}
+		},
+
+        /**
+         * Show the live-streaming container. If the passed 'streamId' is valid then it opens its stream directly.
+         * @param {Boolean} [streamId]
+         */
+        showLiveStream : function(streamId) {
+            this.liveStream.show(streamId);
+        },
+
+        /**
+         * Hide the live-streaming container container
+         */
+        hideLiveStream: function() {
+            this.liveStream.hide();
+        }
 		
     }
 });

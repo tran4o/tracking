@@ -354,7 +354,7 @@ Class("Track",
 			{
 				this.debugParticipant.onDebugClick(event);
 			}
-		},
+		}
 
     }
 });

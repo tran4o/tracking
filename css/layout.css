@@ -253,7 +253,11 @@ BODY
 	margin-left:-134px;
 }
 
-#button_settings,#button_rank,#button_favorites,#button_participants,#toolbar_track {
+#button_livestream,
+#button_rank,
+#button_favorites,
+#button_participants,
+#toolbar_track {
     position : absolute;    
 	z-index : 9999999;
 	bottom : 94px;
@@ -263,7 +267,10 @@ BODY
   	width : 90px;	
   	height : 90px;	
 }	
-#button_settings img,#button_rank img,#button_favorites img,#button_participants img {
+#button_livestream img,
+#button_rank img,
+#button_favorites img,
+#button_participants img {
 	width : 70px;
 	height : 70px;
 	padding-left : 14px;
@@ -285,7 +292,7 @@ BODY
 	margin-left : -125px;
 }
 
-#button_settings {
+#button_livestream {
 	left : 50%;
 	margin-left : -25px;
 }
@@ -533,4 +540,14 @@ table.dataTable td {
 	padding-left : 0;
 	padding-right : 0;
 	min-height : 140px;
+}
+
+#liveStream {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -325px;
+    width: 650px;
+    z-index: 999999;
+
 }

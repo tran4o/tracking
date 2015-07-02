@@ -23,7 +23,7 @@ window.CONFIG=
 		speedAndAccelerationAverageDegree : 4,	// calculation based on N states (average) (MIN 2)
 		displayDelay : 30,	// display delay in SECONDS
 		interpolateGPSAverage : 3, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
-		roadDistanceBestPointCalulcationCoef : 0.2 // TODO EXPLAIN
+        roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
 	simulation : {
 		pingInterval : 10, // interval in seconds to ping with gps data
@@ -69,5 +69,10 @@ window.CONFIG=
         // if set non-positive value (0 or less) then don't show them at all
 		//directionIconBetween : 200
 		directionIconBetween : -1
-	}
+	},
+
+    liveStream : {
+        maxStreams : 8,
+        streams : ["url1", "url2", "url3"]
+    }
 };
