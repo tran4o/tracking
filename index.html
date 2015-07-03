@@ -19,7 +19,7 @@
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-	<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>
+	<!--<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>-->
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"> </script>
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/rgbcolor.js"></script> 
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/StackBlur.js"></script>
@@ -324,7 +324,7 @@ function isTabVisible(tabname) {
 	return !($(tabname).hasClass('hide'));
 }
 function showTab( tabname ) {
-	$('#tabcont div[role="tabpanel"]').addClass('hide');
+	$('#tabcont').find('div[role="tabpanel"]').addClass('hide');
 	if (tabname.indexOf('#') == -1) {
 		tabname = '#' + tabname;
 	}
@@ -334,9 +334,9 @@ function showTab( tabname ) {
 function showParticipants() {
 	showLeftPane();
 	showTab("part");
-	if (!tableParticipants) 
+	if (!tableParticipants)
 	{
-		tableParticipants = $('#table-participants').DataTable( {
+        tableParticipants = $('#table-participants').DataTable( {
 			"iDisplayLength" : 50,
 			"bAutoWidth": false,
 			"aaSorting": [[2,'asc']],
@@ -350,8 +350,8 @@ function showParticipants() {
 					render: function ( data, type, row ) 
 					{
 						if (data.follow == 1)
-							return "<div class='invisible'>1</div><img src='img/favorite.png' class='table-favorite-add'/>"
-						return "<div class='invisible'>0</div><img src='img/favorite-add.png' class='table-favorite-add'/>"
+							return "<div class='invisible'>1</div><img src='img/favorite.png' class='table-favorite-add'/>";
+						return "<div class='invisible'>0</div><img src='img/favorite-add.png' class='table-favorite-add'/>";
 					} 
 							
 				},
@@ -371,6 +371,7 @@ function showParticipants() {
 				{ 
 					// age + GROUP
 					data: null,
+                    className : "dt-body-right",
 					render: function ( data, type, row ) 
 					{
 						var age = parseInt(data.age);
@@ -390,7 +391,7 @@ function showParticipants() {
 							return age;
 						return age+" ("+data.age+")";
 					}
-					,className : "dt-body-right"
+
 				}
 	
 			],
@@ -419,10 +420,10 @@ function showFavs()
 			columns: [
 				{ data: "name" },
 				{ data: "bib",className : "dt-body-center" },
-				{ data: "gender",className : "dt-body-center" },
-							{ 
-					className : "dt-body-center", 
-					data: null,
+                { data: "gender",className : "dt-body-center" },
+                {
+                    className : "dt-body-center",
+                    data: null,
 					render: function ( data, type, row ) 
 					{
 						if (!data.country)
@@ -462,8 +463,7 @@ function showFavs()
 	           ]
 			}
 		} );
-		$('#table-favorites tbody').on( 'click', 'tr', function (e) {
-			//GUI.setSelectedParticipant("PART0008");//
+		$('#table-favorites').find('tbody').on( 'click', 'tr', function (e) {
 			if (tableFavorites.row( this ).data()) {
 				GUI.setSelectedParticipant1(tableFavorites.row( this ).data().code,true);
 				GUI.setSelectedParticipant2(null);
@@ -493,16 +493,16 @@ function showRank()
 				{ data: "gender-rank",className : "dt-body-center" },
 				{ data: "bib",className : "dt-body-center" },
 				{ data: "gender",className : "dt-body-center" },
-							{ 
-					className : "dt-body-center", 
-					data: null,
-					render: function ( data, type, row ) 
-					{
-						if (!data.country)
-							return "";
-						return '<div class="invisible">'+data.country+'</div><flag-icon key="'+data.country+'" width="42"></flag-icon>';
-					} 
-				},
+                {
+                    className : "dt-body-center",
+                    data: null,
+                    render: function ( data, type, row )
+                    {
+                        if (!data.country)
+                            return "";
+                        return '<div class="invisible">'+data.country+'</div><flag-icon key="'+data.country+'" width="42"></flag-icon>';
+                    }
+                },
 				{ 
 					// age + GROUP
 					data: null,
