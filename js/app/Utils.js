@@ -260,15 +260,15 @@ function renderArrowBase64(width,height,color)
 	var key = width+"x"+height+":"+color;
 	if (RENDEREDARROWS[key])
 		return RENDEREDARROWS[key];
-	var brdcol = "#fefefe"; //increaseBrightness(color,99);
-	
+
 	var svg='<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="'+width+'pt" height="'+height+'pt" '	
 	+'viewBox="137.834 -82.833 114 91.333" enable-background="new 137.834 -82.833 114 91.333" xml:space="preserve">'
 	+'<path fill="none" d="M-51-2.167h48v48h-48V-2.167z"/>'
 	+'<circle display="none" fill="#605CC9" cx="51.286" cy="-35.286" r="88.786"/>'
 	+'<path fill="#605CC9" stroke="#FFFFFF" stroke-width="4" stroke-miterlimit="10" d="M239.5-36.8l-92.558-35.69 c5.216,11.304,8.13,23.887,8.13,37.153c0,12.17-2.451,23.767-6.883,34.327L239.5-36.8z"/>'
-	+'</svg>'
-	var svg=svg.split("#605CC9").join(color);
+	+'</svg>';
+
+    svg=svg.split("#605CC9").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -284,14 +284,12 @@ function renderDirectionBase64(width,height,color)
 		return RENDEREDDIRECTIONS[key];
 
 	var svg='<svg width="'+width+'pt" height="'+height+'pt" '
-
 		+'viewBox="15 9 19.75 29.5" enable-background="new 15 9 19.75 29.5" xml:space="preserve">'
 		+'<path fill="#FFFEFF" d="M17.17,32.92l9.17-9.17l-9.17-9.17L20,11.75l12,12l-12,12L17.17,32.92z"/>'
 		+'<path fill="none" d="M0-0.25h48v48H0V-0.25z"/>'
-
 	+'</svg>';
 
-	var svg=svg.split("#000000").join(color);
+	svg=svg.split("#000000").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -299,12 +297,12 @@ function renderDirectionBase64(width,height,color)
     return RENDEREDDIRECTIONS[key]=canvas.toDataURL();
 }
 
-var RENDEREBOXES={};
+var RENDEREDBOXES={};
 function renderBoxBase64(width,height,color) 
 {
 	var key = width+"x"+height+":"+color;
-	if (RENDEREBOXES[key])
-		return RENDEREBOXES[key];
+	if (RENDEREDBOXES[key])
+		return RENDEREDBOXES[key];
 
 	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">'
 	+'<g id="#ffffffff">'
@@ -315,12 +313,12 @@ function renderBoxBase64(width,height,color)
 	+'</g>'
 	+'</svg>';
 
-	var svg=svg.split("#000000").join(color);
+	svg=svg.split("#000000").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     canvg(canvas, svg,{ ignoreMouse: true, ignoreAnimation: true });
-    return RENDEREBOXES[key]=canvas.toDataURL();
+    return RENDEREDBOXES[key]=canvas.toDataURL();
 }
 
 function interceptOnCircle(a,b,c,r) {
