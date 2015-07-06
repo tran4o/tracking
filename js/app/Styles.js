@@ -58,7 +58,7 @@ window.STYLES=
             );
             STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
 
-            STYLES._genDistanceKm(geomrun, ww, resolution, styles);
+            STYLES._genDistanceKm(ww, resolution, coords, track.distances, 0, i, styles);
         }
         if (geombike && GUI.isShowBike)
         {
@@ -72,7 +72,7 @@ window.STYLES=
             );
             STYLES._genDirection(geombike, ww, resolution, CONFIG.appearance.trackColorBike, styles);
 
-            STYLES._genDistanceKm(geombike, ww, resolution, styles);
+            STYLES._genDistanceKm(ww, resolution, coords, track.distances, i-1, j, styles);
         }
         if (geomswim && GUI.isShowSwim) {
             styles.push(new ol.style.Style({
@@ -85,7 +85,7 @@ window.STYLES=
             );
             STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
 
-            STYLES._genDistanceKm(geomswim, ww, resolution, styles);
+            STYLES._genDistanceKm(ww, resolution, coords, track.distances, j-1, track.distances.length, styles);
         }
 
         // CHECKPOINTS --------------------------
@@ -364,45 +364,53 @@ window.STYLES=
         }
     },
 
-    _genDistanceKm : function(pts, ww, resolution, styles) {
+    _genDistanceKm : function(ww, resolution,
+							  coords, distances, startDistIndex, endDistIndex,
+							  styles) {
         // TODO Rumen - still not ready
-        if (true) return;
+		if (true) {return;}
 
-        var cnt=0;
+        var hotspotsKm = [20, 40, 60, 80, 100, 120, 140, 160, 180];
+
         var res=0.0;
-        for (var i=0;i<pts.length-1;i++)
-        {
-            var start = pts[i+1];
-            var end = pts[i];
-            var dx = end[0] - start[0];
-            var dy = end[1] - start[1];
-            var len = Math.sqrt(dx*dx+dy*dy) / resolution;
-            res+=len;
-            if (i == 0 || res >= 300) {
-                res = 0;
-                var rotation = Math.atan2(dy, dx);
-                styles.push(new ol.style.Style({
-                    geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
-                    //image: new ol.style.Icon({
-                    //    src: xxx,
-                    //    scale : ww/12.0,
-                    //    anchor: [0.5, 0.5],
-                    //    rotateWithView: true,
-                    //    rotation: -rotation + Math.PI, // add 180 degrees
-                    //    opacity : 1
-                    //}),
-                    text: new ol.style.Text({
-                        font: 'normal 13px Lato-Regular',
-                        fill: new ol.style.Fill({
-                            color: '#FFFFFF'
-                        }),
-                        text : len,
-                        offsetX : 0,
-                        offsetY : 0
-                    })
-                }));
-                cnt++;
-            }
+        for (var i = startDistIndex; i < endDistIndex; i++) {
+            if (!hotspotsKm.length) {
+				return;
+			}
+
+			var dist = distances[i];
+			res += dist;
+
+			if (res >= hotspotsKm[0]*1000) {
+				function addHotSpotKM(km) {
+					//var dx = end[0] - start[0];
+					//var dy = end[1] - start[1];
+					//var rotation = Math.atan2(dy, dx);
+					styles.push(new ol.style.Style({
+						//geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
+						geometry: new ol.geom.Point([coords[startDistIndex], coords[startDistIndex+1]]),
+						image: new ol.style.Icon({
+							src: "img/" + km + "km.svg",
+							rotateWithView: true,
+							//rotation: -rotation + Math.PI/2, // add 180 degrees
+							opacity : 1
+						})
+					}));
+				}
+
+				// draw the first hotspot and any next if it's contained in the same "distance"
+				var removeHotspotKm = 0;
+				for (var k = 0, lenHotspotsKm = hotspotsKm.length; k < lenHotspotsKm; k++) {
+					if (res >= hotspotsKm[k]*1000) {
+						addHotSpotKM(hotspotsKm[k]);
+						removeHotspotKm++;
+					} else {
+						break;
+					}
+				}
+				// remove all the already drawn hotspots
+				for (var j = 0; j <removeHotspotKm; j++) hotspotsKm.shift();
+			}
         }
     }
 };
