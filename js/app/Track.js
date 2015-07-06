@@ -21,7 +21,7 @@ Class("Track",
 			is:   "rw",
 			init : []
 		},
-		cams : {
+		movingCams : {
 			is:   "rw",
 			init : []
 		},
@@ -354,10 +354,10 @@ Class("Track",
 
 		newMovingCam : function(id,deviceId,name)
 		{
-			var cam = new Cam({id:id,deviceId:deviceId,code:name});
+			var cam = new MovingCam({id:id,deviceId:deviceId,code:name});
 			cam.init(this.route[0]);
-			cam.setSeqId(this.cams.length);
-			this.cams.push(cam);
+			cam.setSeqId(this.movingCams.length);
+			this.movingCams.push(cam);
 			return cam;
 		},
 		
