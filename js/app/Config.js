@@ -77,7 +77,7 @@ window.CONFIG=
         // the distance between the direction icons - in pixels,
         // if set non-positive value (0 or less) then don't show them at all
 		//directionIconBetween : 200
-		directionIconBetween : 400
+		directionIconBetween : -1
 	},
 
     hotspot : {
