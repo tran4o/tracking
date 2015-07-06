@@ -49,7 +49,15 @@ Class("GUI",
 			is : "rw",
 			init : null
 		},
-		participantsLayer : {
+        hotspotsLayer : {
+			is : "rw",
+			init : null
+		},
+        camsLayer : {
+			is : "rw",
+			init : null
+		},
+        participantsLayer : {
 			is : "rw",
 			init : null
 		},
@@ -107,9 +115,17 @@ Class("GUI",
 			  source: new ol.source.Vector(),
 			  style : STYLES["track"]
 			});
-			this.participantsLayer = new ol.layer.Vector({
+			this.hotspotsLayer = new ol.layer.Vector({
+			  source: new ol.source.Vector(),
+			  style : STYLES["hotspot"]
+			});
+            this.participantsLayer = new ol.layer.Vector({
 			  source: new ol.source.Vector(),
 			  style : STYLES["participant"]
+			});
+			this.camsLayer = new ol.layer.Vector({
+				source: new ol.source.Vector(),
+				style : STYLES["cam"]
 			});
 			if (this.isDebug)
 			this.debugLayerGPS = new ol.layer.Vector({
@@ -128,7 +144,11 @@ Class("GUI",
 			           new ol.layer.Tile({
 			               source: new ol.source.OSM()
 			           }),
-			           this.trackLayer,this.participantsLayer
+			           this.trackLayer,
+			           this.hotspotsLayer,
+				       this.camsLayer,
+				       this.participantsLayer
+
 			  ],
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
@@ -138,7 +158,7 @@ Class("GUI",
 				extent : extent ? extent : undefined
 			  })
 			});
-			
+
 			for (var i=0;i<ints.length;i++)
 				this.map.addInteraction(ints[i]);
 			this.map.addOverlay(this.popup1);
@@ -155,9 +175,9 @@ Class("GUI",
 				var fl = this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
 					if (layer == this.participantsLayer)
 						res.push(feature);
+
 				},this);
-				if (res.length) 
-				{
+				if (res.length) {
 					if (this.selectedParticipant1 == null) {
 						var feat = this.getSelectedParticipantFromArrayCyclic(res);
 						if (feat)
@@ -202,10 +222,8 @@ Class("GUI",
             // pass the id of the DOM element
             this.liveStream = new LiveStream({id : "liveStream"});
         },
-		
-        
+
         addTrackFeature : function() {
-        	TRACK.init();
         	if (TRACK.feature) {
         		var ft = this.trackLayer.getSource().getFeatures();
         		var ok=false;
@@ -284,7 +302,13 @@ Class("GUI",
 		
 		onAnimation : function() 
 		{
-			var arr=[]; 
+			// first interpolate the cams
+			for (var ic=0;ic<TRACK.cams.length;ic++) {
+				var cam = TRACK.cams[ic];
+				cam.interpolate();
+			}
+
+			var arr=[];
 			for (var ip=0;ip<TRACK.participants.length;ip++) 
 			{
 				var p = TRACK.participants[ip];
@@ -353,7 +377,7 @@ Class("GUI",
 				}
 			}
 			//--------------------			
-			if (this.isDebug)  
+			if (this.isDebug)
 				this.doDebugAnimation();
 		},
 		
