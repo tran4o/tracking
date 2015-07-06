@@ -43,57 +43,54 @@ window.STYLES=
 			if (!geombike.length)
 				geombike=null;
 			if (!geomrun.length)
-				geomswim=null;
-			
+                geomrun=null;
 		}
 		
 		if (geomrun && GUI.isShowRun) 
 		{
-			styles.push
-			(					
-					new ol.style.Style({
-						geometry: new ol.geom.LineString(geomrun),
-						stroke: new ol.style.Stroke({
-						color: CONFIG.appearance.trackColorRun,
-						width: ww
-					  })
-					})
-			);
+			styles.push(new ol.style.Style({
+                    geometry: new ol.geom.LineString(geomrun),
+                    stroke: new ol.style.Stroke({
+                        color: CONFIG.appearance.trackColorRun,
+                        width: ww
+                    })
+                })
+            );
             STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
 
-            STYLES._genDistanceKm(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
-		}
-		if (geombike && GUI.isShowBike) 
-		{
-			styles.push
-			(					
-					new ol.style.Style({
-						geometry: new ol.geom.LineString(geombike),
-						stroke: new ol.style.Stroke({
-						color: CONFIG.appearance.trackColorBike,
-						width: ww
-					  })
-					})
-			);
+            STYLES._genDistanceKm(geomrun, ww, resolution, styles);
+        }
+        if (geombike && GUI.isShowBike)
+        {
+            styles.push(new ol.style.Style({
+                    geometry: new ol.geom.LineString(geombike),
+                    stroke: new ol.style.Stroke({
+                        color: CONFIG.appearance.trackColorBike,
+                        width: ww
+                    })
+                })
+            );
             STYLES._genDirection(geombike, ww, resolution, CONFIG.appearance.trackColorBike, styles);
-		}
-		if (geomswim && GUI.isShowSwim) {
-			styles.push
-			(					
-					new ol.style.Style({
-						geometry: new ol.geom.LineString(geomswim),
-						stroke: new ol.style.Stroke({
-						color: CONFIG.appearance.trackColorSwim,
-						width: ww
-					  })
-					})
-			);
-            STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
-		}
 
-		// CHECKPOINTS --------------------------
-		if (geomswim)
-		{
+            STYLES._genDistanceKm(geombike, ww, resolution, styles);
+        }
+        if (geomswim && GUI.isShowSwim) {
+            styles.push(new ol.style.Style({
+                    geometry: new ol.geom.LineString(geomswim),
+                    stroke: new ol.style.Stroke({
+                        color: CONFIG.appearance.trackColorSwim,
+                        width: ww
+                    })
+                })
+            );
+            STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
+
+            STYLES._genDistanceKm(geomswim, ww, resolution, styles);
+        }
+
+        // CHECKPOINTS --------------------------
+        if (geomswim)
+        {
 			if (GUI.isShowSwim)
 				STYLES._genCheckpoint(geomswim, CONFIG.appearance.trackColorSwim, styles);
 		}
@@ -367,9 +364,11 @@ window.STYLES=
         }
     },
 
-    _genDistanceKm : function(pts, ww, resolution, color, styles) {
+    _genDistanceKm : function(pts, ww, resolution, styles) {
+        // TODO Rumen - still not ready
+        if (true) return;
+
         var cnt=0;
-        var icn = renderDirectionBase64(16,16,color);
         var res=0.0;
         for (var i=0;i<pts.length-1;i++)
         {
@@ -384,14 +383,14 @@ window.STYLES=
                 var rotation = Math.atan2(dy, dx);
                 styles.push(new ol.style.Style({
                     geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
-                    image: new ol.style.Icon({
-                        src: icn,
-                        scale : ww/12.0,
-                        anchor: [0.5, 0.5],
-                        rotateWithView: true,
-                        rotation: -rotation + Math.PI, // add 180 degrees
-                        opacity : 1
-                    }),
+                    //image: new ol.style.Icon({
+                    //    src: xxx,
+                    //    scale : ww/12.0,
+                    //    anchor: [0.5, 0.5],
+                    //    rotateWithView: true,
+                    //    rotation: -rotation + Math.PI, // add 180 degrees
+                    //    opacity : 1
+                    //}),
                     text: new ol.style.Text({
                         font: 'normal 13px Lato-Regular',
                         fill: new ol.style.Fill({
