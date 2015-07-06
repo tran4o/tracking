@@ -62,14 +62,29 @@ window.CONFIG=
 	},
 	
 	appearance : {
-		trackColorSwim : '#00a54f',
-		trackColorBike : '#ff00ff',
-		trackColorRun :  '#00aeef',
+		trackColorSwim : '#5676ff',
+		trackColorBike : '#da2346',
+		trackColorRun :  '#079f36',
+
+		// Note the sequence is always Swim-Bike-Run - so 2 change-points
+		imageStart : "img/start.png",
+		imageFinish : "img/finish.png",
+		imageCam : "img/camera.svg",
+		imageCheckpointSwimBike : "img/wz1.svg",
+		imageCheckpointBikeRun : "img/wz2.svg",
+		isShowImageCheckpoint : true,
+
         // the distance between the direction icons - in pixels,
         // if set non-positive value (0 or less) then don't show them at all
 		//directionIconBetween : 200
-		directionIconBetween : -1
+		directionIconBetween : 400
 	},
+
+    hotspot : {
+        cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
+        water : {image : "img/water.svg"},
+        uturn : {image : "img/uturn.svg"}
+    },
 
     liveStreams : [
 		{id : 0, url : "XXX"},

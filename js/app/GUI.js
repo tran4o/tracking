@@ -302,9 +302,9 @@ Class("GUI",
 		
 		onAnimation : function() 
 		{
-			// first interpolate the cams
-			for (var ic=0;ic<TRACK.cams.length;ic++) {
-				var cam = TRACK.cams[ic];
+			// first interpolate the movingCams
+			for (var ic=0;ic<TRACK.movingCams.length;ic++) {
+				var cam = TRACK.movingCams[ic];
 				cam.interpolate();
 			}
 

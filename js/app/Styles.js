@@ -59,7 +59,9 @@ window.STYLES=
 					  })
 					})
 			);
-            STYLES._genDirection(geomrun, ww, CONFIG.appearance.trackColorRun, resolution, styles);
+            STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
+
+            STYLES._genDistanceKm(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
 		}
 		if (geombike && GUI.isShowBike) 
 		{
@@ -73,7 +75,7 @@ window.STYLES=
 					  })
 					})
 			);
-            STYLES._genDirection(geombike, ww, CONFIG.appearance.trackColorBike, resolution, styles);
+            STYLES._genDirection(geombike, ww, resolution, CONFIG.appearance.trackColorBike, styles);
 		}
 		if (geomswim && GUI.isShowSwim) {
 			styles.push
@@ -86,125 +88,74 @@ window.STYLES=
 					  })
 					})
 			);
-            STYLES._genDirection(geomswim, ww, CONFIG.appearance.trackColorSwim, resolution, styles);
+            STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
 		}
-		//-------------------------------------
-		if (coords && coords.length >= 2) 
+
+		// CHECKPOINTS --------------------------
+		if (geomswim)
+		{
+			if (GUI.isShowSwim)
+				STYLES._genCheckpoint(geomswim, CONFIG.appearance.trackColorSwim, styles);
+		}
+		if (geombike)
+		{
+			if (CONFIG.appearance.isShowImageCheckpoint)
+				STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
+			else if (GUI.isShowBike)
+				STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
+		}
+		if (geomrun)
+		{
+			if (CONFIG.appearance.isShowImageCheckpoint)
+				STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
+			else if (GUI.isShowBike)
+				STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
+		}
+
+		// START-FINISH --------------------------
+		if (coords && coords.length >= 2)
 		{
 			var start = coords[0];
 			var end = coords[1];
 			/*var dx = end[0] - start[0];
-			var dy = end[1] - start[1];
-			var rotation = Math.atan2(dy, dx);
-			styles.push(new ol.style.Style(
-			{
-			  geometry: new ol.geom.Point(start),
-			  image: new ol.style.Icon({
-				src: 'img/begin-end-arrow.png',
-				scale : 0.45,
-				anchor: [0.0, 0.5],
-				rotateWithView: true,
-				rotation: -rotation,
-				opacity : 1
-			  })
-			}));*/
+			 var dy = end[1] - start[1];
+			 var rotation = Math.atan2(dy, dx);
+			 styles.push(new ol.style.Style(
+			 {
+			 geometry: new ol.geom.Point(start),
+			 image: new ol.style.Icon({
+			 src: 'img/begin-end-arrow.png',
+			 scale : 0.45,
+			 anchor: [0.0, 0.5],
+			 rotateWithView: true,
+			 rotation: -rotation,
+			 opacity : 1
+			 })
+			 }));*/
 
 			// loop?
 			end = coords[coords.length-1];
-			if (end[0] != start[0] || end[1] != start[1]) 
+			if (end[0] != start[0] || end[1] != start[1])
 			{
 				var start = coords[coords.length-2];
 				var dx = end[0] - start[0];
 				var dy = end[1] - start[1];
 				var rotation = Math.atan2(dy, dx);
 				styles.push(new ol.style.Style(
-				{
-				  geometry: new ol.geom.Point(end),
-				  image: new ol.style.Icon({
-					src: 'img/finish.png',
-					scale : 0.65,
-					anchor: [0.5, 0.5],
-					rotateWithView: true,
-					//rotation: -rotation,
-					opacity : 1
-				  })
-				}));
-			}
-			
-
-			/*if (0 == 1)
-			styles.push(new ol.style.Style(
 					{
-					  geometry: new ol.geom.Point(end),
-					  image: new ol.style.Icon({
-						src: 'img/direction-small.png',
-						scale : 0.7,
-						anchor: [0.5, 0.5],
-						rotateWithView: true,
-						rotation: -rotation,
-						opacity : 0.5
-					  })
-					}));*/
+						geometry: new ol.geom.Point(end),
+						image: new ol.style.Icon({
+							src: CONFIG.appearance.imageFinish,
+							scale : 0.45,
+							anchor: [0.5, 0.5],
+							rotateWithView: true,
+							//rotation: -rotation,
+							opacity : 1
+						})
+					}));
+			}
+		}
 
-		}
-		// CHECKPOINTS --------------------------
-		if (geomrun) 
-		{
-			var end = geomrun[1];
-			var start = geomrun[0];
-			var dx = end[0] - start[0];
-			var dy = end[1] - start[1];
-			var rotation = Math.atan2(dy, dx);
-			styles.push(new ol.style.Style({
-				  geometry: new ol.geom.Point(start),
-				  image: new ol.style.Icon({
-					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorRun),
-					scale : 1,
-					anchor: [0.92, 0.5],
-					rotateWithView: true,
-					rotation: -rotation,
-					opacity : 0.65
-				  })
-			}));
-		}
-		if (geombike && GUI.isShowBike) 
-		{
-			var end = geombike[1];
-			var start = geombike[0];
-			var dx = end[0] - start[0];
-			var dy = end[1] - start[1];
-			var rotation = Math.atan2(dy, dx);
-			styles.push(new ol.style.Style({
-				  geometry: new ol.geom.Point(start),
-				  image: new ol.style.Icon({
-					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorBike),
-					scale : 1,
-					anchor: [0.92, 0.5],
-					rotateWithView: true,
-					rotation: -rotation,
-					opacity : 0.65
-				  })
-			}));
-		}
-		if (geomswim && GUI.isShowSwim) 
-		{
-			var end = geomswim[1];
-			var start = geomswim[0];
-			var dx = end[0] - start[0];
-			var dy = end[1] - start[1];
-			var rotation = Math.atan2(dy, dx);
-			styles.push(new ol.style.Style({
-				  geometry: new ol.geom.Point(start),
-				  image: new ol.style.Icon({
-					src: renderBoxBase64(16,16,CONFIG.appearance.trackColorSwim),
-					scale : 1,
-					anchor: [0.92, 0.5],
-					rotateWithView: true,
-					rotation: -rotation,
-					opacity : 0.65
-				  })
-			}));
-		}
 		return styles;
 	},
 	//--------------------------------------
@@ -229,13 +180,12 @@ window.STYLES=
 	
 	"participant" : function(feature,resolution) 
 	{
-		var etxt="";
 		var part = feature.participant;
-		var lstate = null;
-		if (part.states.length) {
-			lstate = part.states[part.states.length-1];
+		var lstate = part.getLastState();
+		/*var etxt="";
+		if (lstate) {
 			etxt=" "+parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";// | acc "+parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s";
-		}
+		}*/
 		var zIndex = Math.round(part.getElapsed()*1000000)*1000+part.seqId;
 		/*if (part == GUI.getSelectedParticipant()) {
 			zIndex=1e20;
@@ -245,8 +195,7 @@ window.STYLES=
 		var isDirection = (lstate && lstate.getSpeed() > 0 && !part.isSOS && !part.isDiscarded);
 		var animFrame = ((new Date()).getTime()%3000)*Math.PI*2/3000.0;
 
-        styles.push(new ol.style.Style(
-    	        {
+        styles.push(new ol.style.Style( {
     	        	zIndex: zIndex,
     	        	image : new ol.style.Circle({
     	        		radius: 17,
@@ -278,64 +227,183 @@ window.STYLES=
 					  anchorXUnits: 'fraction',
 					  anchorYUnits: 'fraction',
 					  opacity: 1,
-					  src : renderArrowBase64(48,48,part.color), //"img/direction.png",
-						/*feature.participant.isSOS ? 'img/warning-red.png' : 
-						feature.participant.isDiscarded ? 'img/warning-yellow.png' : 
-						feature.participant.icon,*/ 
+					  src : renderArrowBase64(48,48,part.color),
 					  scale : 0.55,
 					  rotation : -part.getRotation()
-					  //0.3
-					  //size : [22,16]
 				   }))
 			}));
 		}
 		return styles;
 	},
+
+	"cam" : function(feature, resolution) {
+		var styles=[];
+
+		var cam = feature.cam;
+		var lstate = cam.getLastState();
+		var isDirection = (lstate && lstate.getSpeed() > 0 && !cam.isSOS && !cam.isDiscarded);
+
+		styles.push(new ol.style.Style({
+			image: new ol.style.Icon(({
+				//scale : 0.55,
+				src : CONFIG.appearance.imageCam
+			}))
+		}));
+
+		if (isDirection && cam.getRotation() != null) {
+			styles.push(new ol.style.Style({
+				image: new ol.style.Icon(({
+					//scale : 0.55,
+					// TODO - This way the text inside the image is rotating also
+					// have to make the rotation with setting the correct anchors
+					rotation : (-cam.getRotation() + (30*Math.PI / 180)),
+					anchor: [-1,1],
+					src : "img/camera" + (cam.seqId+1) + ".svg"
+				}))
+			}));
+		}
+
+		return styles;
+	},
+
+    "hotspot" : function(feature, resolution) {
+        var styles=[];
+
+        var hotspot = feature.hotspot;
+
+        styles.push(new ol.style.Style({
+            image: new ol.style.Icon(({
+                //scale : 0.55,
+                src : hotspot.getType().image
+            }))
+        }));
+
+        return styles;
+    },
+
 	//------------------------------------------------
-	"trackselected" : new ol.style.Style(
-	{
+	// Private methods
+	//------------------------------------------------
+
+	_trackSelected : new ol.style.Style({
 		stroke: new ol.style.Stroke({
 			color: '#FF5050',
 			width: 4.5
 		})
-	})
-};
-// Static private function
-STYLES._genDirection = function(pts, ww, resolution, color, styles)
-{
-    if (CONFIG.appearance.directionIconBetween <= 0) {
-        // this means no need to shw the directions
-        return;
-    }
+	}),
 
-    var cnt=0;
-    var icn = renderDirectionBase64(16,16,color); //renderArrowBase64(48,48,color);
-    var res=0.0;
-    for (var i=0;i<pts.length-1;i++)
-    {
-        var start = pts[i+1];
-        var end = pts[i];
-        var len = Math.sqrt((start[0]-start[0])*(end[0]-start[0])+(end[1]-start[1])*(end[1]-start[1])) / resolution;
-        res+=len;
-        if (i == 0 || res >= CONFIG.appearance.directionIconBetween) {
-            if (res >= CONFIG.appearance.directionIconBetween)
-                res-=CONFIG.appearance.directionIconBetween;
+	_genCheckpoint : function(geometry, color, styles) {
+		var start = geometry[0];
+		var end = geometry[1];
+		var dx = end[0] - start[0];
+		var dy = end[1] - start[1];
+		var rotation = Math.atan2(dy, dx);
+
+		styles.push(new ol.style.Style({
+			geometry: new ol.geom.Point(start),
+			image: new ol.style.Icon({
+				src: renderBoxBase64(16,16,color),
+				scale : 1,
+				anchor: [0.92, 0.5],
+				rotateWithView: true,
+				rotation: -rotation,
+				opacity : 0.65
+			})
+		}));
+	},
+
+	_genCheckpointImage : function(geometry, image, styles) {
+		var start = geometry[0];
+		//var end = geometry[1];
+		//var dx = end[0] - start[0];
+		//var dy = end[1] - start[1];
+		//var rotation = Math.atan2(dy, dx);
+
+		styles.push(new ol.style.Style({
+			geometry: new ol.geom.Point(start),
+			image: new ol.style.Icon({
+				src: image,
+				//scale : 0.65,
+				anchor: [0.5, 0.5],
+				rotateWithView: true,
+				//rotation: -rotation,
+				opacity : 1
+			})
+		}));
+	},
+
+	_genDirection : function(pts, ww, resolution, color, styles) {
+        if (CONFIG.appearance.directionIconBetween <= 0) {
+            // this means no need to show the directions
+            return;
+        }
+
+        var cnt = 0;
+        var icn = renderDirectionBase64(16, 16, color);
+        var res = 0.0;
+        for (var i = 0; i < pts.length - 1; i++) {
+            var start = pts[i + 1];
+            var end = pts[i];
             var dx = end[0] - start[0];
             var dy = end[1] - start[1];
-            var rotation = Math.atan2(dy, dx);
-            styles.push(new ol.style.Style(
-                {
+            var len = Math.sqrt(dx * dx + dy * dy) / resolution;
+            res += len;
+            if (i == 0 || res >= CONFIG.appearance.directionIconBetween) {
+                res = 0;
+                var rotation = Math.atan2(dy, dx);
+                styles.push(new ol.style.Style({
+                    geometry: new ol.geom.Point([(start[0] + end[0]) / 2, (start[1] + end[1]) / 2]),
+                    image: new ol.style.Icon({
+                        src: icn,
+                        scale: ww / 12.0,
+                        anchor: [0.5, 0.5],
+                        rotateWithView: true,
+                        rotation: -rotation + Math.PI, // add 180 degrees
+                        opacity: 1
+                    })
+                }));
+                cnt++;
+            }
+        }
+    },
+
+    _genDistanceKm : function(pts, ww, resolution, color, styles) {
+        var cnt=0;
+        var icn = renderDirectionBase64(16,16,color);
+        var res=0.0;
+        for (var i=0;i<pts.length-1;i++)
+        {
+            var start = pts[i+1];
+            var end = pts[i];
+            var dx = end[0] - start[0];
+            var dy = end[1] - start[1];
+            var len = Math.sqrt(dx*dx+dy*dy) / resolution;
+            res+=len;
+            if (i == 0 || res >= 300) {
+                res = 0;
+                var rotation = Math.atan2(dy, dx);
+                styles.push(new ol.style.Style({
                     geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
                     image: new ol.style.Icon({
                         src: icn,
                         scale : ww/12.0,
                         anchor: [0.5, 0.5],
                         rotateWithView: true,
-                        rotation: -rotation,
+                        rotation: -rotation + Math.PI, // add 180 degrees
                         opacity : 1
+                    }),
+                    text: new ol.style.Text({
+                        font: 'normal 13px Lato-Regular',
+                        fill: new ol.style.Fill({
+                            color: '#FFFFFF'
+                        }),
+                        text : len,
+                        offsetX : 0,
+                        offsetY : 0
                     })
                 }));
-            cnt++;
+                cnt++;
+            }
         }
     }
 };

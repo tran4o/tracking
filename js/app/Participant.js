@@ -1,5 +1,15 @@
-Class("ParticipantState",
-{
+Class("MovingPoint", {
+	isa : Point,
+
+	has : {
+		deviceId : {
+			is : "rw",
+			init : "DEVICE_ID_NOT_SET"
+		}
+	}
+});
+//----------------------------------------
+Class("ParticipantState", {
 	has : {
 		speed : {
 			is : "rw",
@@ -9,8 +19,7 @@ Class("ParticipantState",
 			is : "rw",
 			init : 0
 		},
-	    timestamp : 
-		{
+	    timestamp : {
 	        is:   "rw",
 	        init: [0,0]	//lon lat world mercator
 	    },
@@ -49,30 +58,14 @@ Class("ParticipantState",
 	}
 });		
 //----------------------------------------		
-Class("Participant", 
-{
-    //--------------------------------------
-	// ALL COORDINATES ARE IN WORLD MERCATOR
-    //--------------------------------------
-    has: 
-	{
+Class("Participant", {
+	isa : MovingPoint,
+
+	has: {
     	states : {
     		is : "rw",
     		init : []
-    		
     	},
-		code : {
-			is : "rw",
-			init : "CODE_NOT_SET"
-		},
-		id : {
-			is : "rw",
-			init : "ID_NOT_SET"
-		},
-		deviceId : {
-			is : "rw",
-			init : "DEVICE_ID_NOT_SET"
-		},
 		isTimedOut : {
 			is : "rw",
 			init : false
@@ -85,24 +78,13 @@ Class("Participant",
 			is : "rw",
 			init : false
 		},
-		feature : {
-			is : "rw",
-			init : null
-		},
-		position : 
-		{
-	        is:   "rw",
-	        init: [0,0]	//lon lat world mercator
-	    },
-		icon: 
-		{
+		icon: {
 	        is:   "rw",
 	        init: "img/player1.png"
 	    },
-	    image :	//100x100 
-	    {
+	    image : {
 	        is:   "rw",
-	        init: "img/profile1.png"
+	        init: "img/profile1.png"  //100x100
 	    },
 	    color : {
 	        is:   "rw",
@@ -134,14 +116,32 @@ Class("Participant",
 		}
     },
     //--------------------------------------
-	methods: 
-	{
+	after : {
+		init : function(pos) {
+			var ctime = (new Date()).getTime();
+			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:TRACK.getElapsedFromPoint(pos)});
+			this.setElapsed(state.elapsed);
+			this.setStates([state]);
+			this.setIsSOS(false);
+			this.setIsDiscarded(false);
+
+			this.initFeature();
+
+			this.ping(pos,0,false,ctime,0,0,0,0,0);
+		}
+	},
+	methods: {
+		initFeature : function() {
+			this.feature.participant=this;
+			GUI.participantsLayer.getSource().addFeature(this.feature);
+		},
+
 		getInitials : function() {
 			var tt = this.getCode().split(" ");
 			if (tt.length >= 2) {
 				return tt[0][0]+tt[1][0];
 			}
-			if (tt.lenght == 1)
+			if (tt.length == 1)
 				return tt[0][0];
 			return "?";
 		},
@@ -153,13 +153,13 @@ Class("Participant",
 			if (this.feature) 
 				this.feature.setGeometry(new ol.geom.Point(mpos));
 		},
-		interpolate : function() 
-		{
+
+		interpolate : function() {
 			if (!this.states.length)
 				return;
 			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/) 
 			{
-				var lstate=this.states[this.states.length-1];
+				var lstate=this.getLastState();
 				var pos = lstate.gps;
 				if (pos[0] != this.getPosition()[0] || pos[1] != this.getPosition()[1]) 
 				{
@@ -228,8 +228,7 @@ Class("Participant",
 			return {elapsed : ssume,timestamp : ssumt};
 		},
 
-		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
-		{
+		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED) {
 			
 			if (!ctime)
 				ctime=(new Date()).getTime();
@@ -243,7 +242,7 @@ Class("Participant",
 			var tracklen = TRACK.getTrackLength();
 			var tracklen1 = TRACK.getTrackLengthInWGS84();
 			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
-			var lstate = this.states.length ? this.states[this.states.length-1] : null;
+			var lstate = this.getLastState();
 			//----------------------------------------------------------
 			var best;
 			var bestm=null;
@@ -341,44 +340,23 @@ Class("Participant",
 				this.states.shift();
 		},
 
-		init : function(pos) 
-		{
-			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:TRACK.getElapsedFromPoint(pos)});			
-			this.setElapsed(state.elapsed);
-			this.setStates([state]);
-			this.setIsSOS(false);
-			this.setIsDiscarded(false);
-			var feature = new ol.Feature();
-			var geom = new ol.geom.Point(pos);
-			geom.transform('EPSG:4326', 'EPSG:3857');									
-			feature.setGeometry(geom);
-			feature.participant=this;
-			this.setFeature(feature);
-			GUI.participantsLayer.getSource().addFeature(feature);
-			this.setPosition(pos);
-			this.ping(pos,0,false,ctime,0,0,0,0,0);
-		},
-		
-		getFreq : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].freq;
-			return 0;
+		getLastState: function() {
+			return this.states.length ? this.states[this.states.length-1] : null;
 		},
 
-		getSpeed : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].speed;
-			return 0;
+		getFreq : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.freq : 0;
 		},
 
-		getGPS : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].gps;
-			return this.getPosition();
+		getSpeed : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.speed : 0;
+		},
+
+		getGPS : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.gps : this.getPosition();
 		},
 
 		getPopupHTML : function() {
@@ -425,11 +403,10 @@ Class("Participant",
 			var estf=null;
 			var etxt1=null;
 			var etxt2=null;
-			var lstate = null; 
-			if (this.states.length) 
+			var lstate = this.getLastState();
+			if (lstate)
 			{
-				lstate = this.states[this.states.length-1];
-				if (lstate.getSpeed() > 0) 
+				if (lstate.getSpeed() > 0)
 				{
 					var spms = Math.ceil(lstate.getSpeed() * 100) / 100;
 					spms/=1000.0;
@@ -537,7 +514,7 @@ Class("Participant",
 			html+="</div>";
 			return html;
 		}
-		
-		
+
     }
 });
+

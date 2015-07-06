@@ -71,7 +71,7 @@ Class("LiveStream", {
             if (!this._isValid)
                 return;
 
-            this._$comp.hide();
+            this._$comp.slideUp();
         },
 
         /* Private Methods */
@@ -86,7 +86,7 @@ Class("LiveStream", {
             // todo - use the url, not the static stream
             this._$comp.find(".liveStreamPlayer").
                 html("<div id='wowza_player'></div> <script src='//player.cloud.wowza.com/hosted/0eb4cc/wowza.js' type='text/javascript'></script>");
-            this._$comp.show();
+            this._$comp.slideDown();
         }
     }
 });
