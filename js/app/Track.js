@@ -21,6 +21,10 @@ Class("Track",
 			is:   "rw",
 			init : []
 		},
+		cams : {
+			is:   "rw",
+			init : []
+		},
 		// in EPSG 3857
 		feature : {
 			is : "rw",
@@ -339,13 +343,22 @@ Class("Track",
 			this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
 		},
 		
-		newParticipant : function(id,deviceId,code) 
+		newParticipant : function(id,deviceId,name)
 		{
-			var part = new Participant({id:id,deviceId:deviceId,code:code});
+			var part = new Participant({id:id,deviceId:deviceId,code:name});
 			part.init(this.route[0]);
 			part.setSeqId(this.participants.length);
 			this.participants.push(part);
 			return part;
+		},
+
+		newMovingCam : function(id,deviceId,name)
+		{
+			var cam = new Cam({id:id,deviceId:deviceId,code:name});
+			cam.init(this.route[0]);
+			cam.setSeqId(this.cams.length);
+			this.cams.push(cam);
+			return cam;
 		},
 		
 		onMapClick : function(event) 
