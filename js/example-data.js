@@ -36,13 +36,17 @@ var PARTICIPANTS=
 var FAVORITES = PARTICIPANTS.filter(function(v){ return (v && v.follow == 1);});
 
 var MOVING_CAMS = [
-	{"code" : "CAM0001", "deviceId" : "353816054923703", "name" : "Moving Camera One"},
-	{"code" : "CAM0002", "deviceId" : "353816054940715", "name" : "Moving Camera Two"}
+    // for MovingCam the 'liveStream' is the id of any registered live-stream in CONFIG.js
+    // so that they could be connected
+    {"code" : "CAM0001", "deviceId" : "353816054923703", "name" : "Moving Camera One", liveStream : 0},
+	{"code" : "CAM0002", "deviceId" : "353816054940715", "name" : "Moving Camera Two", liveStream : 1}
 ];
 
 var HOTSPOTS = [
-    {point : [0,0], type : CONFIG.hotspot.cam},
-    {point : [0,0], type : CONFIG.hotspot.cam},
+    // for Cam HotSpots the 'liveStream' is the id of any registered live-stream in CONFIG.js
+    // so that they could be connected
+    {point : [11.151354,49.193451], type : CONFIG.hotspot.cam, liveStream : 2},
+    {point : [11.131351,49.123441], type : CONFIG.hotspot.cam, liveStream : 3},
 
     {point : [11.121314,49.299455], type : CONFIG.hotspot.uturn},
     {point : [11.130588,49.297392], type : CONFIG.hotspot.uturn},
@@ -57,4 +61,12 @@ var HOTSPOTS = [
     {point : [11.146140,49.240861], type : CONFIG.hotspot.water},
     {point : [11.124747,49.281597], type : CONFIG.hotspot.water},
     {point : [11.157815,49.228852], type : CONFIG.hotspot.water}
+];
+
+var LIVE_STREAMS = [
+    {id : 0, url : "Stream 1"},
+    {id : 1, url : "Stream 2"},
+    {id : 2, url : "Stream 3"},
+    {id : 3, url : "Stream 4"},
+    {id : 4, url : "Stream 5"}
 ];

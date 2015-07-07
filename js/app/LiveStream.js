@@ -10,7 +10,7 @@ Class("LiveStream", {
     },
     methods: {
         initialize: function() {
-            var liveStreams = CONFIG.liveStreams;
+            var liveStreams = LIVE_STREAMS;
             if (!liveStreams || liveStreams.length <= 0) {
                 console.warn("No live streams set");
                 return;
@@ -21,15 +21,14 @@ Class("LiveStream", {
             var i = 0;
             this._$comp.find(".liveStreamThumb").addClass("inactive").each(function() {
                 var stream = liveStreams[i];
+                i++;
+                if (!stream) {
+                    return false;
+                }
                 $(this).addClass("valid").data("id", stream.id).data("url", stream.url);
 
                 // at least one valid thumb - so the whole LiveStream is valid
                 self._isValid = true;
-
-                i++;
-                if (i === liveStreams.length) {
-                    return false;
-                }
             }).filter(".valid").click(function() {
                 var $this = $(this);
 

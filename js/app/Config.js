@@ -84,11 +84,5 @@ window.CONFIG=
         cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
         water : {image : "img/water.svg"},
         uturn : {image : "img/uturn.svg"}
-    },
-
-    liveStreams : [
-		{id : 0, url : "XXX"},
-		{id : 1, url : "YYY"},
-		{id : 2, url : "ZZZ"}
-	]
+    }
 };
