@@ -225,6 +225,24 @@ Class("GUI",
                     }
 				}
 			},this);
+			for (var i = 0; i < params.length; i++) {
+				var obj = params[i];
+
+			}
+
+			// todo - RUMEN - change mouse cursor when over specific features
+			//$(this.getViewport()).on('mousemove', function(e) {
+			//	var pixel = map.getEventPixel(e.originalEvent);
+			//	var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+			//		return true;
+			//	});
+			//	if (hit) {
+			//		map.getTarget().style.cursor = 'pointer';
+			//	} else {
+			//		map.getTarget().style.cursor = '';
+			//	}
+			//});
+
 			//-----------------------------------------------------
 			if (!this._animationInit) {
 				this._animationInit=true;
