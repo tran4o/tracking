@@ -248,19 +248,6 @@ window.STYLES=
 			}))
 		}));
 
-		if (isDirection && cam.getRotation() != null) {
-			styles.push(new ol.style.Style({
-				image: new ol.style.Icon(({
-					//scale : 0.55,
-					// TODO - This way the text inside the image is rotating also
-					// have to make the rotation with setting the correct anchors
-					rotation : (-cam.getRotation() + (30*Math.PI / 180)),
-					anchor: [-1,1],
-					src : "img/camera" + (cam.seqId+1) + ".svg"
-				}))
-			}));
-		}
-
 		return styles;
 	},
 
