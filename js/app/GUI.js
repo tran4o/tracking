@@ -153,8 +153,8 @@ Class("GUI",
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
 				zoom: this.getInitialZoom(),
-				minZoom: 10,
-				maxZoom: 17,
+				//minZoom: 10,
+				//maxZoom: 17,
 				extent : extent ? extent : undefined
 			  })
 			});
@@ -171,22 +171,30 @@ Class("GUI",
 			this.map.on('click', function(event) 
 			{
 				TRACK.onMapClick(event);
-				var res=[];
-				var fl = this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-					if (layer == this.participantsLayer)
-						res.push(feature);
-
+				var selectedParticipants=[];
+                var selectedHotspot = null;
+				this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+                    if (layer == this.participantsLayer) {
+                        selectedParticipants.push(feature);
+                    } else if (layer == this.hotspotsLayer) {
+                        // allow only one hotspot to be selected at a time
+                        if (!selectedHotspot)
+                            selectedHotspot = feature;
+                    }
 				},this);
-				if (res.length) {
+
+                // first if there are selected participants then show their popups
+                // and only if there are not use the selected hotspot if there's any
+				if (selectedParticipants.length) {
 					if (this.selectedParticipant1 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(res);
+						var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 						if (feat)
 							this.setSelectedParticipant1(feat.participant);
 						else
 							this.setSelectedParticipant1(null);
 						this.selectNum=0;
 					} else if (this.selectedParticipant2 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(res);
+						var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 						if (feat)
 							this.setSelectedParticipant2(feat.participant);
 						else
@@ -195,13 +203,13 @@ Class("GUI",
 					} else {
 						this.selectNum=(this.selectNum+1)%2;
 						if (this.selectNum == 0) {
-							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 							if (feat)
 								this.setSelectedParticipant1(feat.participant);
 							else
 								this.setSelectedParticipant1(null);
 						} else {
-							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 							if (feat)
 								this.setSelectedParticipant2(feat.participant);
 							else
@@ -211,6 +219,10 @@ Class("GUI",
 				} else {
 					this.setSelectedParticipant1(null);
 					this.setSelectedParticipant2(null);
+
+                    if (selectedHotspot) {
+                        selectedHotspot.hotspot.onClick();
+                    }
 				}
 			},this);
 			//-----------------------------------------------------
@@ -458,7 +470,7 @@ Class("GUI",
 
         /**
          * Show the live-streaming container. If the passed 'streamId' is valid then it opens its stream directly.
-         * @param {Boolean} [streamId]
+         * @param {String} [streamId]
          */
         showLiveStream : function(streamId) {
             this.liveStream.show(streamId);

@@ -45,18 +45,18 @@ window.STYLES=
 			if (!geomrun.length)
                 geomrun=null;
 		}
-		
-		if (geomrun && GUI.isShowRun) 
-		{
-			styles.push(new ol.style.Style({
-                    geometry: new ol.geom.LineString(geomrun),
+
+
+        if (geomswim && GUI.isShowSwim) {
+            styles.push(new ol.style.Style({
+                    geometry: new ol.geom.LineString(geomswim),
                     stroke: new ol.style.Stroke({
-                        color: CONFIG.appearance.trackColorRun,
+                        color: CONFIG.appearance.trackColorSwim,
                         width: ww
                     })
                 })
             );
-            STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
+            STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
 
             STYLES._genDistanceKm(ww, resolution, coords, track.distances, 0, i, styles);
         }
@@ -72,20 +72,21 @@ window.STYLES=
             );
             STYLES._genDirection(geombike, ww, resolution, CONFIG.appearance.trackColorBike, styles);
 
-            STYLES._genDistanceKm(ww, resolution, coords, track.distances, i-1, j, styles);
+            STYLES._genDistanceKm(ww, resolution, coords, track.distances, i, j, styles);
         }
-        if (geomswim && GUI.isShowSwim) {
-            styles.push(new ol.style.Style({
-                    geometry: new ol.geom.LineString(geomswim),
+		if (geomrun && GUI.isShowRun)
+		{
+			styles.push(new ol.style.Style({
+                    geometry: new ol.geom.LineString(geomrun),
                     stroke: new ol.style.Stroke({
-                        color: CONFIG.appearance.trackColorSwim,
+                        color: CONFIG.appearance.trackColorRun,
                         width: ww
                     })
                 })
             );
-            STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
+            STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
 
-            STYLES._genDistanceKm(ww, resolution, coords, track.distances, j-1, track.distances.length, styles);
+            STYLES._genDistanceKm(ww, resolution, coords, track.distances, j, track.distances.length, styles);
         }
 
         // CHECKPOINTS --------------------------
@@ -368,41 +369,40 @@ window.STYLES=
 							  coords, distances, startDistIndex, endDistIndex,
 							  styles) {
         // TODO Rumen - still not ready
-		if (true) {return;}
+        //if (true) {return;}
 
         var hotspotsKm = [20, 40, 60, 80, 100, 120, 140, 160, 180];
 
-        var res=0.0;
+        function addHotSpotKM(km, point) {
+            //var dx = end[0] - start[0];
+            //var dy = end[1] - start[1];
+            //var rotation = Math.atan2(dy, dx);
+            styles.push(new ol.style.Style({
+                //geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
+                geometry: new ol.geom.Point([point[0], point[1]]),
+                image: new ol.style.Icon({
+                    src: "img/" + km + "km.svg",
+                    scale: 1.5,
+                    rotateWithView: true,
+                    //rotation: -rotation + Math.PI/2, // add 180 degrees
+                    opacity : 1
+                })
+            }));
+        }
+
         for (var i = startDistIndex; i < endDistIndex; i++) {
             if (!hotspotsKm.length) {
 				return;
 			}
 
 			var dist = distances[i];
-			res += dist;
 
-			if (res >= hotspotsKm[0]*1000) {
-				function addHotSpotKM(km) {
-					//var dx = end[0] - start[0];
-					//var dy = end[1] - start[1];
-					//var rotation = Math.atan2(dy, dx);
-					styles.push(new ol.style.Style({
-						//geometry: new ol.geom.Point([(start[0]+end[0])/2,(start[1]+end[1])/2]),
-						geometry: new ol.geom.Point([coords[startDistIndex], coords[startDistIndex+1]]),
-						image: new ol.style.Icon({
-							src: "img/" + km + "km.svg",
-							rotateWithView: true,
-							//rotation: -rotation + Math.PI/2, // add 180 degrees
-							opacity : 1
-						})
-					}));
-				}
-
+			if (dist >= hotspotsKm[0]*1000) {
 				// draw the first hotspot and any next if it's contained in the same "distance"
 				var removeHotspotKm = 0;
 				for (var k = 0, lenHotspotsKm = hotspotsKm.length; k < lenHotspotsKm; k++) {
-					if (res >= hotspotsKm[k]*1000) {
-						addHotSpotKM(hotspotsKm[k]);
+					if (dist >= hotspotsKm[k]*1000) {
+						addHotSpotKM(hotspotsKm[k], coords[i]);
 						removeHotspotKm++;
 					} else {
 						break;

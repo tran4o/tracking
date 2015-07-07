@@ -9,7 +9,13 @@ Class("HotSpot", {
 
     has : {
         type : {
-            is : "rw",
+            is : "ro",
+            required : true,
+            init : null
+        },
+
+        liveStream : {
+            is : "ro",
             init : null
         }
     },
@@ -18,6 +24,21 @@ Class("HotSpot", {
         init : function() {
             this.feature.hotspot=this;
             GUI.hotspotsLayer.getSource().addFeature(this.feature);
+        }
+    },
+
+    methods : {
+        onClick : function() {
+            // for now only hotspots with attached live-stream can be clicked
+            var isConsumed = false;
+
+            if (this.liveStream) {
+                GUI.showLiveStream(this.liveStream);
+                // well this event should be consumed and not handled any more (like when clicked on another feature
+                isConsumed = true;
+            }
+
+            return isConsumed
         }
     }
 });
