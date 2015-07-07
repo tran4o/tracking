@@ -3,12 +3,14 @@ Class("GUI",
     //--------------------------------------
 	// ALL COORDINATES ARE IN WORLD MERCATOR
     //--------------------------------------
-    has: 
-	{
+    has : {
     	isDebug : {
-    		is : "rw",
     		init : !MOBILE
     	},
+		isDebugShowPosition : {
+			// if set to true it will add an absolute element showing the coordinates above the mouse location
+			init : false
+		},
 		receiverOnMapClick : {
 			is : "rw",
 			init : []
@@ -102,10 +104,8 @@ Class("GUI",
         }
     },
     //--------------------------------------
-	methods: 
-	{
-        init: function (params)  
-		{
+	methods : {
+        init: function (params) {
 			var defPos = [0,0];
 			if (this.initialPos) 
 				defPos=this.initialPos;
@@ -233,6 +233,17 @@ Class("GUI",
 
             // pass the id of the DOM element
             this.liveStream = new LiveStream({id : "liveStream"});
+
+			// if this is ON then it will show the coordinates position under the mouse location
+			if (this.isDebugShowPosition) {
+				$("#map").append('<p id="debugShowPosition">EPSG:3857 <span id="mouse3857"></span> &nbsp; EPSG:4326 <span id="mouse4326"></span>');
+				this.map.on('pointermove', function(event) {
+					var coord3857 = event.coordinate;
+					var coord4326 = ol.proj.transform(coord3857, 'EPSG:3857', 'EPSG:4326');
+					$('#mouse3857').text(ol.coordinate.toStringXY(coord3857, 2));
+					$('#mouse4326').text(ol.coordinate.toStringXY(coord4326, 15));
+				});
+			}
         },
 
         addTrackFeature : function() {

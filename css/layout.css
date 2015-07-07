@@ -587,3 +587,13 @@ table.dataTable td {
 .liveStreamThumb.valid {
 	cursor: pointer;
 }
+
+#debugShowPosition {
+	position: absolute;
+	top: 0;
+	z-index: 9999999;
+}
+
+#debugShowPosition span {
+	background-color: #d9d902;
+}
