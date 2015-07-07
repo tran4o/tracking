@@ -64,9 +64,9 @@ var HOTSPOTS = [
 ];
 
 var LIVE_STREAMS = [
-    {id : 0, url : "Stream 1"},
-    {id : 1, url : "Stream 2"},
-    {id : 2, url : "Stream 3"},
+    {id : 0, url : "http://livestream.com/accounts/7166631/events/4179568/player", name : "Stadionaufbau und Finishline"},
+    {id : 1, url : "http://livestream.com/accounts/14163713/events/4179542/player", name : "Programm Englisch"},
+    {id : 2, url : "http://livestream.com/accounts/14153542/events/4167686/player", name : "Programm deutsch"},
     {id : 3, url : "Stream 4"},
     {id : 4, url : "Stream 5"}
 ];

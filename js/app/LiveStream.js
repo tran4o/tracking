@@ -82,15 +82,24 @@ Class("LiveStream", {
 
             // if shown hide otherwise show
             if (this._isShown)
-                this._$comp.slideUp();
+                this._hide();
             else
-                this._$comp.slideDown();
-            this._isShown = !this._isShown;
+                this.show();
 
             return this._isShown;
         },
 
         /* Private Methods */
+
+        _hide : function() {
+            var self = this;
+            this._$comp.slideUp(undefined, function() {
+                // stop the stream when whole panel has completed animation
+                self._$comp.find(".liveStreamPlayer").empty();
+            });
+
+            this._isShown = false;
+        },
 
         _showStream : function($thumb) {
             // toggle the "inactive" class
@@ -99,14 +108,13 @@ Class("LiveStream", {
 
             // show the new stream
             var url = $thumb.data("url");
-            // todo - use the url, not the static stream
-            this._$comp.find(".liveStreamPlayer").
-                html("<div id='wowza_player'></div> <script src='//player.cloud.wowza.com/hosted/0eb4cc/wowza.js' type='text/javascript'></script>");
+            var $player = this._$comp.find(".liveStreamPlayer");
+            $player.html('<iframe src=' + url + '?width=640&height=360&autoPlay=true&mute=false" width="490" height="300" frameborder="0" scrolling="no"> </iframe>');
 
             // show if not already shown
             if (!this._isShown)
                 this._$comp.slideDown();
-            this._isShown =!this._isShown;
+            this._isShown = true;
         }
     }
 });
