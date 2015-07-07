@@ -48,25 +48,25 @@ var HOTSPOTS = [
     {point : [11.151354,49.193451], type : CONFIG.hotspot.cam, liveStream : 2},
     {point : [11.131351,49.123441], type : CONFIG.hotspot.cam, liveStream : 3},
 
-    {point : [11.121314,49.299455], type : CONFIG.hotspot.uturn},
-    {point : [11.130588,49.297392], type : CONFIG.hotspot.uturn},
-    {point : [11.158507,49.229815], type : CONFIG.hotspot.uturn},
+    {point : [11.120872,49.298692], type : CONFIG.hotspot.uturn},
+    {point : [11.133390,49.296722], type : CONFIG.hotspot.uturn},
+    {point : [11.158594,49.229853], type : CONFIG.hotspot.uturn},
 
     {point : [11.207819,49.185422], type : CONFIG.hotspot.water},
     {point : [11.219776,49.200865], type : CONFIG.hotspot.water},
     {point : [11.351932,49.050410], type : CONFIG.hotspot.water},
-    {point : [11.146861,49.130036], type : CONFIG.hotspot.water},
-    {point : [11.136999,49.210494], type : CONFIG.hotspot.water},
+    {point : [11.147325,49.130010], type : CONFIG.hotspot.water},
+    {point : [11.136763,49.210620], type : CONFIG.hotspot.water},
     {point : [11.115220,49.242122], type : CONFIG.hotspot.water},
     {point : [11.146140,49.240861], type : CONFIG.hotspot.water},
-    {point : [11.124747,49.281597], type : CONFIG.hotspot.water},
+    {point : [11.124955,49.281695], type : CONFIG.hotspot.water},
     {point : [11.157815,49.228852], type : CONFIG.hotspot.water}
 ];
 
 var LIVE_STREAMS = [
     {id : 0, url : "http://livestream.com/accounts/7166631/events/4179568/player", name : "Stadionaufbau und Finishline"},
     {id : 1, url : "http://livestream.com/accounts/14163713/events/4179542/player", name : "Programm Englisch"},
-    {id : 2, url : "http://livestream.com/accounts/14153542/events/4167686/player", name : "Programm deutsch"},
+    {id : 2, url : "http://livestream.com/accounts/14153542/events/4167686/player", name : "Programm Deutsch"},
     {id : 3, url : "Stream 4"},
     {id : 4, url : "Stream 5"}
 ];
