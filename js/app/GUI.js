@@ -477,10 +477,10 @@ Class("GUI",
         },
 
         /**
-         * Hide the live-streaming container container
+         * Toggle the live-streaming container container
          */
-        hideLiveStream: function() {
-            this.liveStream.hide();
+        toggleLiveStream: function() {
+            this.liveStream.toggle();
         }
 		
     }

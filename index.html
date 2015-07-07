@@ -673,14 +673,9 @@ $("#tabcont").find(".close").click(function() {
 });
 
 $("#button_livestream").click(function() {
-    var $this = $(this);
-    $this.toggleClass("inactive");
-    if ($this.hasClass("inactive")) {
-        GUI.showLiveStream();
-    } else {
-        GUI.hideLiveStream();
-
-    }
+    // toggle the LiveStream panel is get if finally it is shown or not
+    var isShown = GUI.toggleLiveStream();
+    $(this).toggleClass("inactive", !isShown);
 });
 
 </script>
