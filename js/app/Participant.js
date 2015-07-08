@@ -212,8 +212,10 @@ Class("Participant",
 					ok=true;
 					break;
 				}
-				if (sb.timestamp < ctime)
+				if (sb.timestamp < ctime) {
+					console.log("BREAK ON "+formatTimeSec(ctime)+" | "+(ctime-sb.timestamp)/1000.0);
 					break;
+				}
 			}
 			/*if (!ok)
 				console.log("Can not find avg for "+ctime);*/
