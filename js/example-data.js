@@ -45,8 +45,8 @@ var MOVING_CAMS = [
 var HOTSPOTS = [
     // for Cam HotSpots the 'liveStream' is the id of any registered live-stream in CONFIG.js
     // so that they could be connected
-    {point : [11.151354,49.193451], type : CONFIG.hotspot.cam, liveStream : 2},
-    {point : [11.131351,49.123441], type : CONFIG.hotspot.cam, liveStream : 3},
+    {point : [11.151354,49.193451], type : CONFIG.hotspot.cam, liveStream : 2, clickable : true},
+    {point : [11.131351,49.123441], type : CONFIG.hotspot.cam, liveStream : 3, clickable : true},
 
     {point : [11.120872,49.298692], type : CONFIG.hotspot.uturn},
     {point : [11.133390,49.296722], type : CONFIG.hotspot.uturn},

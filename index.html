@@ -582,7 +582,8 @@ function initGUI()
 
     // add all the static HotSpots
     for (var k=0;k<HOTSPOTS.length;k++)	{
-        var hotspot = new HotSpot({type : HOTSPOTS[k].type, liveStream : HOTSPOTS[k].liveStream});
+
+        var hotspot = new HotSpot(HOTSPOTS[k]);
         hotspot.init(HOTSPOTS[k].point);
     }
 }

@@ -224,17 +224,25 @@ Class("GUI",
                 }, this);
 
                 // todo - RUMEN - change mouse cursor when over specific features
-                //$(this.getViewport()).on('mousemove', function(e) {
-                //	var pixel = map.getEventPixel(e.originalEvent);
-                //	var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-                //		return true;
-                //	});
-                //	if (hit) {
-                //		map.getTarget().style.cursor = 'pointer';
-                //	} else {
-                //		map.getTarget().style.cursor = '';
-                //	}
-                //});
+                var self = this;
+                $(this.map.getViewport()).on('mousemove', function(e) {
+                    var pixel = self.map.getEventPixel(e.originalEvent);
+                    var isClickable = self.map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                        if (layer === self.participantsLayer || layer === self.camsLayer) {
+                            // all participants and moving cams are clickable
+                            return true;
+                        } else if (layer === self.hotspotsLayer) {
+                            // for the hotspots only those that are set to be clickable
+                            return feature.hotspot.isClickable();
+                        }
+                    });
+
+                    if (isClickable) {
+                        self.map.getViewport().style.cursor = 'pointer';
+                    } else {
+                        self.map.getViewport().style.cursor = '';
+                    }
+                });
 
                 // pass the id of the DOM element
                 this.liveStream = new LiveStream({id : this.liveStreamElementId});
