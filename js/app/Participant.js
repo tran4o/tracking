@@ -292,7 +292,9 @@ Class("Participant",
 						minf=el2;
 				}
 			}
-			if (bestm == null)
+			
+			// ?? OK SKIP DISCARD!!!
+			if (minf == null)
 				return;
 			
 			// minf = overall minimum of elapsed intersections
