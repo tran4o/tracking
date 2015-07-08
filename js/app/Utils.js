@@ -548,3 +548,4 @@ exports.distp=distp;
 exports.circleLineIntersect=circleLineIntersect;
 exports.MOBILE=mobileAndTabletCheck();
 exports.WGS84SPHERE=new WGS84Sphere(6378137);
+exports.formatTimeSec=formatTimeSec;
