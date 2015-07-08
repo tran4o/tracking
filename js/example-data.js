@@ -31,7 +31,7 @@ var PARTICIPANTS = [
     {"code" : "PART0009", "name" : "Leo Dor", "follow" : "0", "bib" : 8,"country" : "Canada","age" : 42,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 
     {"code" : "PART0010", "deviceId" : "353816058289168", "name" : "Jan Raphael",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0010", "deviceId" : "353816058289051", "name" : "Thomas Eckert",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+    {"code" : "PART0010", "deviceId" : "353816058977424", "name" : "Thomas Eckert",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
     {"code" : "PART0010", "deviceId" : "353816058289150", "name" : "Heidi",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
     {"code" : "PART0010", "deviceId" : "353816058288699", "name" : "Jürgen",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
     {"code" : "PART0010", "deviceId" : "353816058291727", "name" : "Test 1",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
