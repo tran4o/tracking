@@ -16,7 +16,7 @@ Class("LiveStream", {
     },
     methods: {
         initialize: function() {
-            var liveStreams = LIVE_STREAMS;
+            var liveStreams = window.LIVE_STREAMS;
             if (!liveStreams || liveStreams.length <= 0) {
                 console.warn("No live streams set");
                 return;

@@ -19,10 +19,12 @@ Class("GUI",
         liveStreamElementId : {
             init : "liveStream"
         },
-		initialPos : {	
+		initialPos : {
+            is : "rw",
 			init : null
 		},
-		initialZoom : {	
+		initialZoom : {
+            is : "rw",
 			init : 10
 		},
 		bingMapKey : {
