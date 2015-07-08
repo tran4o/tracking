@@ -1,4 +1,6 @@
-window.STYLES=
+var CONFIG = require('./Config');
+
+var STYLES=
 {
 	//------------------------------------------------
 	// style function for track
@@ -429,3 +431,6 @@ window.STYLES=
         }
     }
 };
+
+for (var i in STYLES)
+	exports[i]=STYLES[i];

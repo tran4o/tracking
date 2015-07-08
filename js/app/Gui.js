@@ -1,4 +1,9 @@
-Class("GUI", 
+var Utils=require('./Utils');
+var STYLES=require('./Styles');
+require('joose');
+require('./Track');
+
+Class("Gui", 
 {
     //--------------------------------------
 	// ALL COORDINATES ARE IN WORLD MERCATOR
@@ -7,7 +12,7 @@ Class("GUI",
 	{
     	isDebug : {
     		is : "rw",
-    		init : !MOBILE
+    		init : !Utils.mobileAndTabletCheck()
     	},
 		receiverOnMapClick : {
 			is : "rw",
@@ -200,7 +205,7 @@ Class("GUI",
 			}
 
             // pass the id of the DOM element
-            this.liveStream = new LiveStream({id : "liveStream"});
+            //this.liveStream = new LiveStream({id : "liveStream"});
         },
 		
         

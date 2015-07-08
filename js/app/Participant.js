@@ -1,3 +1,6 @@
+require('joose');
+var CONFIG = require('./Config');
+
 Class("ParticipantState",
 {
 	has : {

@@ -1,4 +1,6 @@
-window.CONFIG=
+var Utils = require("./Utils.js");
+
+var CONFIG = 
 {
 	times : {
 		// Date syntax is YYYY, MONTH, DAY, HOUR, MINUTES, ...
@@ -9,7 +11,7 @@ window.CONFIG=
 	timeouts : // in seconds
 	{
 		deviceTimeout : 60*5,
-		animationFrame : MOBILE ? 0.4 : 0.1,
+		animationFrame : Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
 		gpsLocationDebugShow : 4		// time to show gps location (debug) info
 	},
 	distances : // in m
@@ -92,3 +94,6 @@ window.CONFIG=
         uturn : {image : "img/uturn.svg"}
     }
 };
+
+for (var i in CONFIG)
+	exports[i]=CONFIG[i];

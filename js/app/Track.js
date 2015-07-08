@@ -1,3 +1,9 @@
+require('joose');
+
+var rbush = require('rbush');
+var CONFIG = require('./Config');
+var WGS84SPHERE = require('./Utils').WGS84SPHERE;
+
 Class("Track", 
 {	
     //--------------------------------------

@@ -1,0 +1,31 @@
+{
+  "name": "tracking",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node js/nodejs/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tran4o/tracking.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tran4o/tracking/issues"
+  },
+  "homepage": "https://github.com/tran4o/tracking#readme",
+  "dependencies": {
+    "express": "^4.13.0",
+    "joose": "^3.50.0",
+    "browserify": "^10.2.4",
+	"rbush" : "^1.4.0"
+  },
+  "devDependencies": {
+  },
+  "description": ""
+}
