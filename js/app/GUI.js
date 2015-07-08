@@ -223,7 +223,6 @@ Class("GUI",
                     }
                 }, this);
 
-                // todo - RUMEN - change mouse cursor when over specific features
                 var self = this;
                 $(this.map.getViewport()).on('mousemove', function(e) {
                     var pixel = self.map.getEventPixel(e.originalEvent);
