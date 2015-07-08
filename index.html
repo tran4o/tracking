@@ -19,26 +19,30 @@
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-	<!--<script type="text/javascript" language="javascript" src="js/dataTables.editor.min.js"></script>-->
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"> </script>
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/rgbcolor.js"></script> 
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/StackBlur.js"></script>
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/canvg.js"></script>
+
 	<!-- https://github.com/stevenrskelton/flag-icon  -->
 	<!--<script src="js/bower_components/webcomponentsjs/webcomponents.min.js"></script>-->
 	<!--<link rel="import" href="js/bower_components/flag-icon/flag-icon.html"/>-->
 
     <script src="js/ol3/ol.js" type="text/javascript"></script>
     <script src="js/ol3/ol3-popup.js" type="text/javascript"></script>
-    <script src="js/joose-all.js" type="text/javascript"></script>
+    <script src="js/joose.min.js" type="text/javascript"></script>
+    <script src="js/rbush.js" type="text/javascript"></script>
     <script src="js/app/Utils.js" type="text/javascript"></script>
-    <script src="js/app/Styles.js" type="text/javascript"></script>
-    <script src="js/app/Config.js" type="text/javascript"></script>
-    <script src="js/app/GUI.js" type="text/javascript"></script>
-    <script src="js/app/Track.js" type="text/javascript"></script>
-    <script src="js/app/Participant.js" type="text/javascript"></script>
-    <script src="js/app/Simulator.js" type="text/javascript"></script>
-    <script src="js/app/LiveStream.js" type="text/javascript"></script>
+	<script src="js/app/Styles.js" type="text/javascript"></script>
+	<script src="js/app/Config.js" type="text/javascript"></script>
+	<script src="js/app/GUI.js" type="text/javascript"></script>
+	<script src="js/app/LiveStream.js" type="text/javascript"></script>
+	<script src="js/app/Track.js" type="text/javascript"></script>
+	<script src="js/app/Point.js" type="text/javascript"></script>
+	<script src="js/app/HotSpot.js" type="text/javascript"></script>
+	<script src="js/app/Participant.js" type="text/javascript"></script>
+	<script src="js/app/MovingCam.js" type="text/javascript"></script>
+	<script src="js/app/Simulator.js" type="text/javascript"></script>
 
 	<!-- EXAMPLE data -->
 	<script src="js/example-data.js" type="text/javascript"></script>	
@@ -247,7 +251,7 @@
 		<div class="col-sm-12 c2 h100 " id='map'>
 			<div class="content">
 			</div>
-			<div id="header"><div class='menuitem'>start</div><div class='menuitem'>live</div><div class='menuitem last'>news</div>
+			<div id="header"></div>
 			</div>
 			<div id="toolbar_map">
 			</div>
@@ -284,12 +288,12 @@
 						   <div class="liveStreamThumb"></div>
 						   <div class="liveStreamThumb"></div>
 					   </div>
-					   <!--<div>-->
-						   <!--<div class="liveStreamThumb"></div>-->
-						   <!--<div class="liveStreamThumb"></div>-->
-						   <!--<div class="liveStreamThumb"></div>-->
-						   <!--<div class="liveStreamThumb"></div>-->
-					   <!--</div>-->
+					   <div>
+						   <div class="liveStreamThumb"></div>
+						   <div class="liveStreamThumb"></div>
+						   <div class="liveStreamThumb"></div>
+						   <div class="liveStreamThumb"></div>
+					   </div>
 				   </div>
 			</div>
 		</div>
@@ -556,21 +560,33 @@ function initGUI()
 	GUI.init({skipExtent:true});
 	var scoef = 6*5*5*3; //5*4;//*3;//*3;//4.729;
 	var images=["img/timo_bracht.png","img/matty_ried.png","img/felipe_bastos.png"];
-	for (var i=0;i<FAVORITES.length;i++) 
+	var sim = new Simulator();
+	for (var i=0;i<FAVORITES.length;i++)
 	{
-		var p1 = TRACK.newParticipant(FAVORITES[i].id,FAVORITES[i].code,FAVORITES[i].name);
+		var p1 = TRACK.newParticipant(FAVORITES[i].id,FAVORITES[i].deviceId,FAVORITES[i].name);
 		p1.setIcon(images[i]);
 		p1.setImage(images[i]);
 		p1.setColor(rainbow(FAVORITES.length,i));
 		p1.setAge(FAVORITES[i].age);
 		p1.setCountry(FAVORITES[i].country);
 		//---------------------------------------------------------------
-		var sim1 = new Simulator();
-		sim1.simulateParticipantSimple(p1,30*scoef*(1+i/7.0));
+		sim.simulateParticipantSimple(p1,30*scoef*(1+i/7.0));
 		PARTS.push(p1);
-		if (i == 4-1)
-			break;
 	}
+
+    // add all the moving cameras
+	/*for (var j=0;j<MOVING_CAMS.length;j++)	{
+		var movingCam = TRACK.newMovingCam(MOVING_CAMS[j].id,MOVING_CAMS[j].deviceId,MOVING_CAMS[j].name);
+		//---------------------------------------------------------------
+		sim.simulateParticipantSimple(movingCam,30*scoef*(1+(j+i)/7.0));
+	}
+
+    // add all the static HotSpots
+    for (var k=0;k<HOTSPOTS.length;k++)	{
+
+        var hotspot = new HotSpot(HOTSPOTS[k]);
+        hotspot.init(HOTSPOTS[k].point);
+    }*/
 }
 //--------------------------------------------------------------------------
 $(document).ready( function () 
@@ -659,14 +675,9 @@ $("#tabcont").find(".close").click(function() {
 });
 
 $("#button_livestream").click(function() {
-    var $this = $(this);
-    $this.toggleClass("inactive");
-    if ($this.hasClass("inactive")) {
-        GUI.showLiveStream();
-    } else {
-        GUI.hideLiveStream();
-
-    }
+    // toggle the LiveStream panel is get if finally it is shown or not
+    var isShown = GUI.toggleLiveStream();
+    //$(this).toggleClass("inactive", !isShown);
 });
 
 </script>

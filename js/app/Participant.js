@@ -157,7 +157,9 @@ Class("Participant",
 		{
 			if (!this.states.length)
 				return;
-			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/) 
+			var ctime=(new Date()).getTime();
+			var isTime = (ctime >= CONFIG.times.begin && ctime <= CONFIG.times.end);
+			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/ || !isTime) 
 			{
 				var lstate=this.states[this.states.length-1];
 				var pos = lstate.gps;
@@ -173,7 +175,6 @@ Class("Participant",
 				}
 				return;
 			}
-			var ctime=(new Date()).getTime();
 			this.setLastInterpolateTimestamp(ctime);
 			// No enough data?
 			if (this.states.length < 2)
@@ -196,6 +197,7 @@ Class("Participant",
 		calculateElapsedAverage : function(ctime) {
 			var res=null;
 			ctime-=CONFIG.math.displayDelay*1000;
+			var ok = false;
 			for (var i=this.states.length-2;i>=0;i--) 
 			{
 				var j = i+1;
@@ -204,11 +206,14 @@ Class("Participant",
 				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
 				{ 
 					res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
+					ok=true;
 					break;
 				}
 				if (sb.timestamp < ctime)
 					break;
 			}
+			/*if (!ok)
+				console.log("Can not find avg for "+ctime);*/
 			return res;
 		},
 		
@@ -230,7 +235,6 @@ Class("Participant",
 
 		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
 		{
-			
 			if (!ctime)
 				ctime=(new Date()).getTime();
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
@@ -244,46 +248,58 @@ Class("Participant",
 			var tracklen1 = TRACK.getTrackLengthInWGS84();
 			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
 			var lstate = this.states.length ? this.states[this.states.length-1] : null;
+			if (pos[0] == 0 && pos[1] == 0) {
+				if (!lstate) return;
+				pos=lstate.gps;
+			}
 			//----------------------------------------------------------
 			var best;
 			var bestm=null;
-			var lelp = lstate ? lstate.getElapsed() : 0;
-			//----------------------------------------------------------
+			var lelp = lstate ? lstate.getElapsed() : 0;	// last elapsed
 			var tg = TRACK.route;
 			//----------------------------------------------------------
-			/*var i;
-			var ok=false;
-			for (var i=0;i<tg.length-1;i++) if (lelp >= TRACK.distancesElapsed[i] && lelp <= TRACK.distancesElapsed[i+1]) {
-				ok=true;
-				break;
-			}
-			console.log("START WITH "+i+" | "+lelp);
+			// NEW ALG
 			var coef = TRACK.getTrackLengthInWGS84()/TRACK.getTrackLength();
-			if (ok)
-			for (;i<tg.length-1;i++) 
+			var minf = null;
+			var rr = CONFIG.math.gpsInaccuracy*coef;
+			
+			
+			var result = TRACK.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
+			if (!result)
+				result=[];
+			//console.log("FOUND "+result.length);
+			for (var _i=0;_i<result.length;_i++)
 			{
-				var seg=[tg[i],tg[i+1]];
-				var res = interceptOnCircle(tg[i],tg[i+1],pos,CONFIG.math.gpsInaccuracy*coef);
+				var i = result[_i][4].index;
+				var res = interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
-					var p1 = TRACK.getElapsedFromPoint(res[0]);
-					var p2 = TRACK.getElapsedFromPoint(res[1]);
-					if (p2 < p1) {
-						res[0]=res[1];
-						p1=p2;
-					}
-					if (p1 < lelp)
-						continue;
-					if (bestm == null || bestm > p1) 
-					{
-						bestm=p1;
-						best=p1;
-					}
-				}	
-			}*/
-			bestm = _ELAPSED;
+					// has intersection (2 points)
+					var d1 = distp(res[0],tg[i]);
+					var d2 = distp(res[1],tg[i]);
+					var d3 = distp(tg[i],tg[i+1]);
+					var el1 = TRACK.distancesElapsed[i]+(TRACK.distancesElapsed[i+1]-TRACK.distancesElapsed[i])*d1/d3;
+					var el2 = TRACK.distancesElapsed[i]+(TRACK.distancesElapsed[i+1]-TRACK.distancesElapsed[i])*d2/d3;
+					//console.log("Intersection candidate at "+i+" | "+el1+" | "+el2);
+					if (el1 < lelp)
+						el1=lelp;
+					if (el2 < lelp)
+						el2=lelp;
+					//-------------------------------------------------------------------------------------------------
+					if (minf == null || el1 < minf)
+						minf=el1;
+					if (el2 < minf)
+						minf=el2;
+				}
+			}
+			if (bestm == null)
+				return;
 			
+			// minf = overall minimum of elapsed intersections
+			if (minf != null) 
+				bestm=minf;   
 			//-----------------------------------------------------------
+			//bestm = _ELAPSED; //(TEST HACK ONLY)
 			if (bestm != null) 
 			{
 				var nel = bestm; //TRACK.getElapsedFromPoint(best);

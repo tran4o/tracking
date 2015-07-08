@@ -12,7 +12,7 @@
 
 BODY 
 {
-	font-family: 'Lato-Regular', Fallback, "Arial", "Lucida Grande", Tahoma", Verdana";
+	font-family: Lato-Regular, Fallback, Arial, "Lucida Grande", Tahoma, Verdana, sans-serif;
     font-size: 13px;
 	background-color : white;
 }
@@ -42,7 +42,7 @@ BODY
 	height : 22px;
 	position : absolute;
 	left : 0;
-	top : -1;
+	top : -1px;
 	margin-left : -11px;
 }
 
@@ -195,18 +195,18 @@ BODY
 	left:50%;
 	height : 80px;
 	line-height : 60px;
-	width:650px;
-	margin-left : -325px;
+	width:500px;
+	margin-left : -250px;
   	background-color: white;
   	padding-right: 10px;	
   	padding-top: 10px;	
   	padding-bottom: 10px;
-  	padding-left: 360px;	
+  	padding-left: 330px;
   	border-left : 3px solid black;
   	border-right : 3px solid black;
  	border-bottom : 3px solid black;
  	font-family : HarabaraMaisBold;
- 	font-size : 22px;
+ 	font-size : 18px;
 	background-image: url('../img/roth.jpg');
     background-repeat: no-repeat;
     background-position: left center;  	
@@ -214,7 +214,7 @@ BODY
 
 #header .menuitem {
 	float : left;
-	margin-right : 3em;
+	margin-right : 1em;
 	cursor : pointer;
 }
 
@@ -232,8 +232,8 @@ BODY
 	bottom:0;
 	left:50%;
 	height : 104px;
-	margin-left : -325px;
-	width:650px;
+	margin-left : -250px;
+	width:500px;
   	background-color: rgba(0,0,0,.6);
   	border-radius: 40px;
   	padding: 2px;	
@@ -241,7 +241,7 @@ BODY
   	border-left : 3px solid white;
   	border-right : 3px solid white;
   	margin-bottom : -64px;
-}	
+}
 
 #liverank-logo {
 	z-index : 9999999;
@@ -249,7 +249,7 @@ BODY
 	bottom:3px;
 	left:50%;
 	width:268px;
-	height:77px;
+	height:50px;
 	margin-left:-134px;
 }
 
@@ -258,69 +258,68 @@ BODY
 #button_favorites,
 #button_participants,
 #toolbar_track {
-    position : absolute;    
+    position : absolute;
+	left : 50%;
 	z-index : 9999999;
-	bottom : 94px;
+	bottom : 64px;
 	background-color: rgba(0,0,0,.6);
-  	border-radius: 45px;
+  	border-radius: 35px;
   	border : 3px solid white;
-  	width : 90px;	
-  	height : 90px;	
+  	width : 70px;
+  	height : 70px;
 }	
 #button_livestream img,
 #button_rank img,
 #button_favorites img,
 #button_participants img {
-	width : 70px;
-	height : 70px;
+	width : 50px;
+	height : 50px;
 	padding-left : 14px;
 	padding-top : 14px;
+	cursor: pointer;
 }
 
 #button_participants {
-	left : 50%;
-	margin-left : -325px;
+	margin-left : -250px;
 }
 
 #button_favorites {
-	left : 50%;
-	margin-left : -225px;
+	margin-left : -175px;
 }
 
 #button_rank {
-	left : 50%;
-	margin-left : -125px;
+	margin-left : -95px;
 }
 
 #button_livestream {
-	left : 50%;
-	margin-left : -25px;
-}
-#button_livestream.inactive {
-	opacity: 1;
+	margin-left : -15px;
 }
 
 #toolbar_track {
-	left : 50%;
-	margin-left : 100px;
-	width : 225px;
+	margin-left : 64px;
+	width : 185px;
+	padding-top: 7px;
+	padding-left: 9px;
 }
 
 #button_run,#button_bike,#button_swim {
-    position : absolute;    
+    /*position : absolute;*/
+	display: inline-block;
+	z-index : 9999999;
 	background-color: rgba(0,0,0,.6);
-  	border-radius: 32px;
+  	border-radius: 25px;
   	border : 3px solid white;
-  	width : 64px;	
-  	height : 64px;
+  	width : 50px;
+  	height : 50px;
   	left : 8px;	
-  	top : 10px;	
+  	top : 10px;
 }
 #button_run img ,#button_bike img ,#button_swim img {
-	width : 48px;
-	height : 48px;
-	padding-top : 6px;
-	padding-left : 6px;
+	width : 38px;
+	height : 38px;
+	padding-top : 5px;
+	padding-left : 5px;
+	cursor: pointer;
 }
 
 #button_bike {
@@ -549,8 +548,8 @@ table.dataTable td {
     position: absolute;
     top: 0;
     left: 50%;
-    margin-left: -325px;
-    width: 650px;
+    margin-left: -250px;
+    width: 500px;
     z-index: 999999;
 
 	background: white;
@@ -559,7 +558,7 @@ table.dataTable td {
 	border-top: none;
 	padding: 0 2px;
 
-    height: 350px;   /* 269 (the third-party player) + 1 row of thumbs + some bottom padding */
+    height: 450px;   /* 269 (the third-party player) + 2 row of thumbs + some bottom padding */
 }
 
 .liveStreamPlayer {
@@ -578,13 +577,23 @@ table.dataTable td {
 
 .liveStreamThumb {
 	display: inline-block;
-	background-color: red;
-	width: 100px;
-	height: 40px;
+	background-color: darkslategrey;
+	width: 120px;
+	height: 50px;
 }
-.liveStreamThumb.inactve {
+.liveStreamThumb.inactive {
 
 }
 .liveStreamThumb.valid {
 	cursor: pointer;
+}
+
+#debugShowPosition {
+	position: absolute;
+	top: 0;
+	z-index: 9999999;
+}
+
+#debugShowPosition span {
+	background-color: #d9d902;
 }

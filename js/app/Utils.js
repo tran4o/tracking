@@ -122,7 +122,7 @@ function closestProjectionOfPointOnLine(x,y,x1,y1,x2,y2)
 	denominator = Math.pow(Math.sqrt(Math.pow(p2[0]-p1[0],2) + Math.pow(p2[1]-p1[1],2)),2 );
 	nominator   = (p3[0] - p1[0]) * (p2[0] - p1[0]) + (p3[1] - p1[1]) * (p2[1] - p1[1]);
 	if(denominator==0)
-	{   status = "coincidental"
+	{   status = "coincidental";
 		u = -999;
 	}
 	else
@@ -227,6 +227,22 @@ function formatTime(d) {
     return hh+":"+mm;
 }
 
+function formatTimeSec(d) {
+    var hh = d.getHours();
+    if(hh<10){
+    	hh='0'+hh
+    } 
+    var mm = d.getMinutes();
+    if(mm<10){
+        mm='0'+mm
+    } 
+    var ss = d.getSeconds();
+    if(ss<10){
+        ss='0'+ss
+    } 
+    return hh+":"+mm+":"+ss;
+}
+
 function rainbow(numOfSteps, step) {
     // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
     // Adam Cole, 2011-Sept-14
@@ -260,15 +276,15 @@ function renderArrowBase64(width,height,color)
 	var key = width+"x"+height+":"+color;
 	if (RENDEREDARROWS[key])
 		return RENDEREDARROWS[key];
-	var brdcol = "#fefefe"; //increaseBrightness(color,99);
-	
+
 	var svg='<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="'+width+'pt" height="'+height+'pt" '	
 	+'viewBox="137.834 -82.833 114 91.333" enable-background="new 137.834 -82.833 114 91.333" xml:space="preserve">'
 	+'<path fill="none" d="M-51-2.167h48v48h-48V-2.167z"/>'
 	+'<circle display="none" fill="#605CC9" cx="51.286" cy="-35.286" r="88.786"/>'
 	+'<path fill="#605CC9" stroke="#FFFFFF" stroke-width="4" stroke-miterlimit="10" d="M239.5-36.8l-92.558-35.69 c5.216,11.304,8.13,23.887,8.13,37.153c0,12.17-2.451,23.767-6.883,34.327L239.5-36.8z"/>'
-	+'</svg>'
-	var svg=svg.split("#605CC9").join(color);
+	+'</svg>';
+
+    svg=svg.split("#605CC9").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -284,14 +300,12 @@ function renderDirectionBase64(width,height,color)
 		return RENDEREDDIRECTIONS[key];
 
 	var svg='<svg width="'+width+'pt" height="'+height+'pt" '
-
 		+'viewBox="15 9 19.75 29.5" enable-background="new 15 9 19.75 29.5" xml:space="preserve">'
 		+'<path fill="#FFFEFF" d="M17.17,32.92l9.17-9.17l-9.17-9.17L20,11.75l12,12l-12,12L17.17,32.92z"/>'
 		+'<path fill="none" d="M0-0.25h48v48H0V-0.25z"/>'
-
 	+'</svg>';
 
-	var svg=svg.split("#000000").join(color);
+	svg=svg.split("#000000").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -299,12 +313,12 @@ function renderDirectionBase64(width,height,color)
     return RENDEREDDIRECTIONS[key]=canvas.toDataURL();
 }
 
-var RENDEREBOXES={};
+var RENDEREDBOXES={};
 function renderBoxBase64(width,height,color) 
 {
 	var key = width+"x"+height+":"+color;
-	if (RENDEREBOXES[key])
-		return RENDEREBOXES[key];
+	if (RENDEREDBOXES[key])
+		return RENDEREDBOXES[key];
 
 	var svg='<svg width="'+width+'pt" height="'+height+'pt" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">'
 	+'<g id="#ffffffff">'
@@ -315,81 +329,76 @@ function renderBoxBase64(width,height,color)
 	+'</g>'
 	+'</svg>';
 
-	var svg=svg.split("#000000").join(color);
+	svg=svg.split("#000000").join(color);
 	var canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     canvg(canvas, svg,{ ignoreMouse: true, ignoreAnimation: true });
-    return RENDEREBOXES[key]=canvas.toDataURL();
+    return RENDEREDBOXES[key]=canvas.toDataURL();
 }
 
 function interceptOnCircle(a,b,c,r) {
-	return _getIntersections(a,b,[c[0],c[1],r]);
-	
+    return circleLineIntersect(a[0],a[1],b[0],b[1],c[0],c[1],r);
 }
-function _getIntersections(a, b, c) {
-	// Calculate the euclidean distance between a & b
-	var eDistAtoB = Math.sqrt( Math.pow(b[0]-a[0], 2) + Math.pow(b[1]-a[1], 2) );
-
-	// compute the direction vector d from a to b
-	var d = [ (b[0]-a[0])/eDistAtoB, (b[1]-a[1])/eDistAtoB ];
-
-	// Now the line equation is x = dx*t + ax, y = dy*t + ay with 0 <= t <= 1.
-
-	// compute the value t of the closest point to the circle center (cx, cy)
-	var t = (d[0] * (c[0]-a[0])) + (d[1] * (c[1]-a[1]));
-
-	// compute the coordinates of the point e on line and closest to c
-    var e = {coords:[], onLine:false};
-	e.coords[0] = (t * d[0]) + a[0];
-	e.coords[1] = (t * d[1]) + a[1];
-
-	// Calculate the euclidean distance between c & e
-	eDistCtoE = Math.sqrt( Math.pow(e.coords[0]-c[0], 2) + Math.pow(e.coords[1]-c[1], 2) );
-
-	// test if the line intersects the circle
-	if( eDistCtoE < c[2] ) {
-		// compute distance from t to circle intersection point
-	    dt = Math.sqrt( Math.pow(c[2], 2) - Math.pow(eDistCtoE, 2));
-
-	    // compute first intersection point
-	    var f = {coords:[], onLine:false};
-	    f.coords[0] = ((t-dt) * d[0]) + a[0];
-	    f.coords[1] = ((t-dt) * d[1]) + a[1];
-	    // check if f lies on the line
-	    f.onLine = is_on(a,b,f.coords);
-
-	    // compute second intersection point
-	    var g = {coords:[], onLine:false};
-	    g.coords[0] = ((t+dt) * d[0]) + a[0];
-	    g.coords[1] = ((t+dt) * d[1]) + a[1];
-	    // check if g lies on the line
-	    g.onLine = is_on(a,b,g.coords);
-		return [f.coords, g.coords];
-	} else if (parseInt(eDistCtoE) === parseInt(c[2])) {
-		return false;
-	} else {
-		// console.log("No intersection");
-		return false;
-	}
+function distp(p1,p2) {
+    return Math.sqrt((p2[0]-p1[0])*(p2[0]-p1[0])+(p2[1]-p1[1])*(p2[1]-p1[1]));
 }
 
-// BASIC GEOMETRIC functions
-function distance(a,b) {
-	return Math.sqrt( Math.pow(a[0]-b[0], 2) + Math.pow(a[1]-b[1], 2) )
-}
-function is_on(a, b, c) {
-	return distance(a,c) + distance(c,b) == distance(a,b);
+function circleLineIntersect(x1, y1, x2, y2, cx, cy, cr )
+{
+    function dist(x1,y1,x2,y2) {
+        return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+    }
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    var a = dx * dx + dy * dy;
+    var b = 2 * (dx * (x1 - cx) + dy * (y1 - cy));
+    var c = cx * cx + cy * cy;
+    c += x1 * x1 + y1 * y1;
+    c -= 2 * (cx * x1 + cy * y1);
+    c -= cr * cr;
+    var bb4ac = b * b - 4 * a * c;
+    if (bb4ac < 0) {  // Not intersecting
+        return false;
+    } else {
+        var mu = (-b + Math.sqrt( b*b - 4*a*c )) / (2*a);
+        var ix1 = x1 + mu*(dx);
+        var iy1 = y1 + mu*(dy);
+        mu = (-b - Math.sqrt(b*b - 4*a*c )) / (2*a);
+        var ix2 = x1 + mu*(dx);
+        var iy2 = y1 + mu*(dy);
+
+        // The intersection points
+        //ellipse(ix1, iy1, 10, 10);
+        //ellipse(ix2, iy2, 10, 10);
+
+        var testX;
+        var testY;
+        // Figure out which point is closer to the circle
+        if (dist(x1, y1, cx, cy) < dist(x2, y2, cx, cy)) {
+            testX = x2;
+            testY = y2;
+        } else {
+            testX = x1;
+            testY = y1;
+        }
+
+        if (dist(testX, testY, ix1, iy1) < dist(x1, y1, x2, y2) || dist(testX, testY, ix2, iy2) < dist(x1, y1, x2, y2)) {
+            return [ [ix1,iy1],[ix2,iy2] ];
+        } else {
+            return false;
+        }
+    }
 }
 
 function getAngles(a, b, c) {
-	// calculate the angle between ab and ac
-	angleAB = Math.atan2( b[1] - a[1], b[0] - a[0] );
-	angleAC = Math.atan2( c[1] - a[1], c[0] - a[0] );
-	angleBC = Math.atan2( b[1] - c[1], b[0] - c[0] );
-	angleA = Math.abs((angleAB - angleAC) * (180/Math.PI));
-	angleB = Math.abs((angleAB - angleBC) * (180/Math.PI));
-	return [angleA, angleB];
+    // calculate the angle between ab and ac
+    var angleAB = Math.atan2( b[1] - a[1], b[0] - a[0] );
+    var angleAC = Math.atan2( c[1] - a[1], c[0] - a[0] );
+    var angleBC = Math.atan2( b[1] - c[1], b[0] - c[0] );
+    var angleA = Math.abs((angleAB - angleAC) * (180/Math.PI));
+    var angleB = Math.abs((angleAB - angleBC) * (180/Math.PI));
+    return [angleA, angleB];
 }
 window.MOBILE=mobileAndTabletCheck();
 window.WGS84SPHERE = new ol.Sphere(6378137);
