@@ -1,5 +1,11 @@
 window.CONFIG=
 {
+	times : {
+		// Date syntax is YYYY, MONTH, DAY, HOUR, MINUTES, ...
+              // NOTE that the number of the month is the (real-1) , e.g. Januaty is 0, December is 11
+              begin : (new Date(2015, 6, 7, 19)).getTime()
+		,end : (new Date(2015, 6, 17, 19)).getTime()
+	},
 	timeouts : // in seconds
 	{
 		deviceTimeout : 60*5,
@@ -19,11 +25,11 @@ window.CONFIG=
 		popupEnsureVisibleHeight: 120
 	},
 	math : {
-		gpsInaccuracy : 40,
+		gpsInaccuracy : 15,
 		speedAndAccelerationAverageDegree : 4,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 30,	// display delay in SECONDS
+		displayDelay : 60,	// display delay in SECONDS
 		interpolateGPSAverage : 3, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
-        roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
+              roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
 	simulation : {
 		pingInterval : 10, // interval in seconds to ping with gps data
