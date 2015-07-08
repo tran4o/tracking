@@ -338,10 +338,10 @@ function formatDate(d) {
     var mm = d.getMonth()+1; //January is 0!
     var yyyy = d.getFullYear();
     if(dd<10){
-        dd='0'+dd
+        dd='0'+dd;
     } 
     if(mm<10){
-        mm='0'+mm
+        mm='0'+mm;
     } 
     return dd+'.'+mm+'.'+yyyy;
 }
@@ -349,13 +349,29 @@ function formatDate(d) {
 function formatTime(d) {
     var hh = d.getHours();
     if(hh<10){
-    	hh='0'+hh
+    	hh='0'+hh;
     } 
     var mm = d.getMinutes();
     if(mm<10){
-        mm='0'+mm
+        mm='0'+mm;
     } 
     return hh+":"+mm;
+}
+
+function formatTimeSec(d) {
+    var hh = d.getHours();
+    if(hh<10){
+    	hh='0'+hh;
+    } 
+    var mm = d.getMinutes();
+    if(mm<10){
+        mm='0'+mm;
+    } 
+    var ss = d.getSeconds();
+    if(ss<10){
+        ss='0'+ss;
+    } 
+    return hh+":"+mm+":"+ss;
 }
 
 function rainbow(numOfSteps, step) {
