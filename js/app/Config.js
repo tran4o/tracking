@@ -3,8 +3,8 @@ window.CONFIG=
 	times : {
 		// Date syntax is YYYY, MONTH, DAY, HOUR, MINUTES, ...
               // NOTE that the number of the month is the (real-1) , e.g. Januaty is 0, December is 11
-              begin : (new Date(2015, 6, 7, 19)).getTime()
-		,end : (new Date(2015, 6, 17, 19)).getTime()
+              begin : (new Date(2015, 6, 8, 18 , 15)).getTime()
+		,end : (new Date(2015, 6, 17, 18, 15)).getTime()
 	},
 	timeouts : // in seconds
 	{
