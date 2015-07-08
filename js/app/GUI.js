@@ -7,64 +7,50 @@ Class("GUI",
     	isDebug : {
     		init : !MOBILE
     	},
-		isDebugShowPosition : {
-			// if set to true it will add an absolute element showing the coordinates above the mouse location
-			init : false
-		},
-		receiverOnMapClick : {
-			is : "rw",
-			init : []
-		},
-        width : {
-            is:   "rw",
-            init: 750
-        },
-        height: {
-            is:   "rw",
-            init: 500
+        isWidgetMode : {
+            init: false
         },
 		track : {
 			is:   "rw"
 		},
-		elementId : {
-			is : "rw",
+		mapElementId : {
 			init : "map"
 		},
+        liveStreamElementId : {
+            init : "liveStream"
+        },
 		initialPos : {	
-			is : "rw",
 			init : null
 		},
 		initialZoom : {	
-			is : "rw",
 			init : 10
 		},
 		bingMapKey : {
-			is : "rw",
+			is : "ro",
 			init : 'Aijt3AsWOME3hPEE_HqRlUKdcBKqe8dGRZH_v-L3H_FF64svXMbkr1T6u_WASoet'
 		},
 		//-------------------
 		map : {
-			is : "rw",
 			init : null
 		},
 		trackLayer : {
-			is : "rw",
+			is : "ro",
 			init : null
 		},
         hotspotsLayer : {
-			is : "rw",
+			is : "ro",
 			init : null
 		},
         camsLayer : {
-			is : "rw",
+			is : "ro",
 			init : null
 		},
         participantsLayer : {
-			is : "rw",
+			is : "ro",
 			init : null
 		},
 		debugLayerGPS : {
-			is : "rw",
+			is : "ro",
 			init : null
 		},	
 		selectedParticipant1 : {
@@ -106,11 +92,19 @@ Class("GUI",
     //--------------------------------------
 	methods : {
         init: function (params) {
-			var defPos = [0,0];
-			if (this.initialPos) 
+            // create empty if not passed at all
+			params = params || {};
+
+            // when in widget mode disable debug entirely
+            if (this.isWidgetMode) {
+                this.isDebug = false;
+            }
+
+            var defPos = [0,0];
+			if (this.initialPos)
 				defPos=this.initialPos;
 			//---------------------------------------------
-			var extent = params && params.skipExtent ? null : TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
+			var extent = params.skipExtent ? null : TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
 			this.trackLayer = new ol.layer.Vector({
 			  source: new ol.source.Vector(),
 			  style : STYLES["track"]
@@ -127,19 +121,13 @@ Class("GUI",
 				source: new ol.source.Vector(),
 				style : STYLES["cam"]
 			});
-			if (this.isDebug)
-			this.debugLayerGPS = new ol.layer.Vector({
-				  source: new ol.source.Vector(),
-				  style : STYLES["debugGPS"]
-			});
 			//--------------------------------------------------------------
-			var ints = [];
 			this.popup1 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 			this.popup2 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 			this.popup2.setOffset([0,175]);
 			this.map = new ol.Map({
 			  renderer : "canvas",
-			  target: 'map',
+			  target: this.mapElementId,
 			  layers: [
 			           new ol.layer.Tile({
 			               source: new ol.source.OSM()
@@ -150,110 +138,113 @@ Class("GUI",
 				       this.participantsLayer
 
 			  ],
+              controls:  this.isWidgetMode ? [] : ol.control.defaults(),
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
-				zoom: this.getInitialZoom(),
-				//minZoom: 10,
-				//maxZoom: 17,
+				zoom: this.initialZoom,
+				minZoom: this.isWidgetMode ? this.initialZoom : 10,
+				maxZoom: this.isWidgetMode ? this.initialZoom : 17,
 				extent : extent ? extent : undefined
 			  })
 			});
 
-			for (var i=0;i<ints.length;i++)
-				this.map.addInteraction(ints[i]);
+            //var ints = [];
+			//for (var i=0;i<ints.length;i++)
+			//	this.map.addInteraction(ints[i]);
 			this.map.addOverlay(this.popup1);
 			this.map.addOverlay(this.popup2);
-			if (this.isDebug) 
-				this.map.addLayer(this.debugLayerGPS);
+			if (this.isDebug) {
+                this.debugLayerGPS = new ol.layer.Vector({
+                    source: new ol.source.Vector(),
+                    style : STYLES["debugGPS"]
+                });
+                this.map.addLayer(this.debugLayerGPS);
+            }
 			TRACK.init();
 			this.addTrackFeature();
 			//----------------------------------------------------
-			this.map.on('click', function(event) 
-			{
-				TRACK.onMapClick(event);
-				var selectedParticipants=[];
-                var selectedHotspot = null;
-				this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-                    if (layer == this.participantsLayer) {
-                        selectedParticipants.push(feature);
-                    } else if (layer == this.hotspotsLayer) {
-                        // allow only one hotspot to be selected at a time
-                        if (!selectedHotspot)
-                            selectedHotspot = feature;
+			if (!this.isWidgetMode) {
+                this.map.on('click', function (event) {
+                    TRACK.onMapClick(event);
+                    var selectedParticipants = [];
+                    var selectedHotspot = null;
+                    this.map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+                        if (layer == this.participantsLayer) {
+                            selectedParticipants.push(feature);
+                        } else if (layer == this.hotspotsLayer) {
+                            // allow only one hotspot to be selected at a time
+                            if (!selectedHotspot)
+                                selectedHotspot = feature;
+                        }
+                    }, this);
+
+                    // first if there are selected participants then show their popups
+                    // and only if there are not use the selected hotspot if there's any
+                    if (selectedParticipants.length) {
+                        if (this.selectedParticipant1 == null) {
+                            var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+                            if (feat)
+                                this.setSelectedParticipant1(feat.participant);
+                            else
+                                this.setSelectedParticipant1(null);
+                            this.selectNum = 0;
+                        } else if (this.selectedParticipant2 == null) {
+                            var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+                            if (feat)
+                                this.setSelectedParticipant2(feat.participant);
+                            else
+                                this.setSelectedParticipant2(null);
+                            this.selectNum = 1;
+                        } else {
+                            this.selectNum = (this.selectNum + 1) % 2;
+                            if (this.selectNum == 0) {
+                                var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+                                if (feat)
+                                    this.setSelectedParticipant1(feat.participant);
+                                else
+                                    this.setSelectedParticipant1(null);
+                            } else {
+                                var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+                                if (feat)
+                                    this.setSelectedParticipant2(feat.participant);
+                                else
+                                    this.setSelectedParticipant2(null);
+                            }
+                        }
+                    } else {
+                        this.setSelectedParticipant1(null);
+                        this.setSelectedParticipant2(null);
+
+                        if (selectedHotspot) {
+                            selectedHotspot.hotspot.onClick();
+                        }
                     }
-				},this);
+                }, this);
 
-                // first if there are selected participants then show their popups
-                // and only if there are not use the selected hotspot if there's any
-				if (selectedParticipants.length) {
-					if (this.selectedParticipant1 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
-						if (feat)
-							this.setSelectedParticipant1(feat.participant);
-						else
-							this.setSelectedParticipant1(null);
-						this.selectNum=0;
-					} else if (this.selectedParticipant2 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
-						if (feat)
-							this.setSelectedParticipant2(feat.participant);
-						else
-							this.setSelectedParticipant2(null);
-						this.selectNum=1;
-					} else {
-						this.selectNum=(this.selectNum+1)%2;
-						if (this.selectNum == 0) {
-							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
-							if (feat)
-								this.setSelectedParticipant1(feat.participant);
-							else
-								this.setSelectedParticipant1(null);
-						} else {
-							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
-							if (feat)
-								this.setSelectedParticipant2(feat.participant);
-							else
-								this.setSelectedParticipant2(null);
-						}
-					}
-				} else {
-					this.setSelectedParticipant1(null);
-					this.setSelectedParticipant2(null);
+                // todo - RUMEN - change mouse cursor when over specific features
+                //$(this.getViewport()).on('mousemove', function(e) {
+                //	var pixel = map.getEventPixel(e.originalEvent);
+                //	var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                //		return true;
+                //	});
+                //	if (hit) {
+                //		map.getTarget().style.cursor = 'pointer';
+                //	} else {
+                //		map.getTarget().style.cursor = '';
+                //	}
+                //});
 
-                    if (selectedHotspot) {
-                        selectedHotspot.hotspot.onClick();
-                    }
-				}
-			},this);
-			for (var i = 0; i < params.length; i++) {
-				var obj = params[i];
-
-			}
-
-			// todo - RUMEN - change mouse cursor when over specific features
-			//$(this.getViewport()).on('mousemove', function(e) {
-			//	var pixel = map.getEventPixel(e.originalEvent);
-			//	var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-			//		return true;
-			//	});
-			//	if (hit) {
-			//		map.getTarget().style.cursor = 'pointer';
-			//	} else {
-			//		map.getTarget().style.cursor = '';
-			//	}
-			//});
-
+                // pass the id of the DOM element
+                this.liveStream = new LiveStream({id : this.liveStreamElementId});
+            }
 			//-----------------------------------------------------
 			if (!this._animationInit) {
 				this._animationInit=true;
 				setInterval(this.onAnimation.bind(this), 1000*CONFIG.timeouts.animationFrame );
 			}
 
-            // pass the id of the DOM element
-            this.liveStream = new LiveStream({id : "liveStream"});
-
 			// if this is ON then it will show the coordinates position under the mouse location
-			if (this.isDebugShowPosition) {
+            if (params.isDebugShowPosition) {
 				$("#map").append('<p id="debugShowPosition">EPSG:3857 <span id="mouse3857"></span> &nbsp; EPSG:4326 <span id="mouse4326"></span>');
 				this.map.on('pointermove', function(event) {
 					var coord3857 = event.coordinate;
