@@ -26,10 +26,10 @@ window.CONFIG=
 	},
 	math : {
 		gpsInaccuracy : 30,
-		speedAndAccelerationAverageDegree : 4,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 75,	// display delay in SECONDS
-		interpolateGPSAverage : 3, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
-              roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
+		speedAndAccelerationAverageDegree : 3,	// calculation based on N states (average) (MIN 2)
+		displayDelay : 150,	// display delay in SECONDS
+		interpolateGPSAverage : 0, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
+		roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
 	simulation : {
 		pingInterval : 10, // interval in seconds to ping with gps data
