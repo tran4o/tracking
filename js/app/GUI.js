@@ -133,7 +133,7 @@ Class("GUI",
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
 				zoom: this.getInitialZoom(),
-				minZoom: 10,
+				minZoom: 9,
 				maxZoom: 17,
 				extent : extent ? extent : undefined
 			  })
