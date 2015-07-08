@@ -28,8 +28,8 @@ Class("Track",
 		// in EPSG 3857
 		feature : {
 			is : "rw",
-			init : null		},
-		
+			init : null
+		},
 		isDirectionConstraint : {
 			is : "rw",
 			init : false
@@ -48,13 +48,17 @@ Class("Track",
 			init : null
 		},
 		laps : {
-			is : "re",
+			is : "ro",
 			init : 1
 		},
 		totalParticipants : {
-			is : "re",
+			is : "ro",
 			init : 50
-		} 
+		},
+		rTree : {
+			is : "ro",
+			init : rbush(10)
+		}
     },
     //--------------------------------------
 	methods: 
@@ -294,7 +298,8 @@ Class("Track",
 				return;
 			// 1) calculate total route length in KM 
 			this.updateFeature();
-			GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
+			if (typeof window != "undefined")
+				GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
 		},
 		
 		getTrackPart : function(elapsed) {
@@ -328,19 +333,38 @@ Class("Track",
 				this.distancesElapsed.push(this.distances[i]/tl);
 			}
 			//--------------------------------------------------------------
-			var wkt = [];
-			for (var i=0;i<this.route.length;i++) {
-				wkt.push(this.route[i][0]+" "+this.route[i][1]);
+			this.rTree.clear();
+			var arr = [];
+			for (var i=0;i<this.route.length-1;i++)
+			{
+				var x1 = this.route[i][0];
+				var y1 = this.route[i][1];
+				var x2 = this.route[i+1][0];
+				var y2 = this.route[i+1][1];
+				var minx = x1 < x2 ? x1 : x2;
+				var miny = y1 < y2 ? y1 : y2;
+				var maxx = x1 > x2 ? x1 : x2;
+				var maxy = y1 > y2 ? y1 : y2;
+				arr.push([minx,miny,maxx,maxy,{ index : i }]);
 			}
-			wkt="LINESTRING("+wkt.join(",")+")";
-			var format = new ol.format.WKT();
-			if (!this.feature) {
-				this.feature = format.readFeature(wkt);
-			} else {
-				this.feature.setGeometry(format.readFeature(wkt).getGeometry());
+			this.rTree.load(arr);
+			//----------------- ---------------------------------------------
+			if (typeof window != "undefined")
+			{
+				var wkt = [];
+				for (var i=0;i<this.route.length;i++) {
+					wkt.push(this.route[i][0]+" "+this.route[i][1]);
+				}
+				wkt="LINESTRING("+wkt.join(",")+")";
+				var format = new ol.format.WKT();
+				if (!this.feature) {
+					this.feature = format.readFeature(wkt);
+				} else {
+					this.feature.setGeometry(format.readFeature(wkt).getGeometry());
+				}
+				this.feature.track=this;
+				this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
 			}
-			this.feature.track=this;
-			this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
 		},
 		
 		newParticipant : function(id,deviceId,name)
