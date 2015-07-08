@@ -122,7 +122,7 @@ function closestProjectionOfPointOnLine(x,y,x1,y1,x2,y2)
 	denominator = Math.pow(Math.sqrt(Math.pow(p2[0]-p1[0],2) + Math.pow(p2[1]-p1[1],2)),2 );
 	nominator   = (p3[0] - p1[0]) * (p2[0] - p1[0]) + (p3[1] - p1[1]) * (p2[1] - p1[1]);
 	if(denominator==0)
-	{   status = "coincidental"
+	{   status = "coincidental";
 		u = -999;
 	}
 	else
@@ -377,11 +377,11 @@ function circleLineIntersect(x1, y1, x2, y2, cx, cy, cr )
 
 function getAngles(a, b, c) {
     // calculate the angle between ab and ac
-    angleAB = Math.atan2( b[1] - a[1], b[0] - a[0] );
-    angleAC = Math.atan2( c[1] - a[1], c[0] - a[0] );
-    angleBC = Math.atan2( b[1] - c[1], b[0] - c[0] );
-    angleA = Math.abs((angleAB - angleAC) * (180/Math.PI));
-    angleB = Math.abs((angleAB - angleBC) * (180/Math.PI));
+    var angleAB = Math.atan2( b[1] - a[1], b[0] - a[0] );
+    var angleAC = Math.atan2( c[1] - a[1], c[0] - a[0] );
+    var angleBC = Math.atan2( b[1] - c[1], b[0] - c[0] );
+    var angleA = Math.abs((angleAB - angleAC) * (180/Math.PI));
+    var angleB = Math.abs((angleAB - angleBC) * (180/Math.PI));
     return [angleA, angleB];
 }
 window.MOBILE=mobileAndTabletCheck();
