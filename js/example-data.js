@@ -30,8 +30,7 @@ var PARTICIPANTS = [
     {"code" : "PART0008", "name" : "Herr Mann",  "follow" : "0", "bib" : 7,"country" : "Bulgaria","age" : 390,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
     {"code" : "PART0009", "name" : "Leo Dor", "follow" : "0", "bib" : 8,"country" : "Canada","age" : 42,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
 
-    {"code" : "PART0010", "deviceId" : "353816058288962", "name" : "Stefan Sack",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0011", "deviceId" : "353816054923703", "name" : "Cam One",  "follow" : "1", "bib" : 10,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3}
+    {"code" : "PART0010", "deviceId" : "353816054923703", "name" : "Stefan Sack",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3}
 ];
 
 
@@ -40,8 +39,8 @@ var FAVORITES = PARTICIPANTS.filter(function(v){ return (v && v.follow == 1);});
 var MOVING_CAMS = [
     // for MovingCam the 'liveStream' is the id of any registered live-stream in CONFIG.js
     // so that they could be connected
-    {"code" : "CAM0001", "deviceId" : "353816054923703", "name" : "Moving Camera One", liveStream : 0},
-    {"code" : "CAM0002", "deviceId" : "353816054940715", "name" : "Moving Camera Two", liveStream : 1}
+    //{"code" : "CAM0001", "deviceId" : "353816054923703", "name" : "Moving Camera One", liveStream : 0},
+    //{"code" : "CAM0002", "deviceId" : "353816054940715", "name" : "Moving Camera Two", liveStream : 1}
 ];
 
 var HOTSPOTS = [
