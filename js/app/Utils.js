@@ -227,6 +227,22 @@ function formatTime(d) {
     return hh+":"+mm;
 }
 
+function formatTimeSec(d) {
+    var hh = d.getHours();
+    if(hh<10){
+    	hh='0'+hh
+    }
+    var mm = d.getMinutes();
+    if(mm<10){
+        mm='0'+mm
+    }
+    var ss = d.getSeconds();
+    if(ss<10){
+        ss='0'+ss
+    }
+    return hh+":"+mm+":"+ss;
+}
+
 function rainbow(numOfSteps, step) {
     // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
     // Adam Cole, 2011-Sept-14
