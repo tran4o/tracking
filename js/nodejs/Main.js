@@ -1,10 +1,11 @@
 var express = require('express');
 var compress = require('compression');
-var Utils = require('./../app/Utils');
-var Track = require('./../app/Track');
-var Config = require('./Config');
 var extend = require('util')._extend;
 var bodyParser = require('body-parser');
+//--------------------------------------------------------------------
+var Utils = require('./../app/Utils');
+var Config = require('./Config');
+var Tracking = require('./Tracking');
 //--------------------------------------------------------------------
 var app = express();
 app.use('/admin', express.static(__dirname + '/admin'));

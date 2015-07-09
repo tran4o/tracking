@@ -3,7 +3,7 @@ var CONFIG = require('./Config');
 
 Class("ParticipantState",
 {
-	has : {
+	has : {		
 		speed : {
 			is : "rw",
 			init : 0
@@ -59,6 +59,9 @@ Class("Participant",
     //--------------------------------------
     has: 
 	{
+    	track : {
+    		is : "rw"
+    	},
     	states : {
     		is : "rw",
     		init : []
@@ -114,6 +117,10 @@ Class("Participant",
 	    lastInterpolateTimestamp : {
 	    	is : "rw",
 	    	init : null
+	    },
+	    ageGroup : {
+	    	is : "rw",
+	    	init : "-"
 	    },
 	    age : {
 	    	is : "rw",
@@ -186,12 +193,12 @@ Class("Participant",
 			if (res) 
 			{
 				var tres=res;
-				if (tres == TRACK.laps)
+				if (tres == this.track.laps)
 					tres=1.0;
 				else
 					tres=tres%1;
-				this.setPosition(TRACK.getPositionFromElapsed(tres));
-				this.setRotation(TRACK.getRotationFromElapsed(tres));
+				this.setPosition(this.track.getPositionFromElapsed(tres));
+				this.setRotation(this.track.getRotationFromElapsed(tres));
 				this.updateFeature();
 				this.setElapsed(res);
 			} 
@@ -249,8 +256,8 @@ Class("Participant",
 				return;
 			}
 			//----------------------------------------------------------
-			var tracklen = TRACK.getTrackLength();
-			var tracklen1 = TRACK.getTrackLengthInWGS84();
+			var tracklen = this.track.getTrackLength();
+			var tracklen1 = this.track.getTrackLengthInWGS84();
 			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
 			var lstate = this.states.length ? this.states[this.states.length-1] : null;
 			if (pos[0] == 0 && pos[1] == 0) {
@@ -261,15 +268,15 @@ Class("Participant",
 			var best;
 			var bestm=null;
 			var lelp = lstate ? lstate.getElapsed() : 0;	// last elapsed
-			var tg = TRACK.route;
+			var tg = this.track.route;
 			//----------------------------------------------------------
 			// NEW ALG
-			var coef = TRACK.getTrackLengthInWGS84()/TRACK.getTrackLength();
+			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
 			var minf = null;
 			var rr = CONFIG.math.gpsInaccuracy*coef;
 			
 			
-			var result = TRACK.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
+			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
 			if (!result)
 				result=[];
 			//console.log("FOUND "+result.length);
@@ -283,8 +290,8 @@ Class("Participant",
 					var d1 = distp(res[0],tg[i]);
 					var d2 = distp(res[1],tg[i]);
 					var d3 = distp(tg[i],tg[i+1]);
-					var el1 = TRACK.distancesElapsed[i]+(TRACK.distancesElapsed[i+1]-TRACK.distancesElapsed[i])*d1/d3;
-					var el2 = TRACK.distancesElapsed[i]+(TRACK.distancesElapsed[i+1]-TRACK.distancesElapsed[i])*d2/d3;
+					var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
+					var el2 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d2/d3;
 					//console.log("Intersection candidate at "+i+" | "+el1+" | "+el2);
 					if (el1 < lelp)
 						el1=lelp;
@@ -309,7 +316,7 @@ Class("Participant",
 			//bestm = _ELAPSED; //(TEST HACK ONLY)
 			if (bestm != null) 
 			{
-				var nel = bestm; //TRACK.getElapsedFromPoint(best);
+				var nel = bestm; //this.track.getElapsedFromPoint(best);
 				if (lstate) 
 				{
 					/*if (nel < lstate.getElapsed()) 
@@ -323,8 +330,8 @@ Class("Participant",
 						} while (nel < lstate.getElapsed());
 					}*/
 					//--------------------------------------------------------------
-					if (nel > TRACK.laps) {
-						nel=TRACK.laps;
+					if (nel > this.track.laps) {
+						nel=this.track.laps;
 					}
 					//--------------------------------------------------------------
 					llstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree*2 ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree*2] : null;
@@ -340,7 +347,7 @@ Class("Participant",
 			} else {
 				if (lstate)
 					state.setElapsed(lstate.getElapsed());
-				if (lstate.getElapsed() != TRACK.laps) {
+				if (lstate.getElapsed() != this.track.laps) {
 					this.setIsDiscarded(true);
 				}
 			}
@@ -364,21 +371,24 @@ Class("Participant",
 				this.states.shift();
 		},
 
-		init : function(pos) 
+		init : function(pos,track) 
 		{
+			this.setTrack(track);
 			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:TRACK.getElapsedFromPoint(pos)});			
+			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});			
 			this.setElapsed(state.elapsed);
 			this.setStates([state]);
 			this.setIsSOS(false);
 			this.setIsDiscarded(false);
-			var feature = new ol.Feature();
-			var geom = new ol.geom.Point(pos);
-			geom.transform('EPSG:4326', 'EPSG:3857');									
-			feature.setGeometry(geom);
-			feature.participant=this;
-			this.setFeature(feature);
-			GUI.participantsLayer.getSource().addFeature(feature);
+			if (typeof ol != "undefined") {
+				var feature = new ol.Feature();
+				var geom = new ol.geom.Point(pos);
+				geom.transform('EPSG:4326', 'EPSG:3857');									
+				feature.setGeometry(geom);
+				feature.participant=this;
+				this.setFeature(feature);
+				GUI.participantsLayer.getSource().addFeature(feature);
+			}
 			this.setPosition(pos);
 			this.ping(pos,0,false,ctime,0,0,0,0,0);
 		},
@@ -409,27 +419,27 @@ Class("Participant",
 			if (this.isSOS || this.isDiscarded) {
 				pos = this.getGPS();
 			}
-			var tlen = TRACK.getTrackLength();
+			var tlen = this.track.getTrackLength();
 			var ctime = (new Date()).getTime();
 			var elapsed = this.calculateElapsedAverage(ctime);
-			var tpart = TRACK.getTrackPart(elapsed);
+			var tpart = this.track.getTrackPart(elapsed);
 			var targetKM;
 			var partStart;
 			var tpartMore;
 			if (tpart == 0) {
 				tparts="SWIM";
-				targetKM=TRACK.bikeStartKM;
+				targetKM=this.track.bikeStartKM;
 				partStart=0;
 				tpartMore="SWIM";
 			} else if (tpart == 1) {
 				tparts="BIKE";
-				targetKM=TRACK.runStartKM;
-				partStart=TRACK.bikeStartKM;
+				targetKM=this.track.runStartKM;
+				partStart=this.track.bikeStartKM;
 				tpartMore="RIDE";
 			} else if (tpart == 2) { 
 				tparts="RUN";
 				targetKM=tlen/1000.0;
-				partStart=TRACK.runStartKM;
+				partStart=this.track.runStartKM;
 				tpartMore="RUN";
 			}
 			var html="<div class='popup_code' style='color:rgba("+colorAlphaArray(this.getColor(),0.9).join(",")+")'>"+escapeHTML(this.getCode())+" (1)</div>";
@@ -486,9 +496,9 @@ Class("Participant",
 					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
 			}
 			//-------------------------------------------------------------------------------------------------
-			var p1 = 100*TRACK.bikeStartKM/(tlen/1000.0);
-			var p2 = 100*(TRACK.runStartKM-TRACK.bikeStartKM)/(tlen/1000.0);
-			var p3 = 100*(tlen/1000.0 - TRACK.runStartKM)/(tlen/1000.0);
+			var p1 = 100*this.track.bikeStartKM/(tlen/1000.0);
+			var p2 = 100*(this.track.runStartKM-this.track.bikeStartKM)/(tlen/1000.0);
+			var p3 = 100*(tlen/1000.0 - this.track.runStartKM)/(tlen/1000.0);
 			var prettyCoord=
 				"<div style='opacity:0.7;float:left;overflow:hidden;height:7px;width:"+p1+"%;background-color:"+CONFIG.appearance.trackColorSwim+"'/>"+
 				"<div style='opacity:0.7;float:left;overflow:hidden;height:7px;width:"+p2+"%;background-color:"+CONFIG.appearance.trackColorBike+"'/>"+
@@ -518,7 +528,7 @@ Class("Participant",
 			
 			var rank="-";
 			if (this.__pos != undefined)
-				rank=TRACK.participants.length-this.__pos;
+				rank=this.track.participants.length-this.__pos;
 			
 			
 			html="<div class='popup_content_prg'><div style='width:"+p1+"%;height:6px;background-color:"+CONFIG.appearance.trackColorSwim+";float:left;'></div><div style='width:"+p2+"%;height:6px;background-color:"+CONFIG.appearance.trackColorBike+";float:left;'></div><div style='width:"+p3+"%;height:6px;background-color:"+CONFIG.appearance.trackColorRun+";float:left;'></div>";
@@ -536,18 +546,18 @@ Class("Participant",
 
 					if (this.__next && this.getSpeed()) {
 						var pel = this.__next.calculateElapsedAverage(ctime);
-						var dnext = ((pel-elapsed)*TRACK.getTrackLength() / this.getSpeed())/60.0;
+						var dnext = ((pel-elapsed)*this.track.getTrackLength() / this.getSpeed())/60.0;
 						dnext = parseFloat(Math.round(dnext * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l3'>GAP P"+(TRACK.participants.length-this.__next.__pos)+" : "+dnext+" Min</div>";
+						html+="<div class='popup_content_l3'>GAP P"+(this.track.participants.length-this.__next.__pos)+" : "+dnext+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
 					}
 					
 					if (this.__prev && this.__prev.getSpeed()) {
 						var pel = this.__prev.calculateElapsedAverage(ctime);
-						var dprev = ((elapsed-pel)*TRACK.getTrackLength() / this.__prev.getSpeed())/60.0;
+						var dprev = ((elapsed-pel)*this.track.getTrackLength() / this.__prev.getSpeed())/60.0;
 						dprev = parseFloat(Math.round(dprev * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l2'>GAP P"+(TRACK.participants.length-this.__prev.__pos)+" : "+dprev+" Min</div>";
+						html+="<div class='popup_content_l2'>GAP P"+(this.track.participants.length-this.__prev.__pos)+" : "+dprev+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
 					} 

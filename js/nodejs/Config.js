@@ -2,7 +2,7 @@ var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
 var xml2js = require('xml2js');
-
+var Utils = require("./../app/Utils");
 //var low = require('lowdb');
 //--------------------------------------------------------------------------------------
 console.log("Loading server configuration...");
@@ -10,14 +10,21 @@ var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ enco
 console.log("Config data length "+data.length+" bytes");
 var json=JSON.parse(data);
 var now = (new Date()).getTime();
-json.event.startTime = new Date(moment(json.event.startTime, "DD.MM.YYYY HH:SS"));
-json.event.endTime = new Date(moment(json.event.endTime, "DD.MM.YYYY HH:SS"));
-console.log("\nEvent configration ["+json.event.startTime+"  >  "+json.event.endTime+"]");
-console.log("Now is "+(new Date(now)));
+json.event.startTime = new Date(moment(json.event.startTime, "DD.MM.YYYY HH:mm"));
+json.event.endTime = new Date(moment(json.event.endTime, "DD.MM.YYYY HH:mm"));
+console.log("\nEvent configration ["+Utils.formatDateTime(json.event.startTime)+"  >  "+Utils.formatDateTime(json.event.endTime)+"]");
+console.log("Now is "+Utils.formatDateTime(new Date(now)));
 console.log((json.event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
-exports.config=json;
+for (var i in json.starts) 
+{
+	var str = json.starts[i];
+	str.start=new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
+	console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
+}
+for (var i in json)
+	exports[i]=json[i];
 //--------------------------------------------------------------------------------------
-console.log("Loading participants list...");
+console.log("\nLoading participants list...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/participants.json"),{ encoding: 'utf8' });
 console.log("Participants data length "+data.length+" bytes");
 var json=JSON.parse(data);

@@ -1,4 +1,5 @@
 require('joose');
+require('./Participant');
 
 var rbush = require('rbush');
 var CONFIG = require('./Config');
@@ -276,7 +277,7 @@ Class("Track",
 		newParticipant : function(id,deviceId,code) 
 		{
 			var part = new Participant({id:id,deviceId:deviceId,code:code});
-			part.init(this.route[0]);
+			part.init(this.route[0],this);
 			part.setSeqId(this.participants.length);
 			this.participants.push(part);
 			return part;
