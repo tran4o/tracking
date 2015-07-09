@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node js/nodejs/main.js"
+    "start": "node js/nodejs/Main.js"
   },
   "repository": {
     "type": "git",
@@ -20,10 +20,15 @@
   },
   "homepage": "https://github.com/tran4o/tracking#readme",
   "dependencies": {
+    "compression" : "^1.5.1",
     "express": "^4.13.0",
     "joose": "^3.50.0",
     "browserify": "^10.2.4",
-	"rbush" : "^1.4.0"
+	"rbush" : "^1.4.0",
+	"moment" : "^2.10.3",
+	"lowdb" : "^0.10.1",
+	"xml2js" : "^0.4.9",
+	"body-parser" : "^1.13.2"
   },
   "devDependencies": {
   },

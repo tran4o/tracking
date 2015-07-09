@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="jquery.blockUI.js"></script>
+ 	<script src="jquery.autocomplete.min.js"></script>
+	<style>
+	
+		.autocomplete-suggestions { border: 1px solid #999; background: #fff; cursor: default; overflow: auto; }
+		.autocomplete-suggestion { padding: 10px 5px; font-size: 1em; white-space: nowrap; overflow: hidden; }
+		.autocomplete-selected { background: #f0f0f0; }
+		.autocomplete-suggestions strong { font-weight: normal; color: #3399ff; }
+
+		.searchfield { display: inline;  }
+		 
+		.searchfield div.form {
+			display : inline;
+		}
+		
+		.searchfield div.form .biginput {
+		  width: 600px;
+		  height: 40px;
+		  padding: 0 10px 0 10px;
+		  background-color: #fff;
+		  border: 1px solid #c8c8c8;
+		  border-radius: 3px;
+		  color: #aeaeae;
+		  font-weight:normal;
+		  font-size: 1.5em;
+		  -webkit-transition: all 0.2s linear;
+		  -moz-transition: all 0.2s linear;
+		  transition: all 0.2s linear;
+		}
+		
+		.searchfield div.form .biginput:focus {
+		  color: #858585;
+		}
+
+
+		body {
+			font-family: Arial, "Lucida Grande", Tahoma, Verdana, sans-serif;
+    		font-size: 15px;
+    		    		
+			position : absolute;
+			top : 0;
+			right : 0;
+			left : 0;
+			bottom : 0;
+			overflow : auto;
+			padding : 10px;
+			margin : 0;
+			background-color : white;
+		}
+		.header {
+			width : 100%;
+			height : auto;
+			display : block;
+			margin-bottom : 10px;
+		}
+		
+		.header input {
+			width : 250px;
+			margin-right : 10px;
+			padding : 5px;
+		}	
+
+		.buttons {
+			margin-top : 20px;
+		}
+		
+		div.button {
+			cursor : pointer;
+			display : inline;
+			border : 1px solid black;
+			margin-right : 10px;
+			padding : 5px;
+			padding-left : 20px;
+			padding-right : 20px;
+		}
+		
+		div.button:hover {
+			background-color : black;
+			color : white;
+		}
+		
+		.links {
+			display : block;
+			margin-top : 20px;
+			border-top: 1px solid gray;
+			border-bottom: 1px solid gray;
+			padding-top : 10px;
+			padding-bottom : 10px;
+			padding-left : 5px;
+1		}
+		
+		.links a {
+			margin-right : 10px;
+			text-decoration : none;
+			color : black;
+			line-height : 1;
+		}
+		 
+		.links a:hover {
+			color : blue;
+		}
+
+		.info {
+			display : block;
+			margin-top : 20px;
+			padding-bottom : 10px;
+		}
+		
+		.info textarea {
+			width : 100%;
+			box-sizing : border-box;
+			border : 0;
+			background-color : white;
+		}
+		
+		#msg {
+			background-color : red;
+			float : right;
+			padding : 5px;
+			padding-left : 10px;
+			padding-right : 10px;			
+			color : white;
+		}
+			
+	</style>	
+</head>
+<body>
+<div class="header">
+
+	<div class="searchfield">
+	    <div class='form'><input type="text" id="name" placeholder="Participant Name" /></div>
+	 </div>
+	<div class="searchfield">
+	    <div class='form'><input type="text" id="id" placeholder="Participant ID" /></div>
+	 </div>
+	<input type="text" id="imei" placeholder="IMEI" disabled/>
+	<script>
+$.fn.pressEnter = function(fn) {  
+    return this.each(function() {  
+        $(this).bind('enterPress', fn);
+        $(this).keyup(function(e){
+            if(e.keyCode == 13)
+            {
+              $(this).trigger("enterPress");
+            }
+        })
+    });  
+};
+//---------------------------------------------------------------------
+var partName2ID = [];
+var ID2PartName = [];
+$.ajaxSetup({ cache: false });
+$.getJSON( "../participants?mode=acmpl", function( data ) 
+{
+	for (var i in data) 
+	{ 
+		partName2ID.push(data[i]);
+		ID2PartName.push({value : data[i].data, data : data[i].value});
+	}
+});
+//---------------------------------------------------------------------
+$( document ).ready(function() 
+{
+	function block() {
+		$.blockUI({
+			message : "",
+			css: { width: '30%', border:'0px solid #FFFFFF',cursor:'wait',backgroundColor:'#FFFFFF'},
+			overlayCSS:  { backgroundColor: '#FFFFFF',opacity:0.0,cursor:'wait'} 
+		}); 
+	}
+	
+	function unblock() {
+		$.unblockUI();
+	}
+
+	
+	// setup autocomplete function pulling from currencies[] array
+	$('#name').autocomplete({
+	  lookup: partName2ID,
+	  lookupLimit : 50,
+	  onSelect: function (suggestion) {
+		  $("#id").val(suggestion.data);
+		  $("#id").change();
+	  }
+	});
+
+	$('#id').autocomplete({
+	  lookup: ID2PartName,
+	  lookupLimit : 50,
+	  onSelect: function (suggestion) 
+	  {
+		  $("#name").val(suggestion.data);
+		  $("#name").change();
+		  $("#id").change();
+	  }
+	});
+
+	$(".header input").pressEnter(function() {
+		$(this).blur();
+	});
+	
+	$("#id").change(function() 
+	{
+		var val = $("#id").val();
+		$("#imei").attr("disabled");
+		if (val && val.length) 
+		{
+			block();
+			$.getJSON( "../participant/"+val, function( data ) 
+			{
+				unblock();
+				if (data && Object.keys(data) && Object.keys(data).length) { 
+					$("#partjson").val(JSON.stringify(data, null, 4));
+					$('textarea').trigger('input');
+					$("#imei").attr("disabled",null);
+					if (data.IMEI) {
+						$("#imei").val(data.IMEI);
+						$("#imei").data("last-ok",data.IMEI);
+					} else {
+						$("#imei").val("");
+						$("#imei").data("last-ok","");
+					}
+				} else { 
+					$("#partjson").val("");
+					$('textarea').trigger('input');
+					$("#imei").val("");
+					$("#imei").attr("disabled","true");
+				}
+			});
+		} else {
+			$("#imei").val("");	
+			$("#partjson").val("");
+			$('textarea').trigger('input');
+		}
+	});
+	
+	
+	$("#imei").change(function() 
+	{ 
+		if ($(this).val() != $(this).data("last-ok")) 
+		{
+			$("#id").attr("disabled",true);
+			$("#name").attr("disabled",true);
+			$("#msg").hide();			
+			$(".buttons").show();
+		} else {
+			$("#id").attr("disabled",null);
+			$("#name").attr("disabled",null);
+			$(".buttons").hide();
+		} 
+	});
+
+	$("#cancel").click(function() {
+		$("#imei").val($("#imei").data("last-ok"));
+		$("#id").attr("disabled",null);
+		$("#name").attr("disabled",null);
+		$(".buttons").hide();
+	});
+
+	$("#save").click(function() 
+	{
+		$("#msg").hide();			
+		block();
+		var id = $("#id").val();
+		var imei = $("#imei").val();
+		$("#msg").hide();
+		$.post( "../participant/"+id+"/setimei", {value : imei}).done(function(data) {
+			unblock();
+			if (!data.error) {
+				$("#msg").html("");
+				$("#imei").val(data.imei);
+				$("#id").attr("disabled",null);
+				$("#name").attr("disabled",null);
+				$(".buttons").hide();
+				$("#imei").data("last-ok",data.imei);
+			} else {
+				$("#msg").html(data.error);
+				$("#msg").show();
+			}
+		});
+	});	
+	//-------------------------------------------------------------------------------------------
+	$('#partjson').each(function () {
+		  this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+	}).on('input', function () {
+		if ($(this).val() && $(this).val().length) {
+			$(".info").show();
+			this.style.height = 'auto';
+			this.style.height = (this.scrollHeight) + 'px';
+		} else {
+			$(".info").hide();
+		}
+	});
+});
+	</script>	
+</div>
+<div class="buttons" style="display:none">
+	<div class="button" id="save">Save</div><div class="button" id="cancel">Cancel</div>
+	<div id="msg"></div>
+</div>
+<div class="links" style="display:none">
+	<a href="../assignments" target="_blank">Assignments</a>
+</div>
+<div class="info" style="display:none"><textarea id="partjson" disabled></textarea> 
+</div>
+<div class="links">
+	<a href="../aliases" target="_blank">Aliases</a>
+	<a href="../assignments" target="_blank">Assignments</a>
+	<a href="../participants" target="_blank">Participants</a>
+</div>
+</body>
+</html>
+

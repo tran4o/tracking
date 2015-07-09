@@ -1,2 +1,5 @@
 node_modules
 *.db
+data/participants.json
+data/assignments.json
+npm-debug.log

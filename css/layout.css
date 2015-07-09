@@ -9,7 +9,6 @@
     src : url('../font/HarabaraMaisBold.woff') format('woff');
 }
 
-
 BODY 
 {
 	font-family: Lato-Regular, Fallback, Arial, "Lucida Grande", Tahoma, Verdana, sans-serif;
