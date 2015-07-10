@@ -341,7 +341,9 @@ Class("Participant",
 			
 			// minf = overall minimum of elapsed intersections
 			if (minf != null) 
-				bestm=minf;   
+				bestm=minf;
+			
+			console.log("BESTM FOR PING : "+bestm);
 			//-----------------------------------------------------------
 			//bestm = _ELAPSED; //(TEST HACK ONLY)
 			if (bestm != null) 
