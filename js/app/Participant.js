@@ -253,7 +253,7 @@ Class("Participant",
 			}
 			if (!ok) {
 				if (this.states.length >= 2)
-					console.log("NOT FOUND TIME"+Utils.formatDateTimeSec(new Date(ctime))+" | t-last="+(ctime-this.states[this.states.length-1].timestamp)/1000.0+" | t-first="+(ctime-this.states[0].timestamp)/1000.0);
+					console.log(this.code+" | NOT FOUND TIME "+Utils.formatDateTimeSec(new Date(ctime))+" | t-last="+(ctime-this.states[this.states.length-1].timestamp)/1000.0+" | t-first="+(ctime-this.states[0].timestamp)/1000.0);
 			} else
 				this.setSignalLostDelay(null);
 			return res;

@@ -23,7 +23,7 @@ var CONFIG =
 	constraints : {
 		backwardsEpsilonInMeter : 400, //220 m movement in the backward direction will not trigger next run counter increment		
 		maxSpeed : 20,	//kmh
-		maxParticipantStateHistory : 10000, // number of elements
+		maxParticipantStateHistory : 1000, // number of elements
 		popupEnsureVisibleWidth : 200,
 		popupEnsureVisibleHeight: 120
 	},
