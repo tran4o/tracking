@@ -245,15 +245,16 @@ Class("Participant",
 					ok=true;
 					break;
 				}
-				if (sb.timestamp < ctime) {
+				/*if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
 					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					return null;
-				}
+				}*/
 			}
-			if (!ok)
-				console.log("NOT FOUND TIME"+Utils.formatDateTimeSec(new Date(ctime)));
-			else
+			if (!ok) {
+				if (this.states.length >= 2)
+					console.log("NOT FOUND TIME"+Utils.formatDateTimeSec(new Date(ctime))+" | t-last="+(ctime-this.states[this.states.length-1].timestamp)/1000.0+" | t-first="+(ctime-this.states[0].timestamp)/1000.0);
+			} else
 				this.setSignalLostDelay(null);
 			return res;
 		},
