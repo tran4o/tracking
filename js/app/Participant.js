@@ -77,7 +77,7 @@ Class("Participant",
     	},
     	states : {
     		is : "rw",
-    		init : []
+    		init : null //[]
     		
     	},
 		code : {
