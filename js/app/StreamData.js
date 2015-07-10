@@ -146,7 +146,7 @@ Class("StreamData",
 	                        }
 	                });
 	                part.startTime=ctime;
-	        },CONFIG.simulation.pingInterval*1000);
+	        },CONFIG.timeouts.streamDataInterval*1000);
 	    }
     },
      

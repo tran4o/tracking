@@ -247,7 +247,7 @@ Class("Participant",
 				}
 				if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
-					console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
+					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					return null;
 				}
 			}
