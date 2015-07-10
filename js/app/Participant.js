@@ -1,5 +1,6 @@
 require('joose');
 var CONFIG = require('./Config');
+var Utils = require('./Utils');
 
 Class("ParticipantState",
 {
@@ -224,9 +225,13 @@ Class("Participant",
 			} 
 		},
 		
-		calculateElapsedAverage : function(ctime) {
+		calculateElapsedAverage : function(ctime) 
+		{
 			var res=null;
 			ctime-=CONFIG.math.displayDelay*1000;
+			
+			console.log("SEARCHING FOR TIME "+Utils.formatDateTimeSec(new Date(ctime)));
+			
 			var ok = false;
 			for (var i=this.states.length-2;i>=0;i--) 
 			{
@@ -236,15 +241,17 @@ Class("Participant",
 				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
 				{ 
 					res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
+					console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.elapsed))+" > "+Utils.formatDateTimeSec(new Date(sb.elapsed))+"]");
 					ok=true;
 					break;
 				}
-				if (sb.timestamp < ctime) {
+				/*if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
 					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					return null;
-				}
+				}*/
 			}
+			console.log("NOT FOUND TIME");
 			this.setSignalLostDelay(null);
 			return res;
 		},
@@ -297,8 +304,6 @@ Class("Participant",
 			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
 			var minf = null;
 			var rr = CONFIG.math.gpsInaccuracy*coef;
-			
-			
 			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
 			if (!result)
 				result=[];
@@ -520,7 +525,7 @@ Class("Participant",
 						else 
 							etxt1+=" NE";
 					}
-					estf=formatTime(new Date( ctime + targetKM*1000 / spms*1000 ));  
+					estf=Utils.formatTime(new Date( ctime + targetKM*1000 / spms*1000 ));  
 				}
 				if (lstate.getAcceleration() > 0)
 					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
