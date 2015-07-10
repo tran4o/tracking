@@ -410,13 +410,13 @@ Class("Participant",
 			if (this.states.length > CONFIG.constraints.maxParticipantStateHistory && !this.isSOS)
 				this.states.shift();
 			// REMOVE DEBUG TEST
-			for (var i=0;i<this.states.length-1;i++) {
+			/*for (var i=0;i<this.states.length-1;i++) {
 				if (this.states[i].timestamp > this.states[i+1].timestamp)
 				{
 					console.error("ERROR ADD STATE ORDER!!!");
 					debugger;
 				}
-			}
+			}*/
 		},
 
 		init : function(pos,track) 
