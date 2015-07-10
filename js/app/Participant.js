@@ -241,7 +241,7 @@ Class("Participant",
 				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
 				{ 
 					res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
-					console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.elapsed))+" > "+Utils.formatDateTimeSec(new Date(sb.elapsed))+"]");
+					console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.timestamp))+" > "+Utils.formatDateTimeSec(new Date(sb.timestamp))+"]");
 					ok=true;
 					break;
 				}
@@ -251,8 +251,10 @@ Class("Participant",
 					return null;
 				}*/
 			}
-			console.log("NOT FOUND TIME");
-			this.setSignalLostDelay(null);
+			if (!ok)
+				console.log("NOT FOUND TIME")
+			else
+				this.setSignalLostDelay(null);
 			return res;
 		},
 		
