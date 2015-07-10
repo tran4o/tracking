@@ -230,7 +230,7 @@ Class("Participant",
 			var res=null;
 			ctime-=CONFIG.math.displayDelay*1000;
 			
-			console.log("SEARCHING FOR TIME "+Utils.formatDateTimeSec(new Date(ctime)));
+			//console.log("SEARCHING FOR TIME "+Utils.formatDateTimeSec(new Date(ctime)));
 			
 			var ok = false;
 			for (var i=this.states.length-2;i>=0;i--) 
@@ -241,7 +241,7 @@ Class("Participant",
 				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
 				{ 
 					res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
-					console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.timestamp))+" > "+Utils.formatDateTimeSec(new Date(sb.timestamp))+"]");
+					//console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.timestamp))+" > "+Utils.formatDateTimeSec(new Date(sb.timestamp))+"]");
 					ok=true;
 					break;
 				}
@@ -252,7 +252,7 @@ Class("Participant",
 				}*/
 			}
 			if (!ok)
-				console.log("NOT FOUND TIME")
+				console.log("NOT FOUND TIME"+Utils.formatDateTimeSec(new Date(ctime)));
 			else
 				this.setSignalLostDelay(null);
 			return res;
