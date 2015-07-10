@@ -165,7 +165,7 @@ var STYLES=
 		if (coef > 1)
 			coef=1;*/
 
-		var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
+		var coef = TRACK.getTrackLengthInWGS84()/TRACK.getTrackLength();
 		var minf = null;
 		var rr = CONFIG.math.gpsInaccuracy*coef;
 
