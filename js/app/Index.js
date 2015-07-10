@@ -280,9 +280,13 @@ function initGUI()
 		//---------------------------------------------------------------
 		PARTS.push(p1);
 		//break;
+
+		var stream = new StreamData();
+		stream.legacy(p1);
 	}
-	var stream = new StreamData();
-	stream.start(TRACK);
+
+	/*var stream = new StreamData();
+	stream.start(TRACK);*/
 
 	// add all the moving cameras
 	/*for (var j=0;j<MOVING_CAMS.length;j++)	{
