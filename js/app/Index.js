@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------------------------------------
 require('./Track');
 require('./GUI');
-require('./Simulator');
 require('./Participant');
 window.CONFIG=require('./Config');
 var Utils=require('./Utils');
@@ -283,7 +282,6 @@ function initGUI()
 		sim.simulateParticipantSimple(p1,30*scoef*(1+i/7.0));
 		PARTS.push(p1);
 	}
-
     // add all the moving cameras
 	/*for (var j=0;j<MOVING_CAMS.length;j++)	{
 		var movingCam = TRACK.newMovingCam(MOVING_CAMS[j].id,MOVING_CAMS[j].deviceId,MOVING_CAMS[j].name);

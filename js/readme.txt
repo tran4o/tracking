@@ -9,3 +9,6 @@ wget -O data/participants.json "http://portal.mikatiming.de/ah/rest/appapi/meeti
 TO DEL ALL RACE DATA :
 --------------------------------------------------
 http://connectedlifestyle.dtrd.de/triathlon/rest/clearRace
+
+
+wget "http://localhost:3000/raceStart/353816058291727"
