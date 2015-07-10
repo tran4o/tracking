@@ -71,8 +71,6 @@ Class("StreamData",
                 }
                 if (json.length) 
                 {
-                	console.log("DOING JSON POST TO "+url);
-                	console.log(JSON.stringify(json));
                 	$.ajax({
                 	    type: "POST",
                 	    url: url,
@@ -80,8 +78,6 @@ Class("StreamData",
                 	    contentType: "application/json; charset=utf-8",
                 	    dataType: "json",
                 	    success: function(data){
-                	    	console.log(data);
-                	    	console.log("OOOK ");
                 	    	processData(data);
                 	    },
                 	    failure: function(errMsg) {

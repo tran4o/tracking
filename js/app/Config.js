@@ -11,7 +11,7 @@ var CONFIG =
 	timeouts : // in seconds
 	{
 		deviceTimeout : 60*5,
-		animationFrame : 0.4, //2, //Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
+		animationFrame : 2, //2, //Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
 		gpsLocationDebugShow : 4,		// time to show gps location (debug) info
 		streamDataInterval : 10 /* seconds */
 	},
