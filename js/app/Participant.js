@@ -283,9 +283,7 @@ Class("Participant",
 			this.setLastRealDelay(llt-ctime);
 			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
-
 			//isSOS=true;
-			
 			if (isSOS) {
 				this.setIsSOS(true); 
 				this.addState(state);
@@ -411,6 +409,14 @@ Class("Participant",
 			this.states.push(state);
 			if (this.states.length > CONFIG.constraints.maxParticipantStateHistory && !this.isSOS)
 				this.states.shift();
+			// REMOVE DEBUG TEST
+			for (var i=0;i<this.states.length-1;i++) {
+				if (this.states[i].timestamp > this.this.states[i+1].timestamp)
+				{
+					console.error("ERROR ADD STATE ORDER!!!");
+					debugger;
+				}
+			}
 		},
 
 		init : function(pos,track) 
