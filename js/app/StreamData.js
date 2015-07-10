@@ -10,7 +10,7 @@ Class("StreamData",
     {
         start : function(track)
         {
-            var url = "http://liverank-portal.de/triathlon/rest/stream";
+            var url = "http://liverank-portal.de/triathlon/rest/stream"; 
         	var delay = -(new Date()).getTimezoneOffset()*60*1000;		// 120 for gmt+2
         	for (var i in track.participants) 
         	{
@@ -79,7 +79,8 @@ Class("StreamData",
                 	    dataType: "json",
                         processData: false,
                 	    success: function(data){
-                	    	console.log("OOOK "+data);
+                	    	console.log(data);
+                	    	console.log("OOOK ");
                 	    	processData(data);
                 	    },
                 	    failure: function(errMsg) {
