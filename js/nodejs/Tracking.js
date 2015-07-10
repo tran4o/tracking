@@ -2,10 +2,13 @@ require('./../app/Track');
 var Utils = require('./../app/Utils');
 var Config = require('./Config');
 //------------------------------------------------------------------
-var TRACK = new Track();
+var TRACK;
+
+TRACK = new Track();
 TRACK.setBikeStartKM(Config.event.bikeStartKM);
 TRACK.setRunStartKM(Config.event.runStartKM);
 TRACK.setRoute(Config.event.trackData);
+
 console.log("Starting tracking engine for track with length "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(Config.event.bikeStartKM)+" + "+Utils.formatNumber2(Config.event.runStartKM-Config.event.bikeStartKM)+" + "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0-Config.event.runStartKM)+") km");
 
 
@@ -33,6 +36,12 @@ for (var i in Config.participants)
 		part.setAge(getAge(new Date(p.birthDate)));
 		part.setCountry(p.nationality);
 		trackedParticipants.push(part);
+		/*console.log(p);
+		console.log(part.ageGroup);
+		console.log(part.age);
+		console.log(part.country);		
+		console.log(part.color);		
+		console.log("\n\n");*/
 	} 
 }
 
