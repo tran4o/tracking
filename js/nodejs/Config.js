@@ -10,15 +10,15 @@ var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ enco
 console.log("Config data length "+data.length+" bytes");
 var json=JSON.parse(data);
 var now = (new Date()).getTime();
-json.event.startTime = new Date(moment(json.event.startTime, "DD.MM.YYYY HH:mm"));
-json.event.endTime = new Date(moment(json.event.endTime, "DD.MM.YYYY HH:mm"));
+json.event.startTime = json.simulation.enabled ? new Date() : new Date(moment(json.event.startTime, "DD.MM.YYYY HH:mm"));
+json.event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(json.event.endTime, "DD.MM.YYYY HH:mm"));
 console.log("\nEvent configration ["+Utils.formatDateTime(json.event.startTime)+"  >  "+Utils.formatDateTime(json.event.endTime)+"]");
 console.log("Now is "+Utils.formatDateTime(new Date(now)));
 console.log((json.event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
 for (var i in json.starts) 
 {
 	var str = json.starts[i];
-	str.start=new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
+	str.start= json.simulation.enabled ?  new Date() : new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
 	console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
 }
 for (var i in json)

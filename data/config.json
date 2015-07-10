@@ -11,5 +11,11 @@
 	[
 		{ "fromStartNo" : 0, "toStartNo" : 5 , "startTime" : "10.07.2015 00:10" },
 		{ "fromStartNo" : 6, "toStartNo" : 10 , "startTime" : "10.07.2015 00:20" }
-	]
+	],
+	
+	"simulation" : 
+	{
+		"enabled" : 1,
+		"speedCoef" : 1
+	}
 }
