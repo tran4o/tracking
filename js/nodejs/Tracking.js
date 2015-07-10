@@ -36,10 +36,14 @@ for (var i in Config.participants)
 		part.setAgeGroup(p.ageGroup);
 		part.setAge(getAge(new Date(p.birthDate)));
 		part.setCountry(p.nationality);
+		part.setStartPos(parseInt(p.startNo));
 		//part.setIcon(images[i]);
 		//part.setImage(images[i]);
 		trackedParticipants.push(part);
 		partLookupByIMEI[devId]=part;
+		//-----------------------------
+		part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
+		//console.log("PART "+part.getCode()+" NO:"+part.getStartPos()+" | "+Utils.formatDateTimeSec(new Date(part.startTime)))
 	} 
 }
 console.log(trackedParticipants.length+" tracked participants found");
@@ -105,17 +109,19 @@ setInterval(function(e)
 				//var dur=(new Date()).getTime();
 				//dur-=st;
 				//console.log("FINISH : "+dur/1000.0+" sec.");
-				/*console.log("ERR : "+err);
-				console.log("BODY : ");
-				console.log(body);*/
+				console.log("ERR : "+err);
 			});
 		}
 	}
+	var crrtime = (new Date()).getTime();
 	for (var i in trackedParticipants) 
 	{
 		var part = trackedParticipants[i];
-		arr.push(part.deviceId);
-		check()
+		if (crrtime >= part.startTime) 
+		{
+			arr.push(part.deviceId);
+			check()
+		}
 	}
 	check(true);
 	startTime=ctime;
@@ -127,3 +133,4 @@ if (Config.simulation.enabled)
 
 //--------------------------------------------------------------------------
 exports.trackedParticipants=trackedParticipants;
+exports.partLookupByIMEI=partLookupByIMEI;

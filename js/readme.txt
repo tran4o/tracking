@@ -8,4 +8,4 @@ wget -O data/participants.json "http://portal.mikatiming.de/ah/rest/appapi/meeti
 
 TO DEL ALL RACE DATA :
 --------------------------------------------------
-http://liverank-portal.de/triathlon/rest/clearRace
+http://connectedlifestyle.dtrd.de/triathlon/rest/clearRace

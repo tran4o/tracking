@@ -18,11 +18,22 @@ console.log((json.event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n
 for (var i in json.starts) 
 {
 	var str = json.starts[i];
-	str.start= json.simulation.enabled ?  new Date() : new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
-	console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
+	str.start = json.simulation.enabled ?  new Date() : new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
+	//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
 }
 for (var i in json)
 	exports[i]=json[i];
+var startTimes =  json.starts;
+exports.getStartTimeFromStartPos = function(startPos) 
+{
+	for (var i in startTimes) 
+	{
+		if (startPos >= startTimes[i].fromStartNo && startPos <= startTimes[i].toStartNo) {
+			return startTimes[i].start.getTime();
+		}
+	}
+	return 0;
+}
 //--------------------------------------------------------------------------------------
 console.log("\nLoading participants list...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/participants.json"),{ encoding: 'utf8' });

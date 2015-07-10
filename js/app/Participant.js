@@ -153,6 +153,14 @@ Class("Participant",
 		country : {
 			is : "rw",
 			init : "Germany"
+		},
+		startPos : {
+			is : "rw",
+			init : 0
+		},
+		startTime : {
+			is : "rw",
+			init : 0
 		}
     },
     //--------------------------------------

@@ -15,6 +15,23 @@ app.use(bodyParser.urlencoded({
   extended: true
 })); 
 
+app.get('/raceStart/:id', function (req, res) {
+	res.header("Content-Type", "application/json; charset=utf-8");
+	var id = req.params.id;
+	var part = Tracking.partLookupByIMEI[id];
+	console.log(part.code);
+	if (!part) {
+		res.send(JSON.stringify({RET:"ERR",RETMSG:"PARTICIPANT BY IMEI NOT FOUND"}));
+	} else {
+		var now = (new Date()).getTime();
+		var startperiod = parseInt((part.startTime-now)/1000.0);		// seconds
+		if (startperiod < 0)
+			startperiod=0;
+		var endperiod = 9999999;									    // seconds
+		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":""+startperiod,"ENDPERIOD":""+endperiod}));
+	}
+});
+
 app.get('/status', function (req, res) 
 {
 	res.header("Content-Type", "application/json; charset=utf-8");
