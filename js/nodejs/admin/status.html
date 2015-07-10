@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="jquery.blockUI.js"></script>
+ 	<script src="jquery.autocomplete.min.js"></script>
+	<style>
+		body {
+			font-family: Arial, "Lucida Grande", Tahoma, Verdana, sans-serif;
+    		font-size: 12px;    		    		
+			position : absolute;
+			top : 0;
+			right : 0;
+			left : 0;
+			bottom : 0;
+			overflow : auto;
+			padding : 10px;
+			margin : 0;
+			background-color : white;
+		}
+		.header {
+			width : 100%;
+			height : auto;
+			display : block;
+			margin-bottom : 10px;
+		}
+
+		table {
+			border : 1px solid #F0F0F0;
+			/* width : 100%; */
+		}
+		
+		table td {
+			padding : 5px;
+		}
+		
+		table thead tr {
+			background-color : #e0e0e0;
+		}
+		table thead tr {
+			text-align : center;
+		}
+		table tbody tr {
+			text-align : right;
+		}
+		
+	</style>	
+</head>
+<body>
+<div class="header">
+</div>
+<table>
+	<thead>	
+		<tr>
+			<td>ID</td>
+			<td>IMEI</td>
+			<td>ELAPSED %</td>
+			<td>LON</td>
+			<td>LAT</td>
+			<td>LAST PING</td>
+			<td>REAL DELAY (sec.)</td>
+			<td>NO SIGNAL (sec.)</td>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>	
+</table>
+<script>
+function formatNumber2(val) {
+	return parseFloat(Math.round(val * 100) / 100).toFixed(2);
+}
+function formatTimeSec(d) {
+    var hh = d.getHours();
+    if(hh<10){
+    	hh='0'+hh;
+    } 
+    var mm = d.getMinutes();
+    if(mm<10){
+        mm='0'+mm;
+    } 
+    var ss = d.getSeconds();
+    if(ss<10){
+        ss='0'+ss;
+    } 
+    return hh+":"+mm+":"+ss;
+}
+
+function doGet() 
+{
+	$.getJSON( "../status", function( data ) 
+	{
+		$(".header").html("Start "+data.startStr+" ("+formatNumber2(data.startAfter/(1000*60.0)) +" min. to go) <div style='float:right;font-weight:bold;color:red;'>"+ formatTimeSec(new Date())+"</div>");
+		var rr = [];
+		for (var id in data.partStatus) 
+		{
+			rr.push("<tr>");
+			var dd = data.partStatus[id];
+			rr.push("<td>"+id+"</td>")
+			rr.push("<td>"+dd.imei+"</td>")
+			rr.push("<td>"+formatNumber2(dd.elapsed)+"</td>")
+			rr.push("<td>"+dd.lon+"</td>")
+			rr.push("<td>"+dd.lat+"</td>")
+			rr.push("<td>"+dd.lastReq+"</td>")			
+			rr.push("<td>"+formatNumber2(dd.realDelay/1000.0)+"</td>")
+			rr.push("<td>"+(dd.lostDelay ? formatNumber2(dd.lostDelay/1000.0) : "-") +"</td>")
+			rr.push("</tr>");
+		}
+		$("tbody").html(rr.join(""));
+	});
+}
+
+$(document).ready(function() {
+	doGet();
+	setInterval(doGet,5000);
+});
+</script>	
+</body>
+</html>
+

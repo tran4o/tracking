@@ -15,6 +15,38 @@ app.use(bodyParser.urlencoded({
   extended: true
 })); 
 
+app.get('/status', function (req, res) 
+{
+	res.header("Content-Type", "application/json; charset=utf-8");
+	var now = (new Date()).getTime();
+	var moretogo = (Config.event.startTime.getTime()-now);
+	if (moretogo < 0) {
+		moretogo=0;
+	}	
+	var partStatus = {};
+	for (var i in Tracking.trackedParticipants)
+	{
+		var part = Tracking.trackedParticipants[i];
+		var pos = part.getGPS();
+		var ltmp = part.getLastPingTimestamp();
+		partStatus[part.id]=
+		{
+			imei : part.deviceId,
+			lon : pos[0],
+			lat : pos[1],
+			realDelay : part.lastRealDelay,
+			lostDelay : part.signalLostDelay,
+			lastReq : ltmp ? Utils.formatTimeSec(new Date(ltmp)) : "-",
+			elapsed : part.getElapsed()*100.0
+		};
+	}
+	res.send(JSON.stringify({
+		startStr : Utils.formatTimeSec(Config.event.startTime),
+		startAfter : moretogo,
+		partStatus : partStatus
+	},null,4));
+});
+
 app.get('/assignment/:id', function (req, res) 
 {
 	console.log("GET assignment for id = "+req.params.id);

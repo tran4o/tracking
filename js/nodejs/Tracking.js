@@ -55,7 +55,7 @@ setInterval(function(e)
 		return;
 	function onData(data) 
 	{
-		if (!data.length)
+		if (!data || !data.length)
 			return;
 		for (var i=0;i<data.length;i++) 
 		{
@@ -79,10 +79,12 @@ setInterval(function(e)
 			if (!actime)
 				continue;
 			var part = partLookupByIMEI[e.IMEI];
-			if (!part)
+			if (!part) {
+				console.log("FUCK PART "+e.IMEI);
 				continue;
+			}
 			actime+=delay;
-			console.log("PING AT POS "+c[0]+" | "+c[1]+" TIME="+actime/1000.0+" | "+formatDate(new Date(actime))+" "+formatTimeSec(new Date(actime))+" | DELAY = "+((new Date()).getTime()-actime)/1000.0+" sec delay") ;
+			console.log("PING "+part.code+" | "+part.deviceId+" | "+Utils.formatDateTimeSec(new Date(actime))+" | "+c[0]+" "+c[1]+" | DELAY = "+((new Date()).getTime()-actime)/1000.0+" sec delay") ;
 			part.ping(c,e.HRT,false/*sos */,actime,e.ALT,0/* overall rank*/,0/*groupRank*/,0/*genderRank*/);
 		}
 	}
@@ -92,17 +94,20 @@ setInterval(function(e)
 	{
 		if (arr.length >= 80 || (arr.length && force)) 
 		{			
+			//console.log("GETTING : "+url);			
+			//var st=(new Date()).getTime();
 			var url = "http://liverank-portal.de/triathlon/rest/raceRecord/"+arr.join(",")+"?from="+(startTime-delay)+"&to="+(ctime-delay);
 			arr=[];
-			//console.log("GETTING : "+url);			
 			var client=request.createClient("http://liverank-portal.de");
-			var st=(new Date()).getTime();
 			client.get(url, function(err, res, body) 
 			{
-				var dur=(new Date()).getTime();
-				dur-=st;
-				console.log("FINISH : "+dur/1000.0+" sec.");
-				console.log(body)
+				onData(body);
+				//var dur=(new Date()).getTime();
+				//dur-=st;
+				//console.log("FINISH : "+dur/1000.0+" sec.");
+				/*console.log("ERR : "+err);
+				console.log("BODY : ");
+				console.log(body);*/
 			});
 		}
 	}
@@ -120,3 +125,5 @@ if (Config.simulation.enabled)
 	Simulator.startSimulation(TRACK,Config.simulation.speedCoef);	
 
 
+//--------------------------------------------------------------------------
+exports.trackedParticipants=trackedParticipants;

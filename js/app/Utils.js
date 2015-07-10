@@ -362,6 +362,10 @@ function formatDateTime(d) {
 	return formatDate(d)+" "+formatTime(d);
 }
 
+function formatDateTimeSec(d) {
+	return formatDate(d)+" "+formatTimeSec(d);
+}
+
 function formatTimeSec(d) {
     var hh = d.getHours();
     if(hh<10){
@@ -541,6 +545,7 @@ exports.colorAlphaArray=colorAlphaArray;
 exports.escapeHTML=escapeHTML;
 exports.formatNumber2=formatNumber2;
 exports.formatDateTime=formatDateTime;
+exports.formatDateTimeSec=formatDateTimeSec;
 exports.formatDate=formatDate;
 exports.formatTime=formatTime;
 exports.rainbow=rainbow;

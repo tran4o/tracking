@@ -84,14 +84,11 @@ exports.startSimulation = function(track,coef)
 			//var url = "http://liverank-portal.de/triathlon/rest/raceData/blah/"+part.deviceId;		
 			var json = generateJSON(part.deviceId,lons,lats,times);
 			var client = request.createClient("http://liverank-portal.de");
-			console.log(part.deviceId+" : ------------");
-			console.log(part.deviceId);
 			client.post('http://liverank-portal.de/triathlon/rest/raceData/blah/'+part.deviceId, json, function(err, res, body) 
 			{
-				  return console.log("POSTED for "+part.deviceId+" | "+res.statusCode);
-				
+				  //return console.log("POSTED for "+part.deviceId+" | "+res.statusCode);				
 			});
-			break;
+			//break;
 		}
 	},30*1000); /* 30 seconds every simulation */
 }

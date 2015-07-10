@@ -59,6 +59,18 @@ Class("Participant",
     //--------------------------------------
     has: 
 	{
+    	lastPingTimestamp : {
+    		is : "rw",
+    		init : null
+    	},
+    	signalLostDelay : {
+    		is : "rw",
+    		init : null
+    	},
+    	lastRealDelay : {
+    		is : "rw",
+    		init : 0
+    	},
     	track : {
     		is : "rw"
     	},
@@ -220,12 +232,16 @@ Class("Participant",
 					break;
 				}
 				if (sb.timestamp < ctime) {
-					console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
+					this.setSignalLostDelay(ctime-sb.timestamp);
+					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					break;
 				}
 			}
-			/*if (!ok)
-				console.log("Can not find avg for "+ctime);*/
+			if (!ok) {
+				this.setSignalLostDelayconsole.log("Can not find avg for "+ctime);
+			} else {
+				this.setSignalLostDelay(null);
+			}
 			return res;
 		},
 		
@@ -247,8 +263,11 @@ Class("Participant",
 
 		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
 		{
+			var llt = (new Date()).getTime(); 
 			if (!ctime)
-				ctime=(new Date()).getTime();
+				ctime=llt;
+			this.setLastRealDelay(llt-ctime);
+			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
 			if (isSOS) {
 				this.setIsSOS(true); 
@@ -412,6 +431,13 @@ Class("Participant",
 			if (this.states.length)
 				return this.states[this.states.length-1].gps;
 			return this.getPosition();
+		},
+
+		getElapsed : function() 
+		{
+			if (this.states.length)
+				return this.states[this.states.length-1].elapsed;
+			return 0;
 		},
 
 		getPopupHTML : function() {
