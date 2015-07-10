@@ -29,7 +29,7 @@ var CONFIG =
 	math : {
 		gpsInaccuracy : 20,
 		speedAndAccelerationAverageDegree : 2,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 80,	// display delay in SECONDS
+		displayDelay : 100,	// display delay in SECONDS
 		interpolateGPSAverage : 0, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
 		roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
