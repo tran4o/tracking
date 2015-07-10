@@ -282,7 +282,7 @@ function initGUI()
 
 		var stream = new StreamData();
 		stream.legacy(p1);
-		//break;		
+		
 	}
 
 	/*var stream = new StreamData();
