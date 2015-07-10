@@ -54,9 +54,7 @@ exports.startSimulation = function(track,coef)
 	console.log("Staring simulation with coef "+coef);
 	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
-	var coef = track.getTrackLength() / track.getTrackLengthInWGS84();  
-	var p0 = track.route[0];
-	var randcoef = CONFIG.simulation.gpsInaccuracy * 0.0001 / WGS84SPHERE.haversineDistance(p0, [p0[0]+0.0001, p0[1]+0.0001]);		
+	var coef = CONFIG.simulation.gpsInaccuracy * track.getTrackLength() / track.getTrackLengthInWGS84();  
 	setInterval(function(e) 
 	{
 		var ctime = (new Date()).getTime();
