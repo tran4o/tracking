@@ -19,22 +19,7 @@ var EVENTS = [
     }
 ];
 var PARTICIPANTS = [
-    {"code" : "PART0001", "deviceId" : "353816058289150", "name" : "Timo Bracht",  "follow" : "0", "bib" : 1,"country" : "Germany","age" : 22,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0002", "deviceId" : "353816058289168", "name" : "Matty Ried", "follow" : "0", "bib" : 2,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0003", "deviceId" : "353816058288699", "name" : "Felipe Bastos", "follow" : "0", "bib" : 3,"country" : "Brazil","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0005", "deviceId" : "353816058291891", "name" : "Birgit Fischer",  "follow" : "0", "bib" : 4,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0004", "deviceId" : "353816058291875", "name" : "Vorname Nachname", "follow" : "0", "bib" : 3,"country" : "Brazil","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0006", "name" : "Thomas Größe ", "follow" : "0", "bib" : 5,"country" : "USA","age" : 32,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0007", "name" : "Albert Müller", "follow" : "0", "bib" : 6,"country" : "Germany","age" : 49,"gender" : "F","occupation" : "not available" , "pulse" : 140 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-
-    {"code" : "PART0008", "name" : "Herr Mann",  "follow" : "0", "bib" : 7,"country" : "Bulgaria","age" : 390,"gender" : "M","occupation" : "free lancer" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0009", "name" : "Leo Dor", "follow" : "0", "bib" : 8,"country" : "Canada","age" : 42,"gender" : "M","occupation" : "manager"  , "pulse" : 180 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    
     {"code" : "PART0010", "deviceId" : "353816058291727", "name" : "T B115",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
     {"code" : "PART0010", "deviceId" : "353816058288962", "name" : "T B116",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3}
-    
-    
-    ];
-
-
+];
 var FAVORITES = PARTICIPANTS.filter(function(v){ return (v && v.follow == 1);});
