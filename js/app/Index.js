@@ -279,10 +279,10 @@ function initGUI()
 		p1.setCountry(FAVORITES[i].country);
 		//---------------------------------------------------------------
 		PARTS.push(p1);
-		//break;
 
 		var stream = new StreamData();
 		stream.legacy(p1);
+		//break;		
 	}
 
 	/*var stream = new StreamData();
