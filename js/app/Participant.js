@@ -438,7 +438,7 @@ Class("Participant",
 				GUI.participantsLayer.getSource().addFeature(feature);
 			}
 			this.setPosition(pos);
-			this.ping(pos,0,false,0 /* placeholder ctime */,0,0,0,0,0);
+			this.ping(pos,0,false,1 /* placeholder ctime not 0 */,0,0,0,0,0);
 		},
 		
 		getFreq : function() 
