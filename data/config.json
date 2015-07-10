@@ -9,7 +9,7 @@
 	},
 	"starts" : 
 	[
-		{ "fromStartNo" : 1, "toStartNo" : 999999 , "startTime" : "10.07.2015 22:00" }
+		{ "fromStartNo" : 1, "toStartNo" : 999999 , "startTime" : "11.07.2015 01:30" }
 	],
 	
 	"simulation" : 
