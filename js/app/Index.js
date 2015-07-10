@@ -23,7 +23,12 @@ function transformToAssocArray( prmstr ) {
 }
 var params = getSearchParameters();
 //-----------------------------------------------
-console.warn(params);
+if (params["debug"] && params["debug"] != "0") 
+{
+	// DEBUG MODE CONFIGURATIOn
+	CONFIG.timeouts.animationFrame=4; // 4 sec
+}
+//-----------------------------------------------
 
 var tableFavorites=null;
 var tableParticipants=null;
