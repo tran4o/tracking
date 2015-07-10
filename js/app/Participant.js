@@ -411,7 +411,7 @@ Class("Participant",
 				this.states.shift();
 			// REMOVE DEBUG TEST
 			for (var i=0;i<this.states.length-1;i++) {
-				if (this.states[i].timestamp > this.this.states[i+1].timestamp)
+				if (this.states[i].timestamp > this.states[i+1].timestamp)
 				{
 					console.error("ERROR ADD STATE ORDER!!!");
 					debugger;
