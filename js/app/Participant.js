@@ -312,6 +312,7 @@ Class("Participant",
 			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
 			if (!result)
 				result=[];
+			
 			//console.log("FOUND "+result.length);
 			for (var _i=0;_i<result.length;_i++)
 			{
@@ -339,9 +340,9 @@ Class("Participant",
 			}
 			
 			if (minf == null)
-				console.error("MINF NULL ("+result.length+")");
+				console.error("MINF NULL ("+result.length+") COEF="+coef);
 			else
-				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m)");
+				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m) COEF="+coef);
 			
 			// ?? OK SKIP DISCARD!!!
 			if (minf == null) 

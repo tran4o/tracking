@@ -50,7 +50,7 @@ function generateJSON(imei,lons,lats,times)
 //------------------------------------------
 exports.startSimulation = function(track,coef)  
 {
-	var trackInSeconds = 10*60;	//10 min
+	var trackInSeconds = 5*60;	//10 min
 	console.log("Staring simulation with coef "+coef);
 	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
@@ -71,7 +71,9 @@ exports.startSimulation = function(track,coef)
 				var tm = ctime - (2-k)*10*1000;
 				if (tm < stime)
 					tm=stime;
-				var elapsed = ((tm - stime)/1000.0)/trackInSeconds; 
+				var elapsed = ((tm - stime)/1000.0)/trackInSeconds;
+				if (elapsed > 1)
+					elapsed=1;
 				var pos = track.getPositionFromElapsed(elapsed % 1.0);
 				var dist1 = (Math.random()*2.0-1.0) * randcoef;
 				var dist2 =  (Math.random()*2.0-1.0)  * randcoef;
