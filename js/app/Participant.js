@@ -423,7 +423,7 @@ Class("Participant",
 		{
 			this.setTrack(track);
 			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});			
+			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});			
 			this.setElapsed(state.elapsed);
 			this.setStates([state]);
 			this.setIsSOS(false);
