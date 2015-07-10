@@ -19,7 +19,6 @@ app.get('/raceStart/:id', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var id = req.params.id;
 	var part = Tracking.partLookupByIMEI[id];
-	console.log(part.code);
 	if (!part) {
 		res.send(JSON.stringify({RET:"ERR",RETMSG:"PARTICIPANT BY IMEI NOT FOUND"}));
 	} else {
