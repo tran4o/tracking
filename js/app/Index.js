@@ -2,7 +2,7 @@
 require('./Track');
 require('./GUI');
 require('./Participant');
-require('./Simulator');
+require('./StreamData');
 window.CONFIG=require('./Config');
 var Utils=require('./Utils');
 for (var e in Utils) 
@@ -268,9 +268,7 @@ function errorRoute(err) {
 function initGUI() 
 {
 	GUI.init({skipExtent:true});
-	var scoef = 6*5*5*3; //5*4;//*3;//*3;//4.729;
 	var images=["img/timo_bracht.png","img/matty_ried.png","img/felipe_bastos.png"];
-	var sim = new Simulator();
 	for (var i=0;i<FAVORITES.length;i++)
 	{
 		var p1 = TRACK.newParticipant(FAVORITES[i].id,FAVORITES[i].deviceId,FAVORITES[i].name);
@@ -280,10 +278,12 @@ function initGUI()
 		p1.setAge(FAVORITES[i].age);
 		p1.setCountry(FAVORITES[i].country);
 		//---------------------------------------------------------------
-		sim.simulateParticipantSimple(p1,30*scoef*(1+i/7.0));
 		PARTS.push(p1);
 	}
-    // add all the moving cameras
+	var stream = new StreamData();
+	stream.start(TRACK);
+
+	// add all the moving cameras
 	/*for (var j=0;j<MOVING_CAMS.length;j++)	{
 		var movingCam = TRACK.newMovingCam(MOVING_CAMS[j].id,MOVING_CAMS[j].deviceId,MOVING_CAMS[j].name);
 		//---------------------------------------------------------------

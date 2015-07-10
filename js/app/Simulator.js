@@ -14,7 +14,7 @@ Class("Simulator",
                 simulateParticipantSimple : function(part,trackInSeconds)
                 {
                         var delay = 60*1000*60*2; // 2 hours delay
-                        var reqdelay = 45*1000; // 45 secs req delay
+                        var reqdelay = 10*1000; // 45 secs req delay
                         var p0 = TRACK.route[0];
                         var randcoef = CONFIG.simulation.gpsInaccuracy * 0.0001 / WGS84SPHERE.haversineDistance(p0, [p0[0]+0.0001, p0[1]+0.0001]);
                         var stime = (new Date()).getTime();

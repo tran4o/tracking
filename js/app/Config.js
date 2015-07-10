@@ -12,7 +12,8 @@ var CONFIG =
 	{
 		deviceTimeout : 60*5,
 		animationFrame : Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
-		gpsLocationDebugShow : 4		// time to show gps location (debug) info
+		gpsLocationDebugShow : 4,		// time to show gps location (debug) info
+		streamDataInterval : 10 /* seconds */
 	},
 	distances : // in m
 	{

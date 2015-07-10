@@ -15,7 +15,7 @@
 	
 	"simulation" : 
 	{
-		"enabled" : 0,
+		"enabled" : 1,
 		"speedCoef" : 1
 	}
 }
