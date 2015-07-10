@@ -26,10 +26,10 @@ Class("StreamData",
                 var mmap = {};
                 for (var i in track.participants) 
                 {
-                	var part = track.participants[i];
-                	json.push({to : ctime-delay,from : part.startTime-delay,IMEI : part.deviceId});
-                	//json.push({to : 900719925474099,from : 0,IMEI : part.deviceId});
-                	mmap[part.deviceId]=part;
+                	var pp = track.participants[i];
+                	json.push({to : ctime-delay,from : pp.startTime-delay,IMEI : pp.deviceId});
+                	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
+                	mmap[pp.deviceId]=part;
                 }
                 function processData(data) 
                 {
