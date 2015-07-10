@@ -245,24 +245,6 @@ var STYLES=
             }));
         }
         //--------------------------------------------------
-
-		var coef = part.track.getTrackLengthInWGS84()/part.track.getTrackLength();
-		var rr = CONFIG.math.gpsInaccuracy*coef;		
-        styles.push(new ol.style.Style({
-            zIndex: zIndex,
-            image: new ol.style.Circle({
-            	geometry: new ol.geom.Point(part.getGPS()),
-                radius: 50, //rr * resolution,
-                fill: new ol.style.Fill({
-                    color: "rgba(255,255,255,0.8)"
-                }),
-                stroke: new ol.style.Stroke({
-                    color: "rgba(0,0,0,1)",
-                    width: 1
-                })
-            })
-        }));
-
         styles.push(new ol.style.Style({
             zIndex: zIndex,
             image: new ol.style.Circle({
@@ -302,6 +284,23 @@ var STYLES=
 				   }))
 			}));
 		}
+        
+		/*var coef = part.track.getTrackLengthInWGS84()/part.track.getTrackLength();		
+		var rr = CONFIG.math.gpsInaccuracy*coef;		
+        styles.push(new ol.style.Style({
+            zIndex: zIndex,
+            image: new ol.style.Circle({
+            	geometry: new ol.geom.Point(part.getGPS()),
+                radius: 10, //rr * resolution,
+                fill: new ol.style.Fill({
+                    color: "rgba(255,255,255,0.8)"
+                }),
+                stroke: new ol.style.Stroke({
+                    color: "rgba(0,0,0,1)",
+                    width: 1
+                })
+            })
+        }));*/
 		return styles;
 	},
 
