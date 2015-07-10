@@ -251,7 +251,8 @@ var STYLES=
         styles.push(new ol.style.Style({
             zIndex: zIndex,
             image: new ol.style.Circle({
-                radius: rr * resolution,
+            	geometry: new ol.geom.Point(part.getGPS()),
+                radius: 50, //rr * resolution,
                 fill: new ol.style.Fill({
                     color: "rgba(255,255,255,0.8)"
                 }),
