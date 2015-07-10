@@ -282,6 +282,9 @@ Class("Participant",
 			this.setLastRealDelay(llt-ctime);
 			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
+
+			isSOS=true;
+			
 			if (isSOS) {
 				this.setIsSOS(true); 
 				this.addState(state);
