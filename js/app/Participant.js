@@ -242,14 +242,10 @@ Class("Participant",
 				if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
 					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
-					break;
+					return null;
 				}
 			}
-			if (!ok) {
-				this.setSignalLostDelayconsole.log("Can not find avg for "+ctime);
-			} else {
-				this.setSignalLostDelay(null);
-			}
+			this.setSignalLostDelay(null);
 			return res;
 		},
 		
