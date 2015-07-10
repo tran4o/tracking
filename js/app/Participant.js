@@ -245,11 +245,11 @@ Class("Participant",
 					ok=true;
 					break;
 				}
-				/*if (sb.timestamp < ctime) {
+				if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
-					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
+					console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					return null;
-				}*/
+				}
 			}
 			if (!ok)
 				console.log("NOT FOUND TIME"+Utils.formatDateTimeSec(new Date(ctime)));
