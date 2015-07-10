@@ -2,6 +2,7 @@
 require('./Track');
 require('./GUI');
 require('./Participant');
+require('./Simulator');
 window.CONFIG=require('./Config');
 var Utils=require('./Utils');
 for (var e in Utils) 
