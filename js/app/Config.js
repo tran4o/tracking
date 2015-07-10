@@ -11,7 +11,7 @@ var CONFIG =
 	timeouts : // in seconds
 	{
 		deviceTimeout : 60*5,
-		animationFrame : 2, //2, //Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
+		animationFrame : 0.1, //2, //2, //Utils.mobileAndTabletCheck() ? 0.4 : 0.1,
 		gpsLocationDebugShow : 4,		// time to show gps location (debug) info
 		streamDataInterval : 10 /* seconds */
 	},
@@ -34,7 +34,7 @@ var CONFIG =
 	math : {
 		gpsInaccuracy : 20,
 		speedAndAccelerationAverageDegree : 2,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 100,	// display delay in SECONDS
+		displayDelay : 70,	// display delay in SECONDS
 		interpolateGPSAverage : 0, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
 		roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
