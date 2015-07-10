@@ -338,8 +338,13 @@ Class("Participant",
 				}
 			}
 			
-			// ?? OK SKIP DISCARD!!!
 			if (minf == null)
+				console.error("MINF NULL ("+result.length+")");
+			else
+				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m)");
+			
+			// ?? OK SKIP DISCARD!!!
+			if (minf == null) 
 				return;
 			
 			// minf = overall minimum of elapsed intersections
