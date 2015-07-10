@@ -161,17 +161,21 @@ var STYLES=
 	//--------------------------------------
 	"debugGPS" : function(feature,resolution) 
 	{
-		var coef = ((new Date()).getTime()-feature.timeCreated)/(CONFIG.timeouts.gpsLocationDebugShow*1000);
+		/*var coef = ((new Date()).getTime()-feature.timeCreated)/(CONFIG.timeouts.gpsLocationDebugShow*1000);
 		if (coef > 1)
-			coef=1;
+			coef=1;*/
+
+		var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
+		var minf = null;
+		var rr = CONFIG.math.gpsInaccuracy*coef;
 
 		return [
 		        new ol.style.Style({
 		        image: new ol.style.Circle({
-		            radius: coef*20,
+		            radius: rr,				//coef*20,
 		            stroke: new ol.style.Stroke({
 		            	//feature.color
-		                color: colorAlphaArray(feature.color,(1.0-coef)*1.0), 
+		                color: colorAlphaArray(feature.color,0.7),     //colorAlphaArray(feature.color,(1.0-coef)*1.0), 
 		                width: 4
 		            })
 		          })
