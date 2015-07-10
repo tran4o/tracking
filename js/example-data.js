@@ -19,7 +19,8 @@ var EVENTS = [
     }
 ];
 var PARTICIPANTS = [
-    {"code" : "PART0010", "deviceId" : "3538160582917270", "name" : "T B115",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
-    {"code" : "PART0010", "deviceId" : "3538160582889620", "name" : "T B116",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3}
+    {"code" : "PART0010", "deviceId" : "353816058291727", "name" : "T B115",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+    {"code" : "PART0010", "deviceId" : "353816058288962", "name" : "T B116",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3},
+    {"code" : "PART0010", "deviceId" : "353816058285729", "name" : "T B116",  "follow" : "1", "bib" : 9,"country" : "Germany","age" : 27,"gender" : "F","occupation" : "athlete" , "pulse" : 120 , "overall-rank" : 1,"group-rank" : 2, "gender-rank" : 3}
 ];
 var FAVORITES = PARTICIPANTS.filter(function(v){ return (v && v.follow == 1);});
