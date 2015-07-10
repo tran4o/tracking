@@ -161,21 +161,16 @@ var STYLES=
 	//--------------------------------------
 	"debugGPS" : function(feature,resolution) 
 	{
-		/*var coef = ((new Date()).getTime()-feature.timeCreated)/(CONFIG.timeouts.gpsLocationDebugShow*1000);
+		var coef = ((new Date()).getTime()-feature.timeCreated)/(CONFIG.timeouts.gpsLocationDebugShow*1000);
 		if (coef > 1)
-			coef=1;*/
-
-		var coef = TRACK.getTrackLengthInWGS84()/TRACK.getTrackLength();
-		var minf = null;
-		var rr = CONFIG.math.gpsInaccuracy*coef;
-
+			return [];
 		return [
 		        new ol.style.Style({
 		        image: new ol.style.Circle({
-		            radius: rr,				//coef*20,
+		            radius: coef*20,
 		            stroke: new ol.style.Stroke({
 		            	//feature.color
-		                color: colorAlphaArray(feature.color,0.7),     //colorAlphaArray(feature.color,(1.0-coef)*1.0), 
+		                color: colorAlphaArray(feature.color,(1.0-coef)*1.0), 
 		                width: 4
 		            })
 		          })
@@ -249,6 +244,47 @@ var STYLES=
                 })
             }));
         }
+        //--------------------------------------------------
+
+		var coef = part.track.getTrackLengthInWGS84()/part.track.getTrackLength();
+		var rr = CONFIG.math.gpsInaccuracy*coef;		
+        styles.push(new ol.style.Style({
+            zIndex: zIndex,
+            image: new ol.style.Circle({
+                radius: rr,
+                fill: new ol.style.Fill({
+                    color: "rgba(255,255,255,0.8)"
+                }),
+                stroke: new ol.style.Stroke({
+                    color: "rgba(0,0,0,1)",
+                    width: 1
+                })
+            })
+        }));
+
+        styles.push(new ol.style.Style({
+            zIndex: zIndex,
+            image: new ol.style.Circle({
+                radius: 17,
+                fill: new ol.style.Fill({
+                    color: part.isDiscarded || part.isSOS ? "rgba(192,0,0," + (Math.sin(animFrame) * 0.7 + 0.3) + ")" : "rgba(" + colorAlphaArray(part.color, 0.85).join(",") + ")"
+                }),
+                stroke: new ol.style.Stroke({
+                    color: part.isDiscarded || part.isSOS ? "rgba(255,0,0," + (1.0 - (Math.sin(animFrame) * 0.7 + 0.3)) + ")" : "#ffffff",
+                    width: 3
+                })
+            }),
+            text: new ol.style.Text({
+                font: 'normal 13px Lato-Regular',
+                fill: new ol.style.Fill({
+                    color: '#FFFFFF'
+                }),
+                text: part.getInitials(),
+                offsetX: 0,
+                offsetY: 0
+            })
+        }));
+
 
         if (isDirection && part.getRotation() != null)
         {
