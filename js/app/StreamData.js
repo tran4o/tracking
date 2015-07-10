@@ -1,4 +1,5 @@
 require('joose');
+var Utils = require('./Utils');
 var CONFIG = require('./Config');
 Class("StreamData",
 {
