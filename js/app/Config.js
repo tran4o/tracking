@@ -29,7 +29,7 @@ var CONFIG =
 	},
 	simulation : {
 		pingInterval : 10, // interval in seconds to ping with gps data
-		gpsInaccuracy : 5 	// error simulation in METER (look math.gpsInaccuracy, min 1/2)
+		gpsInaccuracy : 30 	// error simulation in METER (look math.gpsInaccuracy, min 1/2)
 	},	
 	math : {
 		gpsInaccuracy : 20,
