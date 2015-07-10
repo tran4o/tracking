@@ -89,7 +89,7 @@ Class("StreamData",
                 	    }
                 	});
                 }                		
-                //setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
+                setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
         	}
         	doTick();
         }
