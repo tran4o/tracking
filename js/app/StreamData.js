@@ -77,7 +77,6 @@ Class("StreamData",
                 	    data: JSON.stringify(json),
                 	    contentType: "application/json; charset=utf-8",
                 	    dataType: "json",
-                        processData: false,
                 	    success: function(data){
                 	    	console.log(data);
                 	    	console.log("OOOK ");
@@ -88,7 +87,7 @@ Class("StreamData",
                 	    }
                 	});
                 }                		
-                setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
+                //setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
         	}
         	doTick();
         }
