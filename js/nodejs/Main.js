@@ -23,7 +23,7 @@ app.get('/raceStart/:id', function (req, res) {
 		res.send(JSON.stringify({RET:"ERR",RETMSG:"PARTICIPANT BY IMEI NOT FOUND"}));
 	} else {
 		var now = (new Date()).getTime();
-		var startperiod = parseInt((part.startTime-now)/1000.0);		// seconds
+		var startperiod = parseInt((part.startTime-now)/(1000.0*60));		// seconds
 		if (startperiod < 0)
 			startperiod=0;
 		var endperiod = 9999999;									    // seconds
