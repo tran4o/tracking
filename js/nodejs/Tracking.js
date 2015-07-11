@@ -1,5 +1,7 @@
 require('./../app/Track');
+require('./../app/StreamData');
 var Utils = require('./../app/Utils');
+var CONFIG = require('./../app/Config');
 var Config = require('./Config');
 var Simulator = require('./Simulator');
 var request = require('request-json');
@@ -21,7 +23,6 @@ function getAge(birthDate) {
     }
     return age;
 }
-
 var trackedParticipants=[];
 var partLookupByIMEI={};
 for (var i in Config.participants) 
@@ -36,9 +37,9 @@ for (var i in Config.participants)
 		part.setAgeGroup(p.ageGroup);
 		part.setAge(getAge(new Date(p.birthDate)));
 		part.setCountry(p.nationality);
-		part.setStartPos(parseInt(p.startNo));
-		//part.setIcon(images[i]);
-		//part.setImage(images[i]);
+		part.setStartPos(parseInt(p.startNo));		
+		part.setIcon("data/img/"+devId+".jpg");
+		part.setImage("data/img/"+devId+".jpg");
 		trackedParticipants.push(part);
 		partLookupByIMEI[devId]=part;
 		//-----------------------------
@@ -50,87 +51,35 @@ console.log(trackedParticipants.length+" tracked participants found");
 //--------------------------------------------------------------------------
 var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 var startTime = (new Date()).getTime() - 10*60*1000;	// 10 minutes before
-// every 4 sec.
-setInterval(function(e) 
-{
+function isInRaceChecker() {
 	var ctime = (new Date()).getTime();
 	var isTime = (ctime >= Config.event.startTime.getTime() && ctime <= Config.event.endTime.getTime());
-	if (!isTime) 
-		return;
-	function onData(data) 
-	{
-		if (!data || !data.length)
-			return;
-		for (var i=0;i<data.length;i++) 
-		{
-			var e = data[i];		
-			//----------------------------------
-			delete e._id;
-			delete e.TS;		
-			e.LON=parseInt(e.LON);
-			e.LAT=parseInt(e.LAT);
-			if (isNaN(e.LON) || isNaN(e.LAT))
-				continue;
-			if (e.ALT)
-				e.ALT=parseFloat(e.ALT);
-			if (e.TIME)
-				e.TIME=parseFloat(e.TIME);		
-			if (e.HRT)
-				e.HRT=parseInt(e.HRT);
-			//----------------------------------
-			var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
-			var actime = parseInt(e.EPOCH);
-			if (!actime)
-				continue;
-			var part = partLookupByIMEI[e.IMEI];
-			if (!part) {
-				console.log("FUCK PART "+e.IMEI);
-				continue;
-			}
-			actime+=delay;
-			console.log("PING "+part.code+" | "+part.deviceId+" | "+Utils.formatDateTimeSec(new Date(actime))+" | "+c[0]+" "+c[1]+" | DELAY = "+((new Date()).getTime()-actime)/1000.0+" sec delay") ;
-			part.ping(c,e.HRT,false/*sos */,actime,e.ALT,0/* overall rank*/,0/*groupRank*/,0/*genderRank*/);
-		}
-	}
-	//-------------------------------------------------------------------------------------------------------------------------------------
-	var arr=[];
-	function check(force) 
-	{
-		if (arr.length >= 80 || (arr.length && force)) 
-		{			
-			//console.log("GETTING : "+url);			
-			//var st=(new Date()).getTime();
-			var url = "http://liverank-portal.de/triathlon/rest/raceRecord/"+arr.join(",")+"?from="+(startTime-delay)+"&to="+(ctime-delay);
-			arr=[];
-			var client=request.createClient("http://liverank-portal.de");
-			client.get(url, function(err, res, body) 
-			{
-				onData(body);
-				//var dur=(new Date()).getTime();
-				//dur-=st;
-				//console.log("FINISH : "+dur/1000.0+" sec.");
-				console.log("ERR : "+err);
-			});
-		}
-	}
-	var crrtime = (new Date()).getTime();
-	for (var i in trackedParticipants) 
-	{
-		var part = trackedParticipants[i];
-		if (crrtime >= part.startTime) 
-		{
-			arr.push(part.deviceId);
-			check()
-		}
-	}
-	check(true);
-	startTime=ctime;
-},4000);
+	return isTime;
+}
 //--------------------------------------------------------------------------
 if (Config.simulation.enabled) 
 	Simulator.startSimulation(TRACK,Config.simulation.speedCoef);	
-
-
 //--------------------------------------------------------------------------
 exports.trackedParticipants=trackedParticipants;
 exports.partLookupByIMEI=partLookupByIMEI;
+//--------------------------------------------------------------------------
+CONFIG.math.displayDelay = Config.interpolation;
+var stream = new StreamData();
+stream.start(TRACK,inRaceChecker);
+//--------------------------------------------------------------------------
+// EVERY 5 seconds interpolation and ranking calculations
+//--------------------------------------------------------------------------
+setInterval(function() 
+{
+	if (!inRaceChecker())
+		return;	
+	var ctime = (new Date()).getTime();
+	for (var i in trackedParticipants) 
+	{
+		var part = trackedParticipants[i];
+		part.calculateElapsedAverage(ctime);
+	}
+},5000);
+
+
+

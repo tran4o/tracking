@@ -9,7 +9,7 @@ Class("StreamData",
     //--------------------------------------
     methods:
     {
-        start : function(track)
+        start : function(track,checker)
         {
             var url = "http://liverank-portal.de/triathlon/rest/stream"; 
         	var delay = -(new Date()).getTimezoneOffset()*60*1000;		// 120 for gmt+2
@@ -21,6 +21,8 @@ Class("StreamData",
         	//-------------------------------------------------------------------------        	
         	function doTick() 
         	{
+        		if (checker && !checker())
+        			return;
                 var json=[];
                 var ctime = (new Date()).getTime();
                 var mmap = {};

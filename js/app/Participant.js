@@ -229,9 +229,7 @@ Class("Participant",
 		{
 			var res=null;
 			ctime-=CONFIG.math.displayDelay*1000;
-			
 			//console.log("SEARCHING FOR TIME "+Utils.formatDateTimeSec(new Date(ctime)));
-			
 			var ok = false;
 			for (var i=this.states.length-2;i>=0;i--) 
 			{

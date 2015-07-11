@@ -16,5 +16,10 @@
 		"enabled" : 0,
 		"speedCoef" : 1,
 		"debugStarts" : 0
+	},
+	"interpolation" : 
+	{
+		"displayDelay" : 40
+		
 	}
 }
