@@ -61,6 +61,10 @@ var STYLES=
             STYLES._genDirection(geomswim, ww, resolution, CONFIG.appearance.trackColorSwim, styles);
 
             STYLES._genDistanceKm(ww, resolution, coords, track.distances, 0, i, styles);
+
+			// for now don't show this checkpoint
+			//if (GUI.isShowSwim)
+			//	STYLES._genCheckpoint(geomswim, CONFIG.appearance.trackColorSwim, styles);
         }
         if (geombike && GUI.isShowBike)
         {
@@ -75,6 +79,14 @@ var STYLES=
             STYLES._genDirection(geombike, ww, resolution, CONFIG.appearance.trackColorBike, styles);
 
             STYLES._genDistanceKm(ww, resolution, coords, track.distances, i, j, styles);
+
+			// add checkpoint if this is not already added as a hotspot
+			if (!track.isAddedHotSpotSwimBike) {
+				if (CONFIG.appearance.isShowImageCheckpoint)
+					STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
+				else if (GUI.isShowBike)
+					STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
+			}
         }
 		if (geomrun && GUI.isShowRun)
 		{
@@ -89,34 +101,15 @@ var STYLES=
             STYLES._genDirection(geomrun, ww, resolution, CONFIG.appearance.trackColorRun, styles);
 
             STYLES._genDistanceKm(ww, resolution, coords, track.distances, j, track.distances.length, styles);
-        }
 
-        // CHECKPOINTS --------------------------
-        if (geomswim)
-        {
-			if (GUI.isShowSwim)
-				STYLES._genCheckpoint(geomswim, CONFIG.appearance.trackColorSwim, styles);
-		}
-		if (geombike)
-		{
-			// if this is not already added as a hotpost
-			if (!track.isAddedHotSpotSwimBike) {
-				if (CONFIG.appearance.isShowImageCheckpoint)
-					STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
-				else if (GUI.isShowBike)
-					STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
-			}
-		}
-		if (geomrun)
-		{
-			// if this is not already added as a hotpost
+			// add checkpoint if this is not already added as a hotspot
 			if (!track.isAddedHotSpotBikeRun) {
 				if (CONFIG.appearance.isShowImageCheckpoint)
 					STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
 				else if (GUI.isShowBike)
 					STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
 			}
-		}
+        }
 
 		// START-FINISH --------------------------
 		if (coords && coords.length >= 2)
@@ -318,7 +311,7 @@ var STYLES=
 		styles.push(new ol.style.Style({
 			image: new ol.style.Icon(({
 				// TODO Rumen - it's better all images to be the same size, so the same scale
-				scale : 0.035,
+				scale : 0.040,
 				src : CONFIG.appearance.imageCam.split(".svg").join((cam.seqId+1) + ".svg")
 			}))
 		}));
@@ -334,7 +327,7 @@ var STYLES=
 		// TODO Rumen - it's better all images to be the same size, so the same scale
 		var scale = 1;
 		if (type === CONFIG.hotspot.camSwimBike || type === CONFIG.hotspot.camBikeRun) {
-			scale = 0.035;
+			scale = 0.040;
 		}
 
         styles.push(new ol.style.Style({
