@@ -10,11 +10,11 @@
 	"starts" : 
 	[
 		{ "fromStartNo" : 1, "toStartNo" : 999999 , "startTime" : "11.07.2015 01:30" }
-	],
-	
+	],	
 	"simulation" : 
 	{
 		"enabled" : 0,
-		"speedCoef" : 1
-	}
+		"speedCoef" : 1,
+		"debugStarts" : 1
+	},
 }
