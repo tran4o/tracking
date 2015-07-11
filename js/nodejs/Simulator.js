@@ -54,7 +54,14 @@ exports.startSimulation = function(track,coef)
 	console.log("Staring simulation with coef "+coef);
 	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
-	var coef = CONFIG.simulation.gpsInaccuracy * track.getTrackLength() / track.getTrackLengthInWGS84();  
+	var coef = CONFIG.simulation.gpsInaccuracy * track.getTrackLength() / track.getTrackLengthInWGS84();
+	
+	// clear all gps tracking data first..
+	for (var i in track.participants) 
+	{
+		var id = track.participants[i].deviceId;
+		request.get("http://liverank-portal.de/triathlon/rest/clearRace/"+id);
+	}
 	setInterval(function(e) 
 	{
 		var ctime = (new Date()).getTime();

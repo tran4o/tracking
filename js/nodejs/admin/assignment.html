@@ -276,7 +276,7 @@ $( document ).ready(function()
 	});
 	
 	function updateButtons() {
-		if (imgNew || $(this).val() != $(this).data("last-ok")) 
+		if (imgNew || $("#imei").val() != $("#imei").data("last-ok")) 
 		{
 			$("#id").attr("disabled",true);
 			$("#name").attr("disabled",true);
