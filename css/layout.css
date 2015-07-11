@@ -187,6 +187,20 @@ BODY
 	top:0;
 }
 
+#tabcont, #tabcont > [role=tabpanel] {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+#mikaTiming {
+	bottom: 10px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 60px;
+}
+
 #header {
 	z-index : 999999;
 	position:absolute;
