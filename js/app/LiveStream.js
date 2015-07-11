@@ -50,7 +50,7 @@ Class("LiveStream", {
             });
         },
 
-        show: function(streamId) {
+        show: function(streamId, completeCallback) {
             if (!this._isValid)
                return;
 
@@ -72,39 +72,40 @@ Class("LiveStream", {
                 return;
             }
 
-            this._showStream($thumb);
+            this._showStream($thumb, completeCallback);
         },
 
         /**
          *
          * @return {boolean}
          */
-        toggle : function() {
+        toggle : function(completeCallback) {
             if (!this._isValid)
                 return;
 
             // if shown hide otherwise show
             if (this._isShown)
-                this._hide();
+                this._hide(completeCallback);
             else
-                this.show();
+                this.show(completeCallback);
 
             return this._isShown;
         },
 
         /* Private Methods */
 
-        _hide : function() {
+        _hide : function(completeCallback) {
             var self = this;
-            this._$comp.slideUp(undefined, function() {
+            this._$comp.slideUp(400, function() {
                 // stop the stream when whole panel has completed animation
                 self._$comp.find(".liveStreamPlayer").empty();
+                completeCallback();
             });
 
             this._isShown = false;
         },
 
-        _showStream : function($thumb) {
+        _showStream : function($thumb, completeCallback) {
             // toggle the "inactive" class
             this._$comp.find(".liveStreamThumb").addClass("inactive");
             $thumb.removeClass("inactive");
@@ -112,11 +113,11 @@ Class("LiveStream", {
             // show the new stream
             var url = $thumb.data("url");
             var $player = this._$comp.find(".liveStreamPlayer");
-            $player.html('<iframe src=' + url + '?width=640&height=360&autoPlay=true&mute=false" width="490" height="300" frameborder="0" scrolling="no"> </iframe>');
+            $player.html('<iframe src=' + url + '?width=490&height=275&autoPlay=true&mute=false" width="490" height="275" frameborder="0" scrolling="no"> </iframe>');
 
             // show if not already shown
             if (!this._isShown)
-                this._$comp.slideDown();
+                this._$comp.slideDown(400, completeCallback);
             this._isShown = true;
         }
     }

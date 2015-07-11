@@ -203,23 +203,16 @@ BODY
 	border-radius: 0 0 40px 40px;
  	font-family : HarabaraMaisBold;
  	font-size : 18px;
+
 	background-image: url('../img/roth.jpg');
     background-repeat: no-repeat;
-    background-position: left center;  	
-}
+    background-position: left center;
 
-#header .menuitem {
-	float : left;
-	margin-right : 1em;
-	cursor : pointer;
-}
-
-#header .menuitem:hover {
-	color : red;
-}
-
-#header .last {
-	margin-right : 0;
+	/* for those browsers that support multiple backgrounds */
+	background-image: url("../img/roth.jpg"), url("../img/RacetheLegend.png");
+	background-position: left center, right center;
+	background-repeat: no-repeat;
+	background-size: auto auto, 200px auto;
 }
 
 #toolbar_map {
@@ -249,27 +242,26 @@ BODY
 	margin-left:-134px;
 }
 
-#partners {
+#link_partners, #link_legalNotice {
 	z-index: 9999999;
 	position: absolute;
 	bottom: 5px;
+	text-transform: uppercase;
+	color: white;
+	font-size: 10px;
+	cursor: pointer;
+}
+#link_partners {
 	margin-right: 140px;
 	right: 50%;
-	text-transform: uppercase;
-	color: white;
 }
 
-#legal_notice {
-	z-index: 9999999;
-	position: absolute;
-	bottom: 5px;
+#link_legalNotice {
 	left: 50%;
 	margin-left: 140px;
-	text-transform: uppercase;
-	color: white;
 }
 
-#button_livestream,
+#button_liveStream,
 #button_rank,
 #button_favorites,
 #button_participants,
@@ -284,7 +276,7 @@ BODY
   	width : 70px;
   	height : 70px;
 }
-#button_livestream img,
+#button_liveStream img,
 #button_rank img,
 #button_favorites img,
 #button_participants img {
@@ -307,7 +299,7 @@ BODY
 	margin-left : -95px;
 }
 
-#button_livestream {
+#button_liveStream {
 	margin-left : -15px;
 }
 
@@ -560,30 +552,48 @@ table.dataTable td {
 	min-height : 140px;
 }
 
-#liveStream {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    margin-left: -250px;
-    width: 500px;
-    z-index: 999999;
+#liveStream, #partners, #legalNotice {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	margin-left: -250px;
+	width: 500px;
+	z-index: 999998;
 
 	background: white;
 	border-radius: 0 0 40px 40px;
 	border: solid 3px;
 	border-top: none;
 	padding: 0 2px;
+}
 
-    height: 450px;   /* 269 (the third-party player) + 2 row of thumbs + some bottom padding */
+#partners, #legalNotice {
+	opacity: 0.8;
+	padding-top: 85px;
+}
+
+#legalNotice {
+	font-size: 8px;
+	padding-bottom: 30px;
+}
+
+.legalNoticeH1, .legalNoticeH2 {
+	font-weight: bold;
+}
+
+#partners img {
+	height: 50px;
+	margin-left: 20px;
+}
+
+#liveStream {
+    height: 450px;   /* 275(the third-party player) + 2 row of thumbs + some bottom padding */
 }
 
 .liveStreamPlayer {
-
 }
 
 .liveStreamThumbs {
-	position: absolute;
-	bottom: 30px
 }
 
 /* Center the Third-party player */
@@ -594,8 +604,8 @@ table.dataTable td {
 .liveStreamThumb {
 	display: inline-block;
 	background-color: darkslategrey;
-	width: 120px;
-	height: 50px;
+	width: 161px;
+	height: 52px; /* if two rows with 3 thumbs */
 }
 .liveStreamThumb.inactive {
 
