@@ -1,4 +1,6 @@
 require('joose');
+require('./Point');
+
 var CONFIG = require('./Config');
 var Utils = require('./Utils');
 
@@ -52,12 +54,22 @@ Class("ParticipantState",
 		}
 	}
 });		
-//----------------------------------------		
-Class("Participant", 
+//----------------------------------------
+Class("MovingPoint", {
+	isa : Point,
+
+	has : {
+		deviceId : {
+			is : "rw",
+			init : "DEVICE_ID_NOT_SET"
+		}
+	}
+});
+//----------------------------------------
+Class("Participant",
 {
-    //--------------------------------------
-	// ALL COORDINATES ARE IN WORLD MERCATOR
-    //--------------------------------------
+	isa : MovingPoint,
+
     has: 
 	{
     	lastPingTimestamp : {
@@ -80,18 +92,6 @@ Class("Participant",
     		init : null //[]
     		
     	},
-		code : {
-			is : "rw",
-			init : "CODE_NOT_SET"
-		},
-		id : {
-			is : "rw",
-			init : "ID_NOT_SET"
-		},
-		deviceId : {
-			is : "rw",
-			init : "DEVICE_ID_NOT_SET"
-		},
 		isTimedOut : {
 			is : "rw",
 			init : false
@@ -104,24 +104,13 @@ Class("Participant",
 			is : "rw",
 			init : false
 		},
-		feature : {
-			is : "rw",
-			init : null
-		},
-		position : 
-		{
-	        is:   "rw",
-	        init: [0,0]	//lon lat world mercator
-	    },
-		icon: 
-		{
-	        is:   "rw",
+		icon: {
+			is: "rw",
 	        init: "img/player1.png"
 	    },
-	    image :	//100x100 
-	    {
+	    image :	{
 	        is:   "rw",
-	        init: "img/profile1.png"
+	        init: "img/profile1.png"  //100x100
 	    },
 	    color : {
 	        is:   "rw",
@@ -164,15 +153,36 @@ Class("Participant",
 			init : 0
 		}
     },
+	after : {
+		init : function(pos, track) {
+			this.setTrack(track);
+			var ctime = (new Date()).getTime();
+			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});
+			this.setElapsed(state.elapsed);
+			this.setStates([state]);
+			this.setIsSOS(false);
+			this.setIsDiscarded(false);
+
+			if (this.feature) {
+				this.initFeature();
+			}
+			this.ping(pos,0,false,1 /* placeholder ctime not 0 */,0,0,0,0,0);
+		}
+	},
     //--------------------------------------
 	methods: 
 	{
+		initFeature : function() {
+			this.feature.participant=this;
+			GUI.participantsLayer.getSource().addFeature(this.feature);
+		},
+
 		getInitials : function() {
 			var tt = this.getCode().split(" ");
 			if (tt.length >= 2) {
 				return tt[0][0]+tt[1][0];
 			}
-			if (tt.lenght == 1)
+			if (tt.length == 1)
 				return tt[0][0];
 			return "?";
 		},
@@ -417,54 +427,28 @@ Class("Participant",
 			}*/
 		},
 
-		init : function(pos,track) 
-		{
-			this.setTrack(track);
-			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});			
-			this.setElapsed(state.elapsed);
-			this.setStates([state]);
-			this.setIsSOS(false);
-			this.setIsDiscarded(false);
-			if (typeof ol != "undefined") {
-				var feature = new ol.Feature();
-				var geom = new ol.geom.Point(pos);
-				geom.transform('EPSG:4326', 'EPSG:3857');									
-				feature.setGeometry(geom);
-				feature.participant=this;
-				this.setFeature(feature);
-				GUI.participantsLayer.getSource().addFeature(feature);
-			}
-			this.setPosition(pos);
-			this.ping(pos,0,false,1 /* placeholder ctime not 0 */,0,0,0,0,0);
-		},
-		
-		getFreq : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].freq;
-			return 0;
+		getLastState: function() {
+			return this.states.length ? this.states[this.states.length-1] : null;
 		},
 
-		getSpeed : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].speed;
-			return 0;
+		getFreq : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.freq : 0;
 		},
 
-		getGPS : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].gps;
-			return this.getPosition();
+		getSpeed : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.speed : 0;
 		},
 
-		getElapsed : function() 
-		{
-			if (this.states.length)
-				return this.states[this.states.length-1].elapsed;
-			return 0;
+		getGPS : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.gps : this.getPosition();
+		},
+
+		getElapsed : function() {
+			var lstate = this.getLastState();
+			return lstate ? lstate.elapsed : 0;
 		},
 
 		getPopupHTML : function() {

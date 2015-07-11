@@ -1,6 +1,4 @@
-/**
- * Created by Rumen Neshev on 7/4/2015.
- */
+require('joose');
 
 Class("Point", {
     //--------------------------------------
@@ -28,12 +26,15 @@ Class("Point", {
 
     methods : {
         init : function(pos) {
-            var geom = new ol.geom.Point(pos);
-            geom.transform('EPSG:4326', 'EPSG:3857');
-            var feature = new ol.Feature();
-            feature.setGeometry(geom);
-            this.setFeature(feature);
-            this.setPosition(pos);
+            if (typeof ol != "undefined") {
+                var geom = new ol.geom.Point(pos);
+                geom.transform('EPSG:4326', 'EPSG:3857');
+                var feature = new ol.Feature();
+                feature.setGeometry(geom);
+                this.setFeature(feature);
+
+                this.setPosition(pos);
+            }
         }
     }
 });

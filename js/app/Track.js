@@ -28,6 +28,10 @@ Class("Track",
 			is:   "rw",
 			init : []
 		},
+		movingCams : {
+			is:   "rw",
+			init : []
+		},
 		// in EPSG 3857
 		feature : {
 			is : "rw",
@@ -61,6 +65,13 @@ Class("Track",
 		rTree : {
 			is : "rw",
 			init : rbush(10)
+		},
+
+		isAddedHotSpotSwimBike : {
+			init : false
+		},
+		isAddedHotSpotBikeRun : {
+			init : false
 		}
     },
     //--------------------------------------
@@ -274,13 +285,79 @@ Class("Track",
 			}
 		},
 		
-		newParticipant : function(id,deviceId,code) 
+		newParticipant : function(id,deviceId,name)
 		{
-			var part = new Participant({id:id,deviceId:deviceId,code:code});
+			var part = new Participant({id:id,deviceId:deviceId,code:name});
 			part.init(this.route[0],this);
 			part.setSeqId(this.participants.length);
 			this.participants.push(part);
 			return part;
+		},
+
+		newMovingCam : function(id,deviceId,name)
+		{
+			var cam = new MovingCam({id:id,deviceId:deviceId,code:name});
+			cam.init(this.route[0],this);
+			cam.setSeqId(this.movingCams.length);
+			this.movingCams.push(cam);
+			return cam;
+		},
+
+		newHotSpots : function(hotspots) {
+			if (!hotspots || !hotspots.length) {
+				return;
+			}
+
+			// TODO Rumen - this is COPY-PASTE code form the Styles
+			// so later it has to be in only one place - getting the geometries for each type distance
+			// maybe in the same place distances are calculated.
+			// THIS IS TEMPORARY PATCH to get the needed points
+			if (!isNaN(this.bikeStartKM)) {
+				for (var i=0;i<this.distances.length;i++) {
+					if (this.distances[i] >= this.bikeStartKM*1000)
+						break;
+				}
+				var j;
+				if (!isNaN(this.runStartKM)) {
+					for (j=i;j<this.distances.length;j++) {
+						if (this.distances[j] >= this.runStartKM*1000)
+							break;
+					}
+				} else {
+					j=this.distances.length;
+				}
+				var coords=this.feature.getGeometry().getCoordinates();
+				var geomswim=coords.slice(0,i);
+				var geombike=coords.slice(i < 1 ? i : i-1,j);
+				if (j < this.distances.length)
+					var geomrun=coords.slice(j < 1 ? j : j-1,this.distances.length);
+				if (!geomswim.length)
+					geomswim=null;
+				if (!geombike.length)
+					geombike=null;
+				if (!geomrun.length)
+					geomrun=null;
+			}
+
+			for (var i = 0, len = hotspots.length; i < len; i++) {
+				var hotspot = hotspots[i];
+				var point;
+				if (hotspot.type === CONFIG.hotspot.camSwimBike) {
+					if (this.isAddedHotSpotSwimBike) continue; // not allowed to add to same hotspots
+					if (geombike) {
+						point = ol.proj.transform(geombike[0], 'EPSG:3857', 'EPSG:4326');
+						this.isAddedHotSpotSwimBike = true;
+					}
+				} else if (hotspot.type === CONFIG.hotspot.camBikeRun) {
+					if (this.isAddedHotSpotBikeRun) continue; // not allowed to add to same hotspots
+					if (geomrun) {
+						point = ol.proj.transform(geomrun[0], 'EPSG:3857', 'EPSG:4326');
+						this.isAddedHotSpotBikeRun = true;
+					}
+				}
+				if (point)
+					hotspot.init(point);
+			}
 		},
 		
 		onMapClick : function(event) 

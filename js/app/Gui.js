@@ -2,6 +2,7 @@ var Utils=require('./Utils');
 var STYLES=require('./Styles');
 require('joose');
 require('./Track');
+require('./LiveStream');
 
 Class("Gui", 
 {
@@ -14,6 +15,13 @@ Class("Gui",
     		is : "rw",
     		init : !Utils.mobileAndTabletCheck()
     	},
+		isWidget : {
+			init : false
+		},
+		isDebugShowPosition : {
+			// if set to true it will add an absolute element showing the coordinates above the mouse location
+			init : false
+		},
 		receiverOnMapClick : {
 			is : "rw",
 			init : []
@@ -51,6 +59,14 @@ Class("Gui",
 			init : null
 		},
 		trackLayer : {
+			is : "rw",
+			init : null
+		},
+        hotspotsLayer : {
+			is : "rw",
+			init : null
+		},
+        camsLayer : {
 			is : "rw",
 			init : null
 		},
@@ -103,6 +119,11 @@ Class("Gui",
 	{
         init: function (params)  
 		{
+			// if in widget mode then disable debug
+			if (this.isWidget) {
+				this.isDebug = false;
+			}
+
 			var defPos = [0,0];
 			if (this.initialPos) 
 				defPos=this.initialPos;
@@ -112,9 +133,17 @@ Class("Gui",
 			  source: new ol.source.Vector(),
 			  style : STYLES["track"]
 			});
+			this.hotspotsLayer = new ol.layer.Vector({
+			  source: new ol.source.Vector(),
+			  style : STYLES["hotspot"]
+			});
 			this.participantsLayer = new ol.layer.Vector({
 			  source: new ol.source.Vector(),
 			  style : STYLES["participant"]
+			});
+			this.camsLayer = new ol.layer.Vector({
+				source: new ol.source.Vector(),
+				style : STYLES["cam"]
 			});
 			if (this.isDebug)
 			this.debugLayerGPS = new ol.layer.Vector({
@@ -133,13 +162,17 @@ Class("Gui",
 			           new ol.layer.Tile({
 			               source: new ol.source.OSM()
 			           }),
-			           this.trackLayer,this.participantsLayer
+					this.trackLayer,
+					this.hotspotsLayer,
+					this.camsLayer,
+					this.participantsLayer
 			  ],
+			  controls: this.isWidget ? [] : ol.control.defaults(),
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
 				zoom: this.getInitialZoom(),
-				minZoom: 9,
-				maxZoom: 17,
+				minZoom: this.isWidget ? this.initialZoom : 10,
+				maxZoom: this.isWidget ? this.initialZoom : 17,
 				extent : extent ? extent : undefined
 			  })
 			});
@@ -153,59 +186,99 @@ Class("Gui",
 			TRACK.init();
 			this.addTrackFeature();
 			//----------------------------------------------------
-			this.map.on('click', function(event) 
-			{
-				TRACK.onMapClick(event);
-				var res=[];
-				var fl = this.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-					if (layer == this.participantsLayer)
-						res.push(feature);
-				},this);
-				if (res.length) 
-				{
-					if (this.selectedParticipant1 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(res);
-						if (feat)
-							this.setSelectedParticipant1(feat.participant);
-						else
-							this.setSelectedParticipant1(null);
-						this.selectNum=0;
-					} else if (this.selectedParticipant2 == null) {
-						var feat = this.getSelectedParticipantFromArrayCyclic(res);
-						if (feat)
-							this.setSelectedParticipant2(feat.participant);
-						else
-							this.setSelectedParticipant2(null);
-						this.selectNum=1;
-					} else {
-						this.selectNum=(this.selectNum+1)%2;
-						if (this.selectNum == 0) {
-							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+			if (!this.isWidget) {
+				this.map.on('click', function (event) {
+					TRACK.onMapClick(event);
+					var selectedParticipants = [];
+					var selectedHotspot = null;
+					this.map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+						if (layer == this.participantsLayer) {
+							selectedParticipants.push(feature);
+						} else if (layer == this.hotspotsLayer) {
+							// allow only one hotspot to be selected at a time
+							if (!selectedHotspot)
+								selectedHotspot = feature;
+						}
+					}, this);
+
+					// first if there are selected participants then show their popups
+					// and only if there are not use the selected hotspot if there's any
+					if (selectedParticipants.length) {
+						if (this.selectedParticipant1 == null) {
+							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 							if (feat)
 								this.setSelectedParticipant1(feat.participant);
 							else
 								this.setSelectedParticipant1(null);
-						} else {
-							var feat = this.getSelectedParticipantFromArrayCyclic(res);
+							this.selectNum = 0;
+						} else if (this.selectedParticipant2 == null) {
+							var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
 							if (feat)
 								this.setSelectedParticipant2(feat.participant);
 							else
 								this.setSelectedParticipant2(null);
+							this.selectNum = 1;
+						} else {
+							this.selectNum = (this.selectNum + 1) % 2;
+							if (this.selectNum == 0) {
+								var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+								if (feat)
+									this.setSelectedParticipant1(feat.participant);
+								else
+									this.setSelectedParticipant1(null);
+							} else {
+								var feat = this.getSelectedParticipantFromArrayCyclic(selectedParticipants);
+								if (feat)
+									this.setSelectedParticipant2(feat.participant);
+								else
+									this.setSelectedParticipant2(null);
+							}
+						}
+					} else {
+						this.setSelectedParticipant1(null);
+						this.setSelectedParticipant2(null);
+
+						if (selectedHotspot) {
+							selectedHotspot.hotspot.onClick();
 						}
 					}
-				} else {
-					this.setSelectedParticipant1(null);
-					this.setSelectedParticipant2(null);
-				}
-			},this);
+				}, this);
+
+				// change mouse cursor when over specific features
+				var self = this;
+				$(this.map.getViewport()).on('mousemove', function (e) {
+					var pixel = self.map.getEventPixel(e.originalEvent);
+					var isClickable = self.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+						if (layer === self.participantsLayer || layer === self.camsLayer) {
+							// all participants and moving cameras are clickable
+							return true;
+						} else if (layer === self.hotspotsLayer) {
+							// get "clickability" from the hotspot
+							return feature.hotspot.isClickable();
+						}
+					});
+					self.map.getViewport().style.cursor = isClickable ? 'pointer' : '';
+				});
+			}
 			//-----------------------------------------------------
 			if (!this._animationInit) {
 				this._animationInit=true;
 				setInterval(this.onAnimation.bind(this), 1000*CONFIG.timeouts.animationFrame );
 			}
 
-            // pass the id of the DOM element
-            //this.liveStream = new LiveStream({id : "liveStream"});
+			// if this is ON then it will show the coordinates position under the mouse location
+			if (this.isDebugShowPosition) {
+				$("#map").append('<p id="debugShowPosition">EPSG:3857 <span id="mouse3857"></span> &nbsp; EPSG:4326 <span id="mouse4326"></span>');
+				this.map.on('pointermove', function(event) {
+					var coord3857 = event.coordinate;
+					var coord4326 = ol.proj.transform(coord3857, 'EPSG:3857', 'EPSG:4326');
+					$('#mouse3857').text(ol.coordinate.toStringXY(coord3857, 2));
+					$('#mouse4326').text(ol.coordinate.toStringXY(coord4326, 15));
+				});
+			}
+
+			// pass the id of the DOM element
+			this.liveStream = new LiveStream({id : "liveStream"});
         },
 		
         
@@ -289,7 +362,13 @@ Class("Gui",
 		
 		onAnimation : function() 
 		{
-			var arr=[]; 
+			// first interpolate the movingCams
+			for (var ic=0;ic<TRACK.movingCams.length;ic++) {
+				var cam = TRACK.movingCams[ic];
+				cam.interpolate();
+			}
+
+			var arr=[];
 			for (var ip=0;ip<TRACK.participants.length;ip++) 
 			{
 				var p = TRACK.participants[ip];
@@ -439,17 +518,17 @@ Class("Gui",
 
         /**
          * Show the live-streaming container. If the passed 'streamId' is valid then it opens its stream directly.
-         * @param {Boolean} [streamId]
+         * @param {String} [streamId]
          */
         showLiveStream : function(streamId) {
             this.liveStream.show(streamId);
         },
 
         /**
-         * Hide the live-streaming container container
+         * Toggle the live-streaming container container
          */
-        hideLiveStream: function() {
-            this.liveStream.hide();
+        toggleLiveStream: function() {
+            this.liveStream.toggle();
         }
 		
     }

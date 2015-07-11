@@ -72,7 +72,7 @@ var CONFIG =
 	
 	appearance : {
 		trackColorSwim : '#5676ff',
-		trackColorBike : '#da2346',
+		trackColorBike : '#E20074',
 		trackColorRun :  '#079f36',
 
 		// Note the sequence is always Swim-Bike-Run - so 2 change-points
@@ -91,6 +91,8 @@ var CONFIG =
 
     hotspot : {
         cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
+		camSwimBike : {image : "img/wz1.svg"},
+		camBikeRun : {image : "img/wz2.svg"},
         water : {image : "img/water.svg"},
         uturn : {image : "img/uturn.svg"}
     }

@@ -1,8 +1,5 @@
-/**
- * Date: 7/6/2015
- * Time: 3:02 PM
- * Author Rumen Neshev (rumen.n@komero.net)
- */
+require('joose');
+require('./Participant');
 
 Class("MovingCam", {
     isa : Participant,

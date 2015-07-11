@@ -197,13 +197,10 @@ BODY
 	width:500px;
 	margin-left : -250px;
   	background-color: white;
-  	padding-right: 10px;	
-  	padding-top: 10px;	
-  	padding-bottom: 10px;
-  	padding-left: 330px;
-  	border-left : 3px solid black;
-  	border-right : 3px solid black;
- 	border-bottom : 3px solid black;
+	padding: 10px 330px 10px 10px;
+	border : 3px solid #4c4c4c;
+  	border-top : none;
+	border-radius: 0 0 40px 40px;
  	font-family : HarabaraMaisBold;
  	font-size : 18px;
 	background-image: url('../img/roth.jpg');
@@ -252,6 +249,26 @@ BODY
 	margin-left:-134px;
 }
 
+#partners {
+	z-index: 9999999;
+	position: absolute;
+	bottom: 5px;
+	margin-right: 140px;
+	right: 50%;
+	text-transform: uppercase;
+	color: white;
+}
+
+#legal_notice {
+	z-index: 9999999;
+	position: absolute;
+	bottom: 5px;
+	left: 50%;
+	margin-left: 140px;
+	text-transform: uppercase;
+	color: white;
+}
+
 #button_livestream,
 #button_rank,
 #button_favorites,
@@ -266,7 +283,7 @@ BODY
   	border : 3px solid white;
   	width : 70px;
   	height : 70px;
-}	
+}
 #button_livestream img,
 #button_rank img,
 #button_favorites img,
