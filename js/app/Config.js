@@ -76,6 +76,7 @@ var CONFIG =
 		trackColorRun :  '#079f36',
 
 		// Note the sequence is always Swim-Bike-Run - so 2 change-points
+		// TODO Rumen - add scale here, not in Styles.js
 		imageStart : "img/start.png",
 		imageFinish : "img/finish.png",
 		imageCam : "img/camera.svg",
@@ -91,10 +92,22 @@ var CONFIG =
 
     hotspot : {
         cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
-		camSwimBike : {image : "img/wz1.svg"},
-		camBikeRun : {image : "img/wz2.svg"},
+		camSwimBike : {image : "img/wz1.svg", scale : 0.040},
+		camBikeRun : {image : "img/wz2.svg", scale : 0.040},
         water : {image : "img/water.svg"},
-        uturn : {image : "img/uturn.svg"}
+        uturn : {image : "img/uturn.svg"},
+
+		km10 : {image : "img/10km.svg", scale : 1.5},
+		km20 : {image : "img/20km.svg", scale : 1.5},
+		km30 : {image : "img/30km.svg", scale : 1.5},
+		km40 : {image : "img/40km.svg", scale : 1.5},
+		km60 : {image : "img/60km.svg", scale : 1.5},
+		km80 : {image : "img/80km.svg", scale : 1.5},
+		km100 : {image : "img/100km.svg", scale : 1.5},
+		km120 : {image : "img/120km.svg", scale : 1.5},
+		km140 : {image : "img/140km.svg", scale : 1.5},
+		km160 : {image : "img/160km.svg", scale : 1.5},
+		km180 : {image : "img/180km.svg", scale : 1.5}
     }
 };
 
