@@ -12,6 +12,7 @@ var path = require('path');
 //--------------------------------------------------------------------
 var app = express();
 app.use('/admin', express.static(__dirname + '/admin'));
+app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
 app.use(bodyParser.json({ limit: '5mb' }));       
 app.use(bodyParser.urlencoded({     
@@ -94,7 +95,7 @@ app.post('/participant/:id/setimei', function (req, res) {
 	var id = req.params.id;
 	var imei = Config.mapIMEI(req.body.value);
 	var img = req.body.img;
-	console.log("SET participant IMEI for ID="+id+" VALUE="+imei+" IMG="+img);
+	//console.log("SET participant IMEI for ID="+id+" VALUE="+imei+" IMG="+img);
 	if (imei && imei.length) 
 	{
 		var torem=[];
@@ -129,8 +130,9 @@ app.post('/participant/:id/setimei', function (req, res) {
 	res.send(JSON.stringify({imei:imei}));
 	//-------------------------------------
 	// WRITE IMAGE 
-	if (img && img.length) {
-		
+	if (img && img.length) {		
+		var ipath = path.join(__dirname, "../../data/img/"+id+".jpg");
+		fs.writeFileSync(ipath, Utils.decodeBase64Image(img).data); 
 	}
 });
 
@@ -145,14 +147,17 @@ app.get('/participant/:id', function (req, res)
 		if (part.idParticipant == id) 
 		{
 			var pp = extend({}, part);
-			
 			var apath = path.join(__dirname, "../../data/img/"+id+".jpg");
+			console.log(apath);
+			
 			var data = "{}";
 			if (!fs.existsSync(apath))
 				apath="placeholder-128x128.png";
 			else
 				apath="../../data/img/"+id+".jpg";
 			pp.img=apath;
+			console.log(pp);
+
 			if (Config.assignments[id])
 				pp.IMEI=Config.unmapIMEI(Config.assignments[id]);
 			res.send(JSON.stringify(pp, null, 4));
@@ -164,12 +169,8 @@ app.get('/participant/:id', function (req, res)
 
 app.get('/participants', function (req, res) 
 {
+	//console.log(req.query);
 	res.header("Content-Type", "application/json; charset=utf-8");
-	
-	
-	console.log("QUERY");
-	console.log(req.query);
-	
 	if (req.query.mode == "acmpl") 
 	{
 		var r = [];

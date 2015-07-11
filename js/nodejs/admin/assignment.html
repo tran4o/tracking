@@ -304,12 +304,30 @@ $( document ).ready(function()
 		$(".buttons").hide();
 	});
 	
-	function imageToDataUri(img, width, height) {
-	    var canvas = document.createElement('canvas'),ctx = canvas.getContext('2d');
+	function imageToDataUri(img, width, height) 
+	{
+		var origW = img.naturalWidth;
+		var origH = img.naturalHeight;
+		var reqW = width;
+        var reqH = height;
+		var w,h;
+    	var cropW = Math.min( origW, reqW );
+        var cropH = Math.min( origH, reqH );        
+        if ( cropW * origH < cropH * origW ) {
+            w = Math.round( origW * cropH / origH );
+            h = cropH;
+        } else {
+            w = cropW;
+            h = Math.round( origH * cropW / origW );
+        }
+        var left = - Math.max( 0, Math.round( ( w  - cropW ) / 2 ) );
+        var top =  - Math.max( 0, Math.round( ( h- cropH ) / 2 ) );
+        console.log("ORIG : "+origW+"x"+origH+" TOP="+top+" LEFT="+left+" w="+w+" h="+h);
+        var canvas = document.createElement('canvas'),ctx = canvas.getContext('2d');
 	    canvas.width = width;
 	    canvas.height = height;
-	    ctx.drawImage(img, 0, 0, width, height);
-	    return canvas.toDataURL();
+	    ctx.drawImage(img, left, top, w, h);
+	    return canvas.toDataURL('image/jpeg',90);
 	}
 
 	$("#save").click(function() 

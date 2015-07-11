@@ -535,6 +535,18 @@ function circleLineIntersect(x1, y1, x2, y2, cx, cy, cr )
 	    }
 	  }
 }
+
+function decodeBase64Image(dataString) {
+	  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+	    response = {};
+	  if (matches.length !== 3) {
+	    return new Error('Invalid input string');
+	  }
+	  response.type = matches[1];
+	  response.data = new Buffer(matches[2], 'base64');
+	  return response;
+	}
+
 //------------------------
 exports.myTrim=myTrim;
 exports.myTrimCoordinate=myTrimCoordinate;
@@ -559,3 +571,4 @@ exports.circleLineIntersect=circleLineIntersect;
 exports.MOBILE=mobileAndTabletCheck();
 exports.WGS84SPHERE=new WGS84Sphere(6378137);
 exports.formatTimeSec=formatTimeSec;
+exports.decodeBase64Image=decodeBase64Image;
