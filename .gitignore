@@ -1,5 +1,5 @@
 node_modules
 *.db
-SKIP_data/participants.json
-SKIP_data/assignments.json
+data/participants.json
+data/assignments.json
 npm-debug.log
