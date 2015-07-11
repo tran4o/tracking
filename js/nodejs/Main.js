@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({
 app.get('/raceStart/:id', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	if (Config.simulation.debugStarts) {
-		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":""+0,"ENDPERIOD":""+9999999}));
+		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":"0","ENDPERIOD":"999999"}));
 		return;
 	}
 	var id = req.params.id;
