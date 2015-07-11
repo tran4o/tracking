@@ -4,9 +4,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+ 	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="jquery.blockUI.js"></script>
  	<script src="jquery.autocomplete.min.js"></script>
+
+ 	<link rel="stylesheet" type="text/css" href="jquery.resizeandcrop.css">
+ 	<script type="text/javascript" src="jquery.resizeandcrop.js"></script>
+ 
+
 	<style>
 	
 		.autocomplete-suggestions { border: 1px solid #999; background: #fff; cursor: default; overflow: auto; }
@@ -141,6 +147,8 @@
 	    <div class='form'><input type="text" id="id" placeholder="Participant ID" /></div>
 	 </div>
 	<input type="text" id="imei" placeholder="IMEI" disabled/>
+	<input type='file' id="file" disabled/>
+	
 	<script>
 $.fn.pressEnter = function(fn) {  
     return this.each(function() {  
@@ -153,6 +161,21 @@ $.fn.pressEnter = function(fn) {
         })
     });  
 };
+function convertImgToBase64URL(url, callback, outputFormat){
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function(){
+        var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d'), dataURL;
+        canvas.height = this.height;
+        canvas.width = this.width;
+        ctx.drawImage(this, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+        canvas = null; 
+    };
+    img.src = url;
+}
 //---------------------------------------------------------------------
 var partName2ID = [];
 var ID2PartName = [];
@@ -205,11 +228,16 @@ $( document ).ready(function()
 	$(".header input").pressEnter(function() {
 		$(this).blur();
 	});
+
 	
+	var imgNew=false;
+	var lastImg=null;
+
 	$("#id").change(function() 
 	{
 		var val = $("#id").val();
 		$("#imei").attr("disabled");
+		$("#file").attr("disabled");
 		if (val && val.length) 
 		{
 			block();
@@ -220,6 +248,7 @@ $( document ).ready(function()
 					$("#partjson").val(JSON.stringify(data, null, 4));
 					$('textarea').trigger('input');
 					$("#imei").attr("disabled",null);
+					$("#file").attr("disabled",null);
 					if (data.IMEI) {
 						$("#imei").val(data.IMEI);
 						$("#imei").data("last-ok",data.IMEI);
@@ -227,11 +256,16 @@ $( document ).ready(function()
 						$("#imei").val("");
 						$("#imei").data("last-ok","");
 					}
+					lastImg=data.img;
+					$("#block").html('<img id="crop-me" src="placeholder-128x128.png" realsrc="'+data.img+'" />');
+		            $("#crop-me").resizeAndCrop();
 				} else { 
+					$("#block").html("");
 					$("#partjson").val("");
 					$('textarea').trigger('input');
 					$("#imei").val("");
 					$("#imei").attr("disabled","true");
+					$("#file").attr("disabled","true");					
 				}
 			});
 		} else {
@@ -241,10 +275,8 @@ $( document ).ready(function()
 		}
 	});
 	
-	
-	$("#imei").change(function() 
-	{ 
-		if ($(this).val() != $(this).data("last-ok")) 
+	function updateButtons() {
+		if (imgNew || $(this).val() != $(this).data("last-ok")) 
 		{
 			$("#id").attr("disabled",true);
 			$("#name").attr("disabled",true);
@@ -255,14 +287,30 @@ $( document ).ready(function()
 			$("#name").attr("disabled",null);
 			$(".buttons").hide();
 		} 
+	}
+	
+	$("#imei").change(function() 
+	{ 
+		updateButtons();
 	});
 
 	$("#cancel").click(function() {
+		imgNew=false;
+		$("#block").html('<img id="crop-me" src="placeholder-128x128.png" realsrc="'+lastImg+'" />');
+        $("#crop-me").resizeAndCrop();
 		$("#imei").val($("#imei").data("last-ok"));
 		$("#id").attr("disabled",null);
 		$("#name").attr("disabled",null);
 		$(".buttons").hide();
 	});
+	
+	function imageToDataUri(img, width, height) {
+	    var canvas = document.createElement('canvas'),ctx = canvas.getContext('2d');
+	    canvas.width = width;
+	    canvas.height = height;
+	    ctx.drawImage(img, 0, 0, width, height);
+	    return canvas.toDataURL();
+	}
 
 	$("#save").click(function() 
 	{
@@ -271,7 +319,10 @@ $( document ).ready(function()
 		var id = $("#id").val();
 		var imei = $("#imei").val();
 		$("#msg").hide();
-		$.post( "../participant/"+id+"/setimei", {value : imei}).done(function(data) {
+		var img="";
+		if (imgNew)
+			img = imageToDataUri($("#block img")[0],128,128);
+		$.post( "../participant/"+id+"/setimei", {value : imei,img : img }).done(function(data) {
 			unblock();
 			if (!data.error) {
 				$("#msg").html("");
@@ -280,6 +331,7 @@ $( document ).ready(function()
 				$("#name").attr("disabled",null);
 				$(".buttons").hide();
 				$("#imei").data("last-ok",data.imei);
+				imgNew=false;
 			} else {
 				$("#msg").html(data.error);
 				$("#msg").show();
@@ -298,6 +350,23 @@ $( document ).ready(function()
 			$(".info").hide();
 		}
 	});
+	
+	function readImage(input) {
+		if ( input.files && input.files[0] ) {
+	        var FR= new FileReader();
+	        FR.onload = function(e) {
+	    		$("#block").html('<img id="crop-me" src="placeholder-128x128.png" realsrc="'+e.target.result+'" />');
+	            $("#crop-me").resizeAndCrop();
+	        };       
+	        imgNew=true;
+	        FR.readAsDataURL( input.files[0] );
+	        updateButtons();
+		}
+	}
+	
+	$("#file").change(function(){
+	    readImage( this );
+	});
 });
 	</script>	
 </div>
@@ -308,7 +377,10 @@ $( document ).ready(function()
 <div class="links" style="display:none">
 	<a href="../assignments" target="_blank">Assignments</a>
 </div>
-<div class="info" style="display:none"><textarea id="partjson" disabled></textarea> 
+<div class="info" style="display:none">
+<div id="block">
+</div>
+<textarea id="partjson" disabled></textarea> 
 </div>
 <div class="links">
 	<a href="../aliases" target="_blank">Aliases</a>

@@ -6,15 +6,17 @@ var bodyParser = require('body-parser');
 var Utils = require('./../app/Utils');
 var Config = require('./Config');
 var Tracking = require('./Tracking');
+var fs = require('fs');
+var path = require('path');
+
 //--------------------------------------------------------------------
 var app = express();
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use(compress());
-app.use(bodyParser.json());       
+app.use(bodyParser.json({ limit: '5mb' }));       
 app.use(bodyParser.urlencoded({     
   extended: true
 })); 
-
 app.get('/raceStart/:id', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var id = req.params.id;
@@ -91,7 +93,8 @@ app.post('/participant/:id/setimei', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var id = req.params.id;
 	var imei = Config.mapIMEI(req.body.value);
-	console.log("SET participant IMEI for ID="+id+" VALUE="+imei);
+	var img = req.body.img;
+	console.log("SET participant IMEI for ID="+id+" VALUE="+imei+" IMG="+img);
 	if (imei && imei.length) 
 	{
 		var torem=[];
@@ -124,6 +127,11 @@ app.post('/participant/:id/setimei', function (req, res) {
 		Config.assignIMEI(id,null);
 	}	
 	res.send(JSON.stringify({imei:imei}));
+	//-------------------------------------
+	// WRITE IMAGE 
+	if (img && img.length) {
+		
+	}
 });
 
 
@@ -137,6 +145,14 @@ app.get('/participant/:id', function (req, res)
 		if (part.idParticipant == id) 
 		{
 			var pp = extend({}, part);
+			
+			var apath = path.join(__dirname, "../../data/img/"+id+".jpg");
+			var data = "{}";
+			if (!fs.existsSync(apath))
+				apath="placeholder-128x128.png";
+			else
+				apath="../../data/img/"+id+".jpg";
+			pp.img=apath;
 			if (Config.assignments[id])
 				pp.IMEI=Config.unmapIMEI(Config.assignments[id]);
 			res.send(JSON.stringify(pp, null, 4));
@@ -149,6 +165,11 @@ app.get('/participant/:id', function (req, res)
 app.get('/participants', function (req, res) 
 {
 	res.header("Content-Type", "application/json; charset=utf-8");
+	
+	
+	console.log("QUERY");
+	console.log(req.query);
+	
 	if (req.query.mode == "acmpl") 
 	{
 		var r = [];
