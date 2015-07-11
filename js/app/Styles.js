@@ -99,17 +99,23 @@ var STYLES=
 		}
 		if (geombike)
 		{
-			if (CONFIG.appearance.isShowImageCheckpoint)
-				STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
-			else if (GUI.isShowBike)
-				STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
+			// if this is not already added as a hotpost
+			if (!track.isAddedHotSpotSwimBike) {
+				if (CONFIG.appearance.isShowImageCheckpoint)
+					STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
+				else if (GUI.isShowBike)
+					STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
+			}
 		}
 		if (geomrun)
 		{
-			if (CONFIG.appearance.isShowImageCheckpoint)
-				STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
-			else if (GUI.isShowBike)
-				STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
+			// if this is not already added as a hotpost
+			if (!track.isAddedHotSpotBikeRun) {
+				if (CONFIG.appearance.isShowImageCheckpoint)
+					STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
+				else if (GUI.isShowBike)
+					STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
+			}
 		}
 
 		// START-FINISH --------------------------
@@ -308,13 +314,12 @@ var STYLES=
 		var styles=[];
 
 		var cam = feature.cam;
-		var lstate = cam.getLastState();
-		var isDirection = (lstate && lstate.getSpeed() > 0 && !cam.isSOS && !cam.isDiscarded);
 
 		styles.push(new ol.style.Style({
 			image: new ol.style.Icon(({
-				//scale : 0.55,
-				src : CONFIG.appearance.imageCam
+				// TODO Rumen - it's better all images to be the same size, so the same scale
+				scale : 0.035,
+				src : CONFIG.appearance.imageCam.split(".svg").join((cam.seqId+1) + ".svg")
 			}))
 		}));
 
@@ -325,10 +330,16 @@ var STYLES=
         var styles=[];
 
         var hotspot = feature.hotspot;
+		var type = hotspot.type;
+		// TODO Rumen - it's better all images to be the same size, so the same scale
+		var scale = 1;
+		if (type === CONFIG.hotspot.camSwimBike || type === CONFIG.hotspot.camBikeRun) {
+			scale = 0.035;
+		}
 
         styles.push(new ol.style.Style({
             image: new ol.style.Icon(({
-                //scale : 0.55,
+                scale : scale,
                 src : hotspot.getType().image
             }))
         }));

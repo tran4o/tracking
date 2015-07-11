@@ -1,3 +1,6 @@
+require('joose');
+require('./Utils');
+
 Class("LiveStream", {
     has : {
         _$comp : {

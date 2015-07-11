@@ -2,6 +2,8 @@
 require('./Track');
 require('./GUI');
 require('./Participant');
+require('./MovingCam');
+require('./HotSpot');
 require('./StreamData');
 window.CONFIG=require('./Config');
 var Utils=require('./Utils');
@@ -311,18 +313,24 @@ function initGUI()
 	stream.start(TRACK);
 
 	// add all the moving cameras
-	/*for (var j=0;j<MOVING_CAMS.length;j++)	{
+	for (var j=0;j<MOVING_CAMS.length;j++)	{
 		var movingCam = TRACK.newMovingCam(MOVING_CAMS[j].id,MOVING_CAMS[j].deviceId,MOVING_CAMS[j].name);
-		//---------------------------------------------------------------
-		sim.simulateParticipantSimple(movingCam,30*scoef*(1+(j+i)/7.0));
 	}
 
     // add all the static HotSpots
-    for (var k=0;k<HOTSPOTS.length;k++)	{
-
-        var hotspot = new HotSpot(HOTSPOTS[k]);
-        hotspot.init(HOTSPOTS[k].point);
-    }*/
+    var dynamicTrackHotspots = [];
+	for (var k=0;k<HOTSPOTS.length;k++)	{
+		var hotspotData = HOTSPOTS[k];
+		var hotspot = new HotSpot(HOTSPOTS[k]);
+		if (hotspotData.point) {
+			// this is a static hotspot - just a fixed point
+			hotspot.init(HOTSPOTS[k].point);
+		} else {
+			// this is a dynamic HotSpot - depending on the Track
+			dynamicTrackHotspots.push(hotspot)
+		}
+    }
+	TRACK.newHotSpots(dynamicTrackHotspots);
 }
 //--------------------------------------------------------------------------
 $(document).ready( function () 
@@ -337,73 +345,74 @@ $(document).ready( function ()
 	TRACK.setRoute(trackData);
 	//--------------------------------------------------------------------------
 	initGUI();
-});
 
 //--------------------------------------------------------------------------
-$("#button_swim").css("background-color",CONFIG.appearance.trackColorSwim).click(function() {
-	if ($(this).hasClass("inactive")) 
-	{
-		$(this).removeClass("inactive");
-		GUI.isShowSwim=true;
-	} else {
-		$(this).addClass("inactive");
-		GUI.isShowSwim=false;
-	}
-	GUI.redraw();
-});
+	$("#button_swim").css("background-color",CONFIG.appearance.trackColorSwim).click(function() {
+		if ($(this).hasClass("inactive"))
+		{
+			$(this).removeClass("inactive");
+			GUI.isShowSwim=true;
+		} else {
+			$(this).addClass("inactive");
+			GUI.isShowSwim=false;
+		}
+		GUI.redraw();
+	});
 
-$("#button_bike").css("background-color",CONFIG.appearance.trackColorBike).click(function() {
-	if ($(this).hasClass("inactive"))
-	{
-		$(this).removeClass("inactive");
-		GUI.isShowBike=true;
-	} else {
-		$(this).addClass("inactive");
-		GUI.isShowBike=false;
-	}
-	GUI.redraw();
-});
+	$("#button_bike").css("background-color",CONFIG.appearance.trackColorBike).click(function() {
+		if ($(this).hasClass("inactive"))
+		{
+			$(this).removeClass("inactive");
+			GUI.isShowBike=true;
+		} else {
+			$(this).addClass("inactive");
+			GUI.isShowBike=false;
+		}
+		GUI.redraw();
+	});
 
-$("#button_run").css("background-color",CONFIG.appearance.trackColorRun).click(function() {
-	if ($(this).hasClass("inactive"))
-	{
-		$(this).removeClass("inactive");
-		GUI.isShowRun=true;
-	} else {
-		$(this).addClass("inactive");
-		GUI.isShowRun=false;
-	}
-	GUI.redraw();
-});
+	$("#button_run").css("background-color",CONFIG.appearance.trackColorRun).click(function() {
+		if ($(this).hasClass("inactive"))
+		{
+			$(this).removeClass("inactive");
+			GUI.isShowRun=true;
+		} else {
+			$(this).addClass("inactive");
+			GUI.isShowRun=false;
+		}
+		GUI.redraw();
+	});
 
-$("#button_participants").click(function() {
-	if (isTabVisible("part"))
+	$("#button_participants").click(function() {
+		if (isTabVisible("part"))
+			showMap();
+		else
+			showParticipants();
+	});
+
+	$("#button_favorites").click(function() {
+		if (isTabVisible("favs"))
+			showMap();
+		else
+			showFavs();
+	});
+
+	$("#button_rank").click(function() {
+		if (isTabVisible("rank"))
+			showMap();
+		else
+			showRank();
+	});
+
+	$("#tabcont").find(".close").click(function() {
 		showMap();
-	else
-		showParticipants();
-});
+	});
 
-$("#button_favorites").click(function() {
-	if (isTabVisible("favs"))
-		showMap();
-	else
-		showFavs();
-});
+	$("#button_livestream").click(function() {
+		// toggle the LiveStream panel is get if finally it is shown or not
+		var isShown = GUI.toggleLiveStream();
+		//$(this).toggleClass("inactive", !isShown);
+	});
 
-$("#button_rank").click(function() {
-	if (isTabVisible("rank"))
-		showMap();
-	else
-		showRank();
-});
-
-$("#tabcont").find(".close").click(function() {
-	showMap();
-});
-
-$("#button_livestream").click(function() {
-    // toggle the LiveStream panel is get if finally it is shown or not
-    var isShown = GUI.toggleLiveStream();
-    //$(this).toggleClass("inactive", !isShown);
 });
 

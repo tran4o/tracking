@@ -1,8 +1,6 @@
-/**
- * Date: 7/6/2015
- * Time: 12:39 PM
- * Author Rumen Neshev (rumen.n@komero.net)
- */
+require('joose');
+require('./Point');
+require('./Utils');
 
 Class("HotSpot", {
     isa : Point,
@@ -36,7 +34,7 @@ Class("HotSpot", {
 
             if (this.clickable) {
                 // for now only hotspots with attached live-stream can be clicked
-                if (this.liveStream) {
+                if (isDefined(this.liveStream)) {
                     GUI.showLiveStream(this.liveStream);
                     // well this event should be consumed and not handled any more (like when clicked on another feature
                     isConsumed = true;

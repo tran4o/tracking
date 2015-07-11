@@ -572,3 +572,4 @@ exports.MOBILE=mobileAndTabletCheck();
 exports.WGS84SPHERE=new WGS84Sphere(6378137);
 exports.formatTimeSec=formatTimeSec;
 exports.decodeBase64Image=decodeBase64Image;
+exports.isDefined=isDefined;
