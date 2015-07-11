@@ -408,10 +408,39 @@ $(document).ready( function ()
 		showMap();
 	});
 
-	$("#button_livestream").click(function() {
-		// toggle the LiveStream panel is get if finally it is shown or not
-		var isShown = GUI.toggleLiveStream();
-		//$(this).toggleClass("inactive", !isShown);
+
+	$("#link_partners, #link_legalNotice, #button_liveStream").click(function() {
+		// TODO Rumen - don't like it, will have to fix it later
+		var $toClose = $("._contVisible");
+		var $toOpen = $("#" + $(this).data("open"));
+		var isLiveStreamClose = $toClose.is("#liveStream");
+		var isLiveStreamOpen = $toOpen.is("#liveStream");
+
+		var self = this;
+		function open() {
+			$toClose.removeClass("_contVisible");
+
+			if ($toClose.is($toOpen))
+				return;
+
+			if (isLiveStreamOpen) {
+				var isShown = GUI.toggleLiveStream();
+				$toOpen.toggleClass("_contVisible", isShown);
+			} else {
+				$toOpen.addClass("_contVisible");
+				$toOpen.slideDown();
+			}
+		}
+
+		if ($toClose.length) {
+			if (isLiveStreamClose) {
+				GUI.toggleLiveStream(open);
+			} else {
+				$toClose.slideUp(400, open);
+			}
+		} else {
+			open();
+		}
 	});
 
 });

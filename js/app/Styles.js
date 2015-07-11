@@ -323,16 +323,10 @@ var STYLES=
         var styles=[];
 
         var hotspot = feature.hotspot;
-		var type = hotspot.type;
-		// TODO Rumen - it's better all images to be the same size, so the same scale
-		var scale = 1;
-		if (type === CONFIG.hotspot.camSwimBike || type === CONFIG.hotspot.camBikeRun) {
-			scale = 0.040;
-		}
 
         styles.push(new ol.style.Style({
             image: new ol.style.Icon(({
-                scale : scale,
+                scale : hotspot.getType().scale || 1,
                 src : hotspot.getType().image
             }))
         }));
@@ -429,8 +423,8 @@ var STYLES=
     _genDistanceKm : function(ww, resolution,
 							  coords, distances, startDistIndex, endDistIndex,
 							  styles) {
-        // TODO Rumen - still not ready
-        //if (true) {return;}
+        // TODO Rumen - still not ready - for now static hotspots are used
+        if (true) {return;}
 
         var hotspotsKm = [20, 40, 60, 80, 100, 120, 140, 160, 180];
 

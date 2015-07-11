@@ -519,16 +519,18 @@ Class("Gui",
         /**
          * Show the live-streaming container. If the passed 'streamId' is valid then it opens its stream directly.
          * @param {String} [streamId]
+         * @param {Function} [completeCallback]
          */
-        showLiveStream : function(streamId) {
-            this.liveStream.show(streamId);
+        showLiveStream : function(streamId, completeCallback) {
+            this.liveStream.show(streamId, completeCallback);
         },
 
         /**
          * Toggle the live-streaming container container
+		 * @param {Function} [completeCallback]
          */
-        toggleLiveStream: function() {
-            this.liveStream.toggle();
+        toggleLiveStream: function(completeCallback) {
+            return this.liveStream.toggle(completeCallback);
         }
 		
     }
