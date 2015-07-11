@@ -187,6 +187,20 @@ BODY
 	top:0;
 }
 
+#tabcont, #tabcont > [role=tabpanel] {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+#mikaTiming {
+	bottom: 10px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 60px;
+}
+
 #header {
 	z-index : 999999;
 	position:absolute;
@@ -603,9 +617,10 @@ table.dataTable td {
 
 .liveStreamThumb {
 	display: inline-block;
-	background-color: darkslategrey;
+	background: url("../img/livestream-thumb.png");
+	background-repeat : no-repeat;
 	width: 161px;
-	height: 52px; /* if two rows with 3 thumbs */
+	height: 64px; /* if two rows with 3 thumbs */
 }
 .liveStreamThumb.inactive {
 
