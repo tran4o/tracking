@@ -68,7 +68,6 @@ app.get('/status', function (req, res)
 
 app.get('/assignment/:id', function (req, res) 
 {
-	console.log("GET assignment for id = "+req.params.id);
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var id = req.params.id;
 	var imei = Config.mapIMEI(req.params.imei);
@@ -148,16 +147,12 @@ app.get('/participant/:id', function (req, res)
 		{
 			var pp = extend({}, part);
 			var apath = path.join(__dirname, "../../data/img/"+id+".jpg");
-			console.log(apath);
-			
 			var data = "{}";
 			if (!fs.existsSync(apath))
 				apath="placeholder-128x128.png";
 			else
 				apath="../../data/img/"+id+".jpg";
 			pp.img=apath;
-			console.log(pp);
-
 			if (Config.assignments[id])
 				pp.IMEI=Config.unmapIMEI(Config.assignments[id]);
 			res.send(JSON.stringify(pp, null, 4));
