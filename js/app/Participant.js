@@ -158,7 +158,7 @@ Class("Participant",
 		},
 		isFavorite : {
 			is : "rw",
-			init : false /* todo set false */
+			init : true /* todo set false */
 		}
     },
 	after : {
