@@ -449,21 +449,21 @@ $(document).ready( function ()
 		if (isTabVisible("part"))
 			showMap();
 		else
-			showFavs();
+			showRank();
 	});
 
 	$("#button_favorites").click(function() {
 		if (isTabVisible("favs"))
 			showMap();
 		else
-			showParticipants();
+			showFavs();
 	});
 
 	$("#button_rank").click(function() {
 		if (isTabVisible("rank"))
 			showMap();
 		else
-			showRank();
+			showParticipants();
 	});
 
 	$("#tabcont").find(".close").click(function() {
