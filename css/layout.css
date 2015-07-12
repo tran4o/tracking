@@ -601,7 +601,8 @@ table.dataTable td {
 }
 
 #liveStream {
-    height: 450px;   /* 275(the third-party player) + 2 row of thumbs + some bottom padding */
+	padding-top: 30px;
+    height: 480px;   /* 275(the third-party player) + 2 row of thumbs + some bottom padding */
 }
 
 .liveStreamPlayer {
