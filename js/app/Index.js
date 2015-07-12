@@ -208,9 +208,10 @@ function refreshTables()  {
 			var part = arr[i];
 			res.push({id : part.id,follow : part.isFavorite,name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
 		}
-		tableRank.fnClearTable();
+		console.log("REFRESH TBL!");
+		/*tableRank.fnClearTable();
 		tableRank.fnAddData(res);
-		tableRank.fnDraw();
+		tableRank.fnDraw();*/
 	}
 }
 
