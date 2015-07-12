@@ -449,7 +449,7 @@ $(document).ready( function ()
 		if (isTabVisible("part"))
 			showMap();
 		else
-			showRank();
+			showParticipants();
 	});
 
 	$("#button_favorites").click(function() {
@@ -463,7 +463,7 @@ $(document).ready( function ()
 		if (isTabVisible("rank"))
 			showMap();
 		else
-			showParticipants();
+			showRank();
 	});
 
 	$("#tabcont").find(".close").click(function() {
