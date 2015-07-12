@@ -617,11 +617,30 @@ table.dataTable td {
 
 .liveStreamThumb {
 	display: inline-block;
-	background: url("../img/livestream-thumb.png");
 	background-repeat : no-repeat;
 	width: 161px;
 	height: 64px; /* if two rows with 3 thumbs */
 }
+.liveStreamThumb1 {
+	background: url("../img/b1.jpg");
+}
+.liveStreamThumb2 {
+	background: url("../img/b2.png");
+}
+.liveStreamThumb3 {
+	background: url("../img/b3.png");
+}
+.liveStreamThumb4 {
+	background: url("../img/b4.png");
+}
+.liveStreamThumb5 {
+	background: url("../img/b5.png");
+}
+.liveStreamThumb6 {
+	background: url("../img/b6.png");
+}
+
+
 .liveStreamThumb.inactive {
 
 }
