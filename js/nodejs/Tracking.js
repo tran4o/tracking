@@ -6,6 +6,8 @@ var CONFIG = require('./../app/Config');
 var Config = require('./Config');
 var Simulator = require('./Simulator');
 var request = require('request-json');
+var fs = require('fs');
+var path = require('path');
 //------------------------------------------------------------------
 var TRACK = new Track();
 TRACK.setBikeStartKM(Config.event.bikeStartKM);
@@ -39,8 +41,15 @@ for (var i in Config.participants)
 		part.setCountry(p.nationality);
 		part.setStartPos(parseInt(p.startNo));
 		part.setGender(p.sex);
-		part.setIcon("img/data/"+id+".jpg");
-		part.setImage("img/data/"+id+".jpg");
+
+		var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
+		if (fs.existsSync(apath)) {
+			part.setIcon("img/data/"+id+".jpg");
+			part.setImage("img/data/"+id+".jpg");
+		} else {
+			part.setIcon("img/noimage.png");
+			part.setImage("img/noimage.png");			
+		}
 		trackedParticipants.push(part);
 		partLookupByIMEI[devId]=part;
 		//-----------------------------
