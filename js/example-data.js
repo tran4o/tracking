@@ -48,7 +48,11 @@ var HOTSPOTS = [
 
 var LIVE_STREAMS = [
     // should be maximum 6 livestreams as this is the max allowed in the LiveStream panel - 6 thumbs
-    {id : 0, url : "http://livestream.com/accounts/7166631/events/4179568/player",  name : "Stadionaufbau und Finishline"},
-    {id : 1, url : "http://livestream.com/accounts/14163713/events/4179542/player", name : "Programm Englisch"},
-    {id : 2, url : "http://livestream.com/accounts/14153542/events/4167686/player", name : "Programm Deutsch"}
+    {id : 0, url : "http://www.metacdn.com/r/l/berhhozhx/mix/embed",  name : "LiveRank TV"},
+    {id : 1, url : "http://www.metacdn.com/r/l/berhhozhx/cam1/embed",  name : "LiveRank Cam1"},
+    {id : 2, url : "http://www.metacdn.com/r/l/berhhozhx/cam2/embed",  name : "LiveRank Cam2"},
+
+    {id : 3, url : "http://livestream.com/accounts/14153542/events/4167686/player", name : "Programm Deutsch"},
+    {id : 4, url : "http://livestream.com/accounts/14163713/events/4179542/player", name : "Programm Englisch"},
+    {id : 5, url : "http://livestream.com/accounts/7166631/events/4179568/player",  name : "Stadionaufbau und Finishline"}
 ];
