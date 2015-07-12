@@ -23,8 +23,12 @@ var CONFIG =
 	},
 	simulation : {
 		pingInterval : 10, // interval in seconds to ping with gps data
-		gpsInaccuracy : 0  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
-	},	
+		gpsInaccuracy : 0,  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
+	},
+	settings : {
+		noMiddleWare : 0, 	// SKIP middle ware node js app
+		noInterpolation : 0	// 1 -> no interpolation only points
+	},
 	math : {
 		gpsInaccuracy : 7,	//TODO 13 min
 		speedAndAccelerationAverageDegree : 2,	// calculation based on N states (average) (MIN 2)

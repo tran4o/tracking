@@ -205,29 +205,11 @@ Class("Participant",
 		interpolate : function() 
 		{
 			
-			// TEST
-			/*if (!this.__time)
-				this.__time = (new Date()).getTime();
-			else {
-				var dur = ((new Date()).getTime()-this.__time);
-				var tt = dur/100000.0;
-				if (tt > 1)
-					tt=1;
-				var tka = this.track.getPositionAndRotationFromElapsed(tt);
-				this.setPosition([tka[0],tka[1]]);
-				this.setRotation(tka[2]);
-				this.updateFeature();
-				this.setElapsed(res);
-			}
-			return;*/
-			// TEST
-			
-			
 			if (!this.states.length)
 				return;
 			var ctime=(new Date()).getTime();
 			var isTime = (ctime >= CONFIG.times.begin && ctime <= CONFIG.times.end);
-			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/ || !isTime) 
+			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/ || !isTime || CONFIG.settings.noInterpolation) 
 			{
 				var lstate=this.states[this.states.length-1];
 				var pos = lstate.gps;
@@ -406,8 +388,10 @@ Class("Participant",
 			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
 			//isSOS=true;
-			if (isSOS || this.__skipTracking) {
-				this.setIsSOS(true); 
+			if (isSOS || CONFIG.settings.noInterpolation)
+			{
+				if (isSOS)
+					this.setIsSOS(true);				
 				this.addState(state);
 				return;
 			}

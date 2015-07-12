@@ -28,8 +28,15 @@ var params = getSearchParameters();
 //-----------------------------------------------
 if (params["debug"] && params["debug"] != "0") 
 {
-	// DEBUG MODE CONFIGURATIOn
+	long.warn("GOING TO DEBUG MODE...");
 	CONFIG.timeouts.animationFrame=4; // 4 sec
+}
+//-----------------------------------------------
+if (params["simple"] && params["simple"] != "0") 
+{
+	long.warn("GOING TO SIMPLE MODE...");
+	CONFIG.settings.noMiddleWare=1; 
+	CONFIG.settings.noInterpolation=1; 
 }
 //-----------------------------------------------
 var tableFavorites=null;
@@ -386,33 +393,34 @@ $(document).ready( function ()
 			processEntry(data.participants[i],false);
 		for (var i in data.cams) 
 			processEntry(data.cams[i],true);
-		
-
-		// FIXME ---------------------------------------------------------------------------------- 
-		/*function doHTTP(url,json,onReqDone) 
+		if (CONFIG.settings.noMiddleWare) 
 		{
-		    if (json.length) 
-		    {
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: JSON.stringify(json),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(data){
-                    	onReqDone(data);
-                    },
-                    failure: function(errMsg) {
-                        console.error("ERROR get data from backend "+errMsg)
-                    }
-                });
-		    }                		
+			function doHTTP(url,json,onReqDone) 
+			{
+			    if (json.length) 
+			    {
+	                $.ajax({
+	                    type: "POST",
+	                    url: url,
+	                    data: JSON.stringify(json),
+	                    contentType: "application/json; charset=utf-8",
+	                    dataType: "json",
+	                    success: function(data){
+	                    	onReqDone(data);
+	                    },
+	                    failure: function(errMsg) {
+	                        console.error("ERROR get data from backend "+errMsg)
+	                    }
+	                });
+			    }                		
+			}
+			var stream = new StreamData();
+			stream.start(TRACK,function() {return true;},10,doHTTP); // 10 sec ping int.
+		} else {
+			// NORMAL CASE
+			var stream = new BackendStream();
+			stream.start(TRACK); 									
 		}
-		var stream = new StreamData();
-		stream.start(TRACK,function() {return true;},10,doHTTP); // 10 sec ping int.*/
-		// FIXME ---------------------------------------------------------------------------------- 
-		var stream = new BackendStream();
-		stream.start(TRACK); 									
 
 		initGUI();
 	}).fail(function() {
