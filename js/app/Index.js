@@ -28,13 +28,13 @@ var params = getSearchParameters();
 //-----------------------------------------------
 if (params["debug"] && params["debug"] != "0") 
 {
-	log.warn("GOING TO DEBUG MODE...");
+	console.warn("GOING TO DEBUG MODE...");
 	CONFIG.timeouts.animationFrame=4; // 4 sec
 }
 //-----------------------------------------------
 if (params["simple"] && params["simple"] != "0") 
 {
-	log.warn("GOING TO SIMPLE MODE...");
+	console.warn("GOING TO SIMPLE MODE...");
 	CONFIG.settings.noMiddleWare=1; 
 	CONFIG.settings.noInterpolation=1; 
 }
