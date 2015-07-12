@@ -358,27 +358,19 @@ Class("Gui",
 				onCloseCallback();
 		},
 		
-		
-		
 		onAnimation : function() 
 		{
-			// first interpolate the movingCams
-			for (var ic=0;ic<TRACK.movingCams.length;ic++) {
-				var cam = TRACK.movingCams[ic];
-				cam.interpolate();
-			}
-
 			var arr=[];
-			for (var ip=0;ip<TRACK.participants.length;ip++) 
+			for (var ip=0;ip<TRACK.participants.length;ip++)  
 			{
 				var p = TRACK.participants[ip];
-				p.interpolate();
-				arr.push(ip);
+				if (p.isFavorite) 
+				{
+					p.interpolate();
+					arr.push(ip);
+				}
 			}
 			//-------------------------------------------------------
-			arr.sort(function(a, b){
-				return TRACK.participants[a].getElapsed()-TRACK.participants[b].getElapsed();
-			});
 			for (var ip=0;ip<TRACK.participants.length;ip++) 
 			{
 				TRACK.participants[arr[ip]].__pos=ip;

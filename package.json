@@ -29,7 +29,9 @@
 	"lowdb" : "^0.10.1",
 	"xml2js" : "^0.4.9",
 	"body-parser" : "^1.13.2",
-	"request-json" : "^0.5.3" 
+	"request-json" : "^0.5.3",
+	"binary-search-tree" : "^0.2.4",
+	"request" : "^2.58.0" 
   },
   "devDependencies": {
   },

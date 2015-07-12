@@ -1,17 +1,19 @@
 require('./../app/Track');
+require('./StreamData');
+var BinarySearchTree = require('binary-search-tree').BinarySearchTree;
 var Utils = require('./../app/Utils');
+var CONFIG = require('./../app/Config');
 var Config = require('./Config');
 var Simulator = require('./Simulator');
 var request = require('request-json');
 //------------------------------------------------------------------
-var TRACK;
-
-TRACK = new Track();
+var TRACK = new Track();
 TRACK.setBikeStartKM(Config.event.bikeStartKM);
 TRACK.setRunStartKM(Config.event.runStartKM);
 TRACK.setRoute(Config.event.trackData);
+TRACK.init();
 console.log("Starting tracking engine for track with length "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(Config.event.bikeStartKM)+" + "+Utils.formatNumber2(Config.event.runStartKM-Config.event.bikeStartKM)+" + "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0-Config.event.runStartKM)+") km");
-
+//------------------------------------------------------------------
 function getAge(birthDate) {
     var today = new Date();
     var age = today.getFullYear() - birthDate.getFullYear();
@@ -21,7 +23,6 @@ function getAge(birthDate) {
     }
     return age;
 }
-
 var trackedParticipants=[];
 var partLookupByIMEI={};
 for (var i in Config.participants) 
@@ -32,105 +33,173 @@ for (var i in Config.participants)
 	{
 		var devId = Config.assignments[id];
 		var part = TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
-		part.setColor(Utils.rainbow(Config.assignments.length,trackedParticipants.length));
+		part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,trackedParticipants.length));
 		part.setAgeGroup(p.ageGroup);
-		part.setAge(getAge(new Date(p.birthDate)));
+		part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
 		part.setCountry(p.nationality);
 		part.setStartPos(parseInt(p.startNo));
-		//part.setIcon(images[i]);
-		//part.setImage(images[i]);
+		part.setGender(p.sex);
+		part.setIcon("img/data/"+id+".jpg");
+		part.setImage("img/data/"+id+".jpg");
 		trackedParticipants.push(part);
 		partLookupByIMEI[devId]=part;
 		//-----------------------------
 		part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
-		//console.log("PART "+part.getCode()+" NO:"+part.getStartPos()+" | "+Utils.formatDateTimeSec(new Date(part.startTime)))
+		if (Config.simulation.singleParticipant)
+			break;
 	} 
+}
+if (!Config.simulation.singleParticipant)
+for (var i in Config.cams) 
+{
+	var cam = Config.cams[i];
+	var part = TRACK.newParticipant(cam.code,cam.deviceId,cam.name);
+	part.setAgeGroup("-");
+	part.setGender("-");
+	part.setCountry("Germany");
+	part.setIcon(cam.icon);
+	part.setImage(cam.icon);
+	part.setStartPos(0);
+	part.setAge(0);
+	trackedParticipants.push(part);
+	partLookupByIMEI[devId]=part;
+	part.setStartTime(1); /* placeholder not 0 */
+	part.__cam=1;
 }
 console.log(trackedParticipants.length+" tracked participants found");
 //--------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------
 var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 var startTime = (new Date()).getTime() - 10*60*1000;	// 10 minutes before
-// every 4 sec.
-setInterval(function(e) 
-{
+function inRaceChecker() {
 	var ctime = (new Date()).getTime();
 	var isTime = (ctime >= Config.event.startTime.getTime() && ctime <= Config.event.endTime.getTime());
-	if (!isTime) 
-		return;
-	function onData(data) 
-	{
-		if (!data || !data.length)
-			return;
-		for (var i=0;i<data.length;i++) 
-		{
-			var e = data[i];		
-			//----------------------------------
-			delete e._id;
-			delete e.TS;		
-			e.LON=parseInt(e.LON);
-			e.LAT=parseInt(e.LAT);
-			if (isNaN(e.LON) || isNaN(e.LAT))
-				continue;
-			if (e.ALT)
-				e.ALT=parseFloat(e.ALT);
-			if (e.TIME)
-				e.TIME=parseFloat(e.TIME);		
-			if (e.HRT)
-				e.HRT=parseInt(e.HRT);
-			//----------------------------------
-			var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
-			var actime = parseInt(e.EPOCH);
-			if (!actime)
-				continue;
-			var part = partLookupByIMEI[e.IMEI];
-			if (!part) {
-				console.log("FUCK PART "+e.IMEI);
-				continue;
-			}
-			actime+=delay;
-			console.log("PING "+part.code+" | "+part.deviceId+" | "+Utils.formatDateTimeSec(new Date(actime))+" | "+c[0]+" "+c[1]+" | DELAY = "+((new Date()).getTime()-actime)/1000.0+" sec delay") ;
-			part.ping(c,e.HRT,false/*sos */,actime,e.ALT,0/* overall rank*/,0/*groupRank*/,0/*genderRank*/);
-		}
-	}
-	//-------------------------------------------------------------------------------------------------------------------------------------
-	var arr=[];
-	function check(force) 
-	{
-		if (arr.length >= 80 || (arr.length && force)) 
-		{			
-			//console.log("GETTING : "+url);			
-			//var st=(new Date()).getTime();
-			var url = "http://liverank-portal.de/triathlon/rest/raceRecord/"+arr.join(",")+"?from="+(startTime-delay)+"&to="+(ctime-delay);
-			arr=[];
-			var client=request.createClient("http://liverank-portal.de");
-			client.get(url, function(err, res, body) 
-			{
-				onData(body);
-				//var dur=(new Date()).getTime();
-				//dur-=st;
-				//console.log("FINISH : "+dur/1000.0+" sec.");
-				console.log("ERR : "+err);
-			});
-		}
-	}
-	var crrtime = (new Date()).getTime();
-	for (var i in trackedParticipants) 
-	{
-		var part = trackedParticipants[i];
-		if (crrtime >= part.startTime) 
-		{
-			arr.push(part.deviceId);
-			check()
-		}
-	}
-	check(true);
-	startTime=ctime;
-},4000);
+	return isTime;
+}
 //--------------------------------------------------------------------------
 if (Config.simulation.enabled) 
 	Simulator.startSimulation(TRACK,Config.simulation.speedCoef);	
-
-
 //--------------------------------------------------------------------------
 exports.trackedParticipants=trackedParticipants;
 exports.partLookupByIMEI=partLookupByIMEI;
+//--------------------------------------------------------------------------
+// COPY... 
+CONFIG.math.displayDelay = Config.interpolation.displayDelay;
+//--------------------------------------------------------------------------
+// EVERY 5 seconds interpolation and ranking calculations
+//--------------------------------------------------------------------------
+var stateStorage = {}; 
+function addState(imei,state) 
+{
+	if (!stateStorage[imei])
+		stateStorage[imei]=new BinarySearchTree();
+	stateStorage[imei].insert(state.getTimestamp(),state);	
+	if (stateStorage[imei].data.length > 3000)
+		stateStorage[imei].delete(stateStorage[imei].getMinKey());
+}
+//--------------------------------------------------------------------------
+setInterval(function() 
+{
+	if (!inRaceChecker())
+		return;	
+	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
+	var overAllRank={};
+	var genderRank={};
+	var groupRank={};
+	var arr=[];
+	var val=[];
+	var elapsed=[];
+	for (var i in trackedParticipants) 
+	{ 
+		var part = trackedParticipants[i];
+		var elp = part.avg(ctime,"elapsed")
+		if (elp == null)
+			continue;
+		arr.push(i);
+		elapsed.push(elp);
+		var spd = part.avg(ctime,"speed");
+		if (spd == 0)
+			val.push(999999999.0);
+		else {
+			var moredist = (1.0-elp)*TRACK.getTrackLength();
+			val.push(moredist/spd);
+		}
+	}
+	console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
+	//console.log(val);
+	arr.sort(function(a, b){
+		return val[a]-val[b];
+	});
+	var tmp={};
+	var tmp1={};
+	var k=0;
+	for (var i in arr) 
+	{
+		var part = trackedParticipants[arr[i]];
+		var ageGroup = part.getAgeGroup();
+		var gender = part.getGender();
+		if (!tmp[ageGroup])
+			tmp[ageGroup]=[];
+		tmp[ageGroup].push(part);
+		if (!tmp1[gender])
+			tmp1[gender]=[];
+		tmp1[gender].push(part);
+		overAllRank[part.deviceId]=k+1;
+		groupRank[part.deviceId]=tmp[ageGroup].length;
+		genderRank[part.deviceId]=tmp1[gender].length;
+		k++;
+	}
+	for (var i in arr) 
+	{
+		var part = trackedParticipants[arr[i]];		
+		var ts = new ParticipantState();
+		ts.setSpeed(part.avg(ctime,"speed"));
+		ts.setElapsed(elapsed[i]);
+		ts.setFreq(parseInt(part.avg(ctime,"freq")));
+		ts.setAcceleration(part.avg(ctime,"acceleration"));
+		ts.setAlt(parseInt(part.avg(ctime,"alt")));
+		ts.setGps(part.avg2(ctime,"gps"));
+		ts.setIsSOS(part.states[part.states.length-1].getIsSOS());
+		ts.setTimestamp(ctime);		
+		ts.setOverallRank(overAllRank[part.deviceId]);
+		ts.setGenderRank(genderRank[part.deviceId]);
+		ts.setGroupRank(groupRank[part.deviceId]);		
+		//console.log(ts);
+		addState(part.deviceId,ts);
+	}
+},5000);
+//--------------------------------------------------------------------------
+// from inclusive , to exclusive
+exports.queryData = function(imei,from,to) 
+{
+	if (!inRaceChecker())
+		return [];
+	var res=[];
+	if (stateStorage[imei]) 
+	{
+		var qry = stateStorage[imei].betweenBounds({ $gte: from, $lt: to });
+		for (var j in qry) 
+		{
+			var state = qry[j];
+			res.push({
+				imei : imei,
+				speed : state.speed,
+				elapsed : state.elapsed,
+				timestamp : state.timestamp-delay,		// UTC
+				gps : state.gps,
+				freq : state.freq,
+				isSOS : state.isSOS,
+				acceleration : state.acceleration,
+				alt : state.alt,
+				overallRank : state.overallRank,
+				genderRank : state.genderRank,
+				groupRank : state.groupRank
+			});
+		}
+	}
+	return res;
+}
+//--------------------------------------------------------------------------
+var stream = new StreamData();
+stream.start(TRACK,inRaceChecker);

@@ -180,14 +180,79 @@ app.get('/participants', function (req, res)
 			r.push({value:name,data:data});
 		}
 		res.send(JSON.stringify(r, null, 4));
+	} else if (req.query.mode == "bcmpl") {
+		var r = [];
+		for (var i in Config.participants) {
+			var part = Config.participants[i];
+			var data = part.idParticipant;
+			r.push({value:""+p.startPos(),data:data});
+		}
+		res.send(JSON.stringify(r, null, 4));
 	} else {
 		res.send(JSON.stringify(Config.participants, null, 4));
 	}
 });
 
 app.get('/event', function (req, res) {
-	//res.header("Content-Type", "application/json; charset=utf-8");
-	res.send('Hello World!');
+	res.header("Content-Type", "application/json; charset=utf-8");
+	var parr=[];
+	var cams=[];
+	for (var i in Tracking.trackedParticipants) 
+	{
+		var part = Tracking.trackedParticipants[i];
+		var rres={
+			id : part.id,
+			code : part.code,
+			color : part.color,
+			ageGroup : part.ageGroup,
+			age : part.age,
+			country : part.country,
+			startPos : part.startPos,
+			gender : part.gender,
+			icon : part.icon,
+			image : part.image,
+			deviceId : part.deviceId
+		};
+		if (part.__cam)
+			cams.push(rres);
+		else
+			parr.push(rres);
+	}
+	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
+	var rres = 
+	{
+		times: 
+		{
+			startTime : Config.event.startTime.getTime()-delay,
+			endTime : Config.event.endTime.getTime()-delay
+		},
+		bikeStartKM : Config.event.bikeStartKM,
+		runStartKM : Config.event.runStartKM,
+		participants : parr,
+		cams : cams,
+		route : Config.event.trackData,
+	};
+	res.send(JSON.stringify(rres, null, 4));
+});
+
+app.post('/stream', function (req, _res) 
+{
+	_res.header("Content-Type", "application/json; charset=utf-8");
+	//console.log("STREAM:");
+	//console.log(req.body);
+	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
+	var res=[];
+	for (var i in req.body) 
+	{
+		var e = req.body[i];
+		var t = Tracking.queryData(e.imei,e.start+delay,e.end+delay);
+		if (t) 
+			for (j in t) 
+				res.push(t[j]);
+	}	
+	/*console.log("RETURN JSON :::::");
+	console.log(res);*/
+	_res.send(JSON.stringify(res, null, 4));
 });
 //--------------------------------------------------------------------
 var server = app.listen(3000, function () 
