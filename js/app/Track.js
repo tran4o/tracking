@@ -330,6 +330,7 @@ Class("Track",
 			var cam = new MovingCam({id:id,deviceId:deviceId,code:name});
 			cam.init(this.route[0],this);
 			cam.setSeqId(seqId);
+			cam.__skipTracking=true;
 			this.participants.push(cam);
 			return cam;
 		},

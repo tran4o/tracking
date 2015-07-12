@@ -406,8 +406,7 @@ Class("Participant",
 			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
 			//isSOS=true;
-			
-			if (isSOS) {
+			if (isSOS || this.__skipTracking) {
 				this.setIsSOS(true); 
 				this.addState(state);
 				return;
