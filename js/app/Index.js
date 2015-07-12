@@ -202,16 +202,25 @@ function refreshTables()  {
 	if (tableRank) 
 	{
 		var arr = PARTICIPANTS;
-		var res = [];
-		for (var i in arr) 
-		{
-			var part = arr[i];
-			res.push({id : part.id,follow : part.isFavorite,name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
-		}
-		console.log("REFRESH TBL!");
-		/*tableRank.fnClearTable();
-		tableRank.fnAddData(res);
-		tableRank.fnDraw();*/
+		tableRank.clear()
+		arr.forEach(function(part) { 
+			tableRank.row.add({
+				id : part.id,
+				follow : part.isFavorite,
+				name : part.code,
+				bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
+		});
+		tableRank.draw();
+	}
+
+	if (tableFavorites) 
+	{
+		var arr = PARTICIPANTS.filter(function(v){ return v.isFavorite; });
+		tableFavorites.clear()
+		arr.forEach(function(part) { 
+			tableFavorites.row.add({name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age} );
+		});
+		tableFavorites.draw();
 	}
 }
 
