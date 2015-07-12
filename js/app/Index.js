@@ -96,8 +96,8 @@ function showParticipants() {
 					render: function ( data, type, row ) 
 					{
 						if (data.follow == 1)
-							return "<div class='invisible'>1</div><img src='img/favorite.png' class='table-favorite-add'/>";
-						return "<div class='invisible'>0</div><img src='img/favorite-add.png' class='table-favorite-add'/>";
+							return "<div class='invisible'>1</div><img onclick='MAKEFAV(\""+data.id+"\")' src='img/favorite.png' class='table-favorite-add'/>";
+						return "<div class='invisible'>0</div><img onclick='MAKEFAV(\""+data.id+"\")' src='img/favorite-add.png' class='table-favorite-add'/>";
 					} 
 							
 				},
@@ -198,29 +198,51 @@ function showFavs()
 	}
 }
 
+function refreshTables()  {
+	if (tableRank) 
+	{
+		var arr = PARTICIPANTS;
+		var res = [];
+		for (var i in arr) 
+		{
+			var part = arr[i];
+			res.push({id : part.id,follow : part.isFavorite,name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
+		}
+		tableRank.fnClearTable();
+		tableRank.fnAddData(res);
+		tableRank.fnDraw();
+	}
+}
+
+
+window.MAKEFAV = function(id) 
+{
+	for (var i in TRACK.participants) 
+	{
+		var p = TRACK.participants[i];
+		if (p.id == id) 
+		{
+			if (p.isFavorite) {
+				p.isFavorite=false;
+				localStorage.setItem("favorite-"+p.id,"0");
+				refreshTables();
+				break;
+			} else {
+				p.isFavorite=true;
+				localStorage.setItem("favorite-"+p.id,"1");
+				refreshTables();
+				break;
+			}
+		}
+	}
+};
+
 function showRank() 
 {
 	showLeftPane();
 	showTab("rank");
 	if (!tableRank) 
 	{
-		window.MAKEFAV = function(id) 
-		{
-			for (var i in TRACK.participants) 
-			{
-				var p = TRACK.participants[i];
-				if (p.id == id) 
-				{
-					if (p.isFavorite) {
-						p.isFavorite=false;
-						localStorage.setItem("favorite-"+p.id,"0");
-					} else {
-						p.isFavorite=true;
-						localStorage.setItem("favorite-"+p.id,"1");
-					}
-				}
-			}
-		};
 		var arr = PARTICIPANTS;
 		var res = [];
 		for (var i in arr) 
@@ -280,7 +302,7 @@ function showRank()
 			}
 		} );
 	} else {
-		$("#table-favorites").resize();  
+		$("#table-ranking").resize();  
 	}
 }
 
@@ -427,14 +449,14 @@ $(document).ready( function ()
 		if (isTabVisible("part"))
 			showMap();
 		else
-			showParticipants();
+			showFavs();
 	});
 
 	$("#button_favorites").click(function() {
 		if (isTabVisible("favs"))
 			showMap();
 		else
-			showFavs();
+			showParticipants();
 	});
 
 	$("#button_rank").click(function() {
