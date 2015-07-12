@@ -5,6 +5,25 @@ var STYLES=
 	//------------------------------------------------
 	// style function for track
 	//------------------------------------------------
+		
+	"_track": function(feature,resolution) 
+	{
+        return 
+        [
+        ];
+	},
+
+	"test": function(feature,resolution) 
+	{
+		var styles=[];
+        styles.push(new ol.style.Style({
+             stroke: new ol.style.Stroke({
+                 color: "#0000FF",
+                 width: 3
+             })
+         	}));
+        return styles;
+	},
 	"track" : function(feature,resolution) 
 	{
 		var styles=[];

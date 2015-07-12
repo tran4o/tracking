@@ -1,7 +1,5 @@
 require('joose');
 var Utils = require('./../app/Utils');
-var Config = require('./Config');
-var requestJSON = require('request-json');
 Class("StreamData",
 {
     has:
@@ -10,7 +8,7 @@ Class("StreamData",
     //--------------------------------------
     methods:
     {
-        start : function(track,checker)
+        start : function(track,checker,pingInterval,callBackFnc)
         {
             var url = "http://liverank-portal.de/triathlon/rest/stream"; 
         	var delay = -(new Date()).getTimezoneOffset()*60*1000;		// 120 for gmt+2
@@ -74,19 +72,8 @@ Class("StreamData",
                 }
                 //console.log("STREAM DATA JSON");
                 //console.log(json);
-                if (json.length) 
-                {
-        			var client = requestJSON.createClient("http://liverank-portal.de");
-        			function onReqDone(err, res, body) 
-        			{
-        				if (err)
-        					console.log("Error geting server live data "+err);
-        				else
-        					processData(body);
-        			}
-        			client.post(url, json, onReqDone);
-                }                		
-                setTimeout(doTick,Config.network.pingInterval*1000);
+                callBackFnc(url,json,processData);
+                setTimeout(doTick,pingInterval*1000);
         	}
         	doTick();
         }

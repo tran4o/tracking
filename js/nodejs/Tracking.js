@@ -1,5 +1,6 @@
 require('./../app/Track');
 require('./StreamData');
+var requestJSON = require('request-json');
 var BinarySearchTree = require('binary-search-tree').BinarySearchTree;
 var Utils = require('./../app/Utils');
 var CONFIG = require('./../app/Config');
@@ -210,5 +211,20 @@ exports.queryData = function(imei,from,to)
 	return res;
 }
 //--------------------------------------------------------------------------
+function doHTTP(url,json,onReqDone) 
+{
+    if (json.length) 
+    {
+		var client = requestJSON.createClient("http://liverank-portal.de");
+		function postDone(err, res, body) 
+		{
+			if (err)
+				console.log("Error geting server live data "+err);
+			else
+				onReqDone(body);
+		}
+		client.post(url, json, postDone);
+    }                		
+}
 var stream = new StreamData();
-stream.start(TRACK,inRaceChecker);
+stream.start(TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);

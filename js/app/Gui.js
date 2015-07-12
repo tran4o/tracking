@@ -3,6 +3,7 @@ var STYLES=require('./Styles');
 require('joose');
 require('./Track');
 require('./LiveStream');
+var CONFIG = require("./Config");
 
 Class("Gui", 
 {
@@ -13,7 +14,7 @@ Class("Gui",
 	{
     	isDebug : {
     		is : "rw",
-    		init : !Utils.mobileAndTabletCheck()
+    		init : !Utils.mobileAndTabletCheck() && CONFIG.appearance.debug
     	},
 		isWidget : {
 			init : false
@@ -78,6 +79,11 @@ Class("Gui",
 			is : "rw",
 			init : null
 		},	
+		testLayer : {
+			is : "rw",
+			init : null
+		},	
+		
 		selectedParticipant1 : {
 			is : "rw",
 			init : null
@@ -145,11 +151,17 @@ Class("Gui",
 				source: new ol.source.Vector(),
 				style : STYLES["cam"]
 			});
-			if (this.isDebug)
-			this.debugLayerGPS = new ol.layer.Vector({
-				  source: new ol.source.Vector(),
-				  style : STYLES["debugGPS"]
-			});
+			if (this.isDebug) 
+			{
+				this.debugLayerGPS = new ol.layer.Vector({
+					  source: new ol.source.Vector(),
+					  style : STYLES["debugGPS"]
+				});
+				this.testLayer = new ol.layer.Vector({
+					  source: new ol.source.Vector(),
+					  style : STYLES["test"]
+				});
+			}
 			//--------------------------------------------------------------
 			var ints = [];
 			this.popup1 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
@@ -181,8 +193,10 @@ Class("Gui",
 				this.map.addInteraction(ints[i]);
 			this.map.addOverlay(this.popup1);
 			this.map.addOverlay(this.popup2);
-			if (this.isDebug) 
+			if (this.isDebug) { 
 				this.map.addLayer(this.debugLayerGPS);
+				this.map.addLayer(this.testLayer);
+			}
 			TRACK.init();
 			this.addTrackFeature();
 			//----------------------------------------------------
@@ -371,7 +385,7 @@ Class("Gui",
 				}
 			}
 			//-------------------------------------------------------
-			for (var ip=0;ip<TRACK.participants.length;ip++) 
+			for (var ip=0;ip<arr.length;ip++) 
 			{
 				TRACK.participants[arr[ip]].__pos=ip;
 				if (ip == 0)

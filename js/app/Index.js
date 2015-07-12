@@ -5,6 +5,7 @@ require('./Participant');
 require('./MovingCam');
 require('./HotSpot');
 require('./BackendStream');
+require('./../nodejs/StreamData');
 window.CONFIG=require('./Config');
 var Utils=require('./Utils');
 for (var e in Utils) 
@@ -67,11 +68,19 @@ function showTab( tabname ) {
 }
 
 function showParticipants() {
+	var arr = PARTICIPANTS;
+	var res = [];
+	for (var i in arr) 
+	{
+		var part = arr[i];
+		res.push({name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
+	}
 	showLeftPane();
 	showTab("part");
 	if (!tableParticipants)
 	{
         tableParticipants = $('#table-participants').DataTable( {
+        	"destroy" : true,
 			"iDisplayLength" : 50,
 			"bAutoWidth": false,
 			"aaSorting": [[2,'asc']],
@@ -111,8 +120,7 @@ function showParticipants() {
                     className : "dt-body-right",
 					render: function ( data, type, row ) 
 					{
-						var age = parseInt(data.age);
-						return data.ageGroup+" ("+age+")";
+						return data.age;
 					}
 
 				}
@@ -135,21 +143,19 @@ function showFavs()
 	showTab("favs");
 	if (!tableFavorites) 
 	{
+		var arr = PARTICIPANTS.filter(function(v){ return v.isFavorite; });
+		var res = [];
+		for (var i in arr) 
+		{
+			var part = arr[i];
+			res.push({name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age});
+		}
 		tableFavorites = $('#table-favorites').DataTable( {
+			"destroy" : true,
 			"iDisplayLength" : 50,
 			"bAutoWidth": false,
 			"aaSorting": [[1,'asc']],
-			data : function () {
-				var arr = PARTICIPANTS;//.filter(function(v){ return v.isFavorite; });
-				var res = [];
-				for (var i in arr) 
-				{
-					var part = arr[i];
-					res.push({name : part.name,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age});
-				}
-				console.log(res);
-				return res;
-			},	
+			data : res,
 			columns: [
 				{ data: "name" },
 				{ data: "bib",className : "dt-body-center" },
@@ -169,8 +175,7 @@ function showFavs()
 					data: null,
 					render: function ( data, type, row ) 
 					{
-						var age = parseInt(data.age);
-						return data.ageGroup+" ("+age+")";
+						return data.age;
 					} 
 					,className : "dt-body-right"
 
@@ -199,23 +204,49 @@ function showRank()
 	showTab("rank");
 	if (!tableRank) 
 	{
-		var arr = PARTICIPANTS;//.filter(function(v){ return v.isFavorite; });
-		var data = [];
+		window.MAKEFAV = function(id) 
+		{
+			for (var i in TRACK.participants) 
+			{
+				var p = TRACK.participants[i];
+				if (p.id == id) 
+				{
+					if (p.isFavorite) {
+						p.isFavorite=false;
+						localStorage.setItem("favorite-"+p.id,"0");
+					} else {
+						p.isFavorite=true;
+						localStorage.setItem("favorite-"+p.id,"1");
+					}
+				}
+			}
+		};
+		var arr = PARTICIPANTS;
+		var res = [];
 		for (var i in arr) 
 		{
 			var part = arr[i];
-			console.log(part);
-			data.push({"name" : part.code,"bib" : part.startPos,"gender" : part.gender,"country" : part.country,"ageGroup" : part.ageGroup,"age" : part.age,"overall-rank":part.overallRank,"gender-rank" : part.genderRank,"group-rank" : part.groupRank,"occupation" : ""});
+			res.push({id : part.id,follow : part.isFavorite,name : part.code,bib : part.startPos,gender : part.gender,country : part.country,ageGroup : part.ageGroup,age : part.age,"overall-rank" : part.getOverallRank(),"gender-rank" : part.getGenderRank(),"group-rank" : part.getGroupRank(), "occupation" : ""});
 		}
-		console.log(data);
-
 		tableRank = $('#table-ranking').DataTable( {
 			"iDisplayLength" : 50,
 			"bAutoWidth": false,
 			"aaSorting": [[1,'asc']],
 			//ajax: "script/participants-example.json",
-			data : data,
+			data : res,
 			columns: [
+				{ 
+					//follow
+					className : "dt-body-center", 
+					data: null,
+					render: function ( data, type, row ) 
+					{
+						if (data.follow == 1)
+							return "<div class='invisible'>1</div><img onclick='MAKEFAV(\""+data.id+"\")' src='img/favorite.png' class='table-favorite-add'/>";
+						return "<div class='invisible'>0</div><img onclick='MAKEFAV(\""+data.id+"\")' src='img/favorite-add.png' class='table-favorite-add'/>";
+					} 
+				},
+
 				{ data: "name" },
 				{ data: "overall-rank",className : "dt-body-center" },
 				{ data: "group-rank",className : "dt-body-center" },
@@ -237,8 +268,7 @@ function showRank()
 					data: null,
 					render: function ( data, type, row ) 
 					{
-						var age = parseInt(data.age);
-						return data.ageGroup+" ("+age+")";
+						return data.age;
 					} 
 				},
 				{ data: "occupation",className : "dt-body-center" }
@@ -301,7 +331,6 @@ $(document).ready( function ()
 		TRACK.setRoute(data.route);
 		CONFIG.times={begin : data.times.startTime+delay, end : data.times.endTime+delay };
 		GUI.init({skipExtent:true});
-		var stream = new BackendStream();
 		function processEntry(pdata,isCam) {
 			var part; 
 			if (isCam)
@@ -325,7 +354,34 @@ $(document).ready( function ()
 			processEntry(data.participants[i],false);
 		for (var i in data.cams) 
 			processEntry(data.cams[i],true);
-		stream.start(TRACK);
+		
+
+		// FIXME ---------------------------------------------------------------------------------- 
+		/*function doHTTP(url,json,onReqDone) 
+		{
+		    if (json.length) 
+		    {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify(json),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data){
+                    	onReqDone(data);
+                    },
+                    failure: function(errMsg) {
+                        console.error("ERROR get data from backend "+errMsg)
+                    }
+                });
+		    }                		
+		}
+		var stream = new StreamData();
+		stream.start(TRACK,function() {return true;},10,doHTTP); // 10 sec ping int.*/
+		// FIXME ---------------------------------------------------------------------------------- 
+		var stream = new BackendStream();
+		stream.start(TRACK); 									
+
 		initGUI();
 	}).fail(function() {
     	console.error("Error get event configuration from backend!");

@@ -158,7 +158,7 @@ Class("Participant",
 		},
 		isFavorite : {
 			is : "rw",
-			init : true /* todo set false */
+			init : false /* todo set false */
 		}
     },
 	after : {
@@ -377,6 +377,25 @@ Class("Participant",
 			//console.warn(state);
 			this.addState(state);
 		},
+
+		getOverallRank : function() {
+			if (this.states.length) {
+				return this.states[this.states.length-1].overallRank;
+			}
+			return "-";
+		},
+		getGroupRank : function() {
+			if (this.states.length) {
+				return this.states[this.states.length-1].groupRank;
+			}
+			return "-";
+		},
+		getGenderRank : function() {
+			if (this.states.length) {
+				return this.states[this.states.length-1].genderRank;
+			}
+			return "-";
+		},
 		
 		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
 		{
@@ -417,9 +436,16 @@ Class("Participant",
 				result=[];
 			//console.log("FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
 			//for (var i=0;i<this.track.route.length-1;i++) {
+
+			//----------------------------------------------
+			var dbgLine = [];
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
+				
+				if (typeof GUI != "undefined" && GUI.isDebug) 
+					dbgLine.push([[tg[i][0], tg[i][1]], [tg[i+1][0], tg[i+1][1]]]);
+				
 				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
@@ -441,6 +467,24 @@ Class("Participant",
 						minf=el2;
 				}
 			}
+			//------/---------------------------------------
+			//console.log("OOOOOOP! "+dbgLine.length);
+			//console.log(dbgLine);
+			if (typeof GUI != "undefined" && GUI.isDebug) 
+			{
+				if (this.__dbgBox) {
+					GUI.testLayer.getSource().removeFeature(this.__dbgBox);
+					delete this.__dbgBox;
+				}
+				if (dbgLine.length) {
+					var feature = new ol.Feature();
+					var geom = new ol.geom.MultiLineString(dbgLine);
+					geom.transform('EPSG:4326', 'EPSG:3857');
+					feature.setGeometry(geom);
+					GUI.testLayer.getSource().addFeature(feature);
+				}
+			} 
+			//---------------------------------------------
 			
 			/*if (minf == null)
 				console.error("MINF NULL ("+result.length+") COEF="+coef);

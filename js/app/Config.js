@@ -26,9 +26,9 @@ var CONFIG =
 		gpsInaccuracy : 0  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
 	},	
 	math : {
-		gpsInaccuracy : 3,	//TODO 13 min
+		gpsInaccuracy : 7,	//TODO 13 min
 		speedAndAccelerationAverageDegree : 2,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 80,						// display delay in SECONDS
+		displayDelay : 60,						// display delay in SECONDS
 		interpolateGPSAverage : 0, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
 		roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
 	},
@@ -65,6 +65,7 @@ var CONFIG =
 	},
 	
 	appearance : {
+		debug : 0,
 		trackColorSwim : '#5676ff',
 		trackColorBike : '#E20074',
 		trackColorRun :  '#079f36',

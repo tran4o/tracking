@@ -15,10 +15,10 @@
 	"simulation" : 
 	{
 		"enabled" : 0,
-		"speedCoef" : 0.25,
-		"debugStarts" : 0,
 		"singleParticipant" : 0,
-		"startElapsed" : 0.30
+		"startElapsed" : 0.30,		
+		"speedCoef" : 1,
+		"debugStarts" : 0
 	},
 	"interpolation" : 
 	{
