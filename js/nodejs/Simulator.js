@@ -6,8 +6,8 @@ var Tracking = require('./Tracking');
 var WGS84SPHERE = Utils.WGS84SPHERE;
 var moment = require('moment');
 var http = require('http');
-var request = require('request-json');
-
+var requestJSON = require('request-json');
+var request = require('request');
 //--------------------------------------------------------------------
 function generateJSON(imei,lons,lats,times)
 {
@@ -50,53 +50,57 @@ function generateJSON(imei,lons,lats,times)
 //------------------------------------------
 exports.startSimulation = function(track,coef)  
 {
-	var trackInSeconds = 5*60;	//10 min
+	var trackInSeconds = 5*60*coef;	//10 min
 	console.log("Staring simulation with coef "+coef);
 	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
-	var coef = CONFIG.simulation.gpsInaccuracy * track.getTrackLength() / track.getTrackLengthInWGS84();
-	
+	var randcoef = CONFIG.simulation.gpsInaccuracy * track.getTrackLengthInWGS84() / track.getTrackLength();
+	console.log("RAND COEF : "+randcoef);
 	// clear all gps tracking data first..
 	for (var i in track.participants) 
 	{
 		var id = track.participants[i].deviceId;
-		request.get("http://liverank-portal.de/triathlon/rest/clearRace/"+id);
+		request.get("http://liverank-portal.de/triathlon/rest/clearRace/"+id,function(){});
 	}
-	setInterval(function(e) 
+	setTimeout(function() 
 	{
-		var ctime = (new Date()).getTime();
-		for (var i in track.participants) 
+		function tick() 
 		{
-			var part = track.participants[i];		
-			var lons = [];
-			var lats = [];
-			var times = [];
-			for (var k=0;k<3;k++) 
+			var ctime = (new Date()).getTime();
+			for (var i in track.participants) 
 			{
-				var tm = ctime - (2-k)*10*1000;
-				if (tm < stime)
-					tm=stime;
-				var elapsed = ((tm - stime)/1000.0)/trackInSeconds;
-				if (elapsed > 1)
-					elapsed=1;
-				var pos = track.getPositionFromElapsed(elapsed % 1.0);
-				var dist1 = (Math.random()*2.0-1.0) * randcoef;
-				var dist2 =  (Math.random()*2.0-1.0)  * randcoef;
-				pos[0]+=dist1;
-				pos[1]+=dist2;
-				times.push(tm-delay); // GMT timestamp
-				lons.push(pos[0]);
-				lats.push(pos[1]);
+				var part = track.participants[i];		
+				var lons = [];
+				var lats = [];
+				var times = [];
+				for (var k=0;k<3;k++) 
+				{
+					var tm = ctime - (2-k)*10*1000;
+					if (tm < stime)
+						tm=stime;
+					var elapsed = ((tm - stime)/1000.0)/trackInSeconds + Config.simulation.startElapsed;
+					if (elapsed > 1)
+						elapsed=1;
+					var pos = track.getPositionAndRotationFromElapsed(elapsed);
+					var dist1 = (Math.random()*2.0-1.0) * randcoef;
+					var dist2 =  (Math.random()*2.0-1.0)  * randcoef;
+					pos[0]+=dist1;
+					pos[1]+=dist2;
+					times.push(tm-delay); // GMT timestamp
+					lons.push(pos[0]);
+					lats.push(pos[1]);
+				}
+				//var url = "http://liverank-portal.de/triathlon/rest/raceData/blah/"+part.deviceId;		
+				var json = generateJSON(part.deviceId,lons,lats,times);
+				var client = requestJSON.createClient("http://liverank-portal.de");
+				//console.log(json);
+				function onReqDone(err, res, body) {
+					return console.log("POSTED for "+this.deviceId+" | "+res.statusCode);								
+				}
+				client.post('http://liverank-portal.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
 			}
-			//var url = "http://liverank-portal.de/triathlon/rest/raceData/blah/"+part.deviceId;		
-			var json = generateJSON(part.deviceId,lons,lats,times);
-			var client = request.createClient("http://liverank-portal.de");
-			console.log("DOING "+'http://liverank-portal.de/triathlon/rest/raceData/blah/'+part.deviceId);
-			function onReqDone(err, res, body) {
-				return console.log("POSTED for "+this.deviceId+" | "+res.statusCode);								
-			}
-			client.post('http://liverank-portal.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
-			//break;
-		}
-	},30*1000); /* 30 seconds every simulation */
+		}	
+		tick();
+		setInterval(tick,30*1000); /* 30 seconds every simulation */
+	},1000); // 1 sec delay
 }

@@ -96,7 +96,7 @@ Class("Track",
 			return [minx,miny,maxx,maxy];
 		},
 		
-		// return [0..1]		
+		// CALL ONLY ONCE ON INIT
 		getElapsedFromPoint : function(point,start) 
 		{
 			var res=0.0;
@@ -131,7 +131,57 @@ Class("Track",
 		},
 		
 		// elapsed from 0..1
-		getPositionFromElapsed : function(elapsed) {
+		getPositionAndRotationFromElapsed : function(elapsed) {
+			var rr=null;
+			var cc = this.route;
+			
+			var ll = this.distancesElapsed.length-1;
+			var si = 0;
+
+			// TODO FIX ME 
+			while (si < ll && si+500 < ll && this.distancesElapsed[si+500] < elapsed ) {
+				si+=500;
+			}
+			
+			while (si < ll && si+250 < ll && this.distancesElapsed[si+250] < elapsed ) {
+				si+=250;
+			}
+			
+			while (si < ll && si+125 < ll && this.distancesElapsed[si+125] < elapsed ) {
+				si+=125;
+			}
+
+			while (si < ll && si+50 < ll && this.distancesElapsed[si+50] < elapsed ) {
+				si+=50;
+			}
+			
+			for (var i=si;i<ll;i++) 
+			{
+				/*do 
+				{
+					var m = ((cc.length-1+i) >> 1);
+					if (m-i > 5 && elapsed < this.distancesElapsed[m]) {
+						i=m;
+						continue;
+					}
+					break;
+				} while (true);*/
+				if (elapsed >= this.distancesElapsed[i] && elapsed <= this.distancesElapsed[i+1]) 
+				{
+					elapsed-=this.distancesElapsed[i];
+					var ac=this.distancesElapsed[i+1]-this.distancesElapsed[i];
+					var a = cc[i];
+					var c = cc[i+1];
+					var dx = c[0] - a[0];
+					var dy = c[1] - a[1];
+					rr=[ a[0]+(c[0]-a[0])*elapsed/ac,a[1]+(c[1]-a[1])*elapsed/ac,Math.atan2(dy, dx)];
+					break;
+				}
+			}
+			return rr;
+		},
+		
+		__getPositionAndRotationFromElapsed : function(elapsed) {
 			elapsed*=this.getTrackLength();
 			var rr=null;
 			var cc = this.route;
@@ -141,7 +191,9 @@ Class("Track",
 				var c = cc[i+1];
 				var ac = WGS84SPHERE.haversineDistance(a,c);
 				if (elapsed <= ac) {
-					rr=[ a[0]+(c[0]-a[0])*elapsed/ac,a[1]+(c[1]-a[1])*elapsed/ac ];
+					var dx = c[0] - a[0];
+					var dy = c[1] - a[1];
+					rr=[ a[0]+(c[0]-a[0])*elapsed/ac,a[1]+(c[1]-a[1])*elapsed/ac,Math.atan2(dy, dx)];
 					break;
 				}
 				elapsed-=ac;
@@ -149,27 +201,6 @@ Class("Track",
 			return rr;
 		},
 
-		getRotationFromElapsed : function(elapsed) 
-		{
-			elapsed*=this.getTrackLength();
-			var rotation=null;
-			var cc = this.route;
-			for (var i=0;i<cc.length-1;i++) 
-			{
-				var a = cc[i];
-				var c = cc[i+1];
-				var ac = WGS84SPHERE.haversineDistance(a,c);
-				if (elapsed <= ac) 
-				{
-					var dx = c[0] - a[0];
-					var dy = c[1] - a[1];
-					rotation=Math.atan2(dy, dx);
-					break;
-				}
-				elapsed-=ac;
-			}
-			return rotation;
-		},
 		
 		getTrackLength : function() {
 			if (this._lentmp1)
@@ -294,12 +325,12 @@ Class("Track",
 			return part;
 		},
 
-		newMovingCam : function(id,deviceId,name)
+		newMovingCam : function(id,deviceId,name,seqId)
 		{
 			var cam = new MovingCam({id:id,deviceId:deviceId,code:name});
 			cam.init(this.route[0],this);
-			cam.setSeqId(this.movingCams.length);
-			this.movingCams.push(cam);
+			cam.setSeqId(seqId);
+			this.participants.push(cam);
 			return cam;
 		},
 

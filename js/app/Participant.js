@@ -151,6 +151,14 @@ Class("Participant",
 		startTime : {
 			is : "rw",
 			init : 0
+		},
+		gender : {
+			is : "rw",
+			init : "M"
+		},
+		isFavorite : {
+			is : "rw",
+			init : true /* todo set false */
 		}
     },
 	after : {
@@ -196,6 +204,25 @@ Class("Participant",
 		},
 		interpolate : function() 
 		{
+			
+			// TEST
+			/*if (!this.__time)
+				this.__time = (new Date()).getTime();
+			else {
+				var dur = ((new Date()).getTime()-this.__time);
+				var tt = dur/100000.0;
+				if (tt > 1)
+					tt=1;
+				var tka = this.track.getPositionAndRotationFromElapsed(tt);
+				this.setPosition([tka[0],tka[1]]);
+				this.setRotation(tka[2]);
+				this.updateFeature();
+				this.setElapsed(res);
+			}
+			return;*/
+			// TEST
+			
+			
 			if (!this.states.length)
 				return;
 			var ctime=(new Date()).getTime();
@@ -228,13 +255,75 @@ Class("Participant",
 					tres=1.0;
 				else
 					tres=tres%1;
-				this.setPosition(this.track.getPositionFromElapsed(tres));
-				this.setRotation(this.track.getRotationFromElapsed(tres));
+				var tka = this.track.getPositionAndRotationFromElapsed(tres);
+				this.setPosition([tka[0],tka[1]]);
+				this.setRotation(tka[2]);
 				this.updateFeature();
 				this.setElapsed(res);
 			} 
 		},
-		
+
+		max : function(ctime,proName) 
+		{
+			var res=0;
+			for (var i=this.states.length-2;i>=0;i--) 
+			{
+				var j = i+1;
+				var sa = this.states[i];
+				var sb = this.states[j];
+				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
+				{ 
+					res = sa[proName];
+					break;
+				}
+				if (sb.timestamp < ctime)
+					break;
+			}
+			return res;
+		},
+
+		avg2 : function(ctime,proName) 
+		{
+			var res=null;
+			for (var i=this.states.length-2;i>=0;i--) 
+			{
+				var j = i+1;
+				var sa = this.states[i];
+				var sb = this.states[j];
+				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
+				{ 
+					res = [
+					       	sa[proName][0]+(ctime-sa.timestamp) * (sb[proName][0]-sa[proName][0]) / (sb.timestamp-sa.timestamp),
+					       	sa[proName][1]+(ctime-sa.timestamp) * (sb[proName][1]-sa[proName][1]) / (sb.timestamp-sa.timestamp)
+				          ]; 
+					break;
+				}
+				if (sb.timestamp < ctime)
+					break;
+			}
+			return res;
+		},
+
+		avg : function(ctime,proName) 
+		{
+			var res=null;
+			//console.log(this.states);
+			for (var i=this.states.length-2;i>=0;i--) 
+			{
+				var j = i+1;
+				var sa = this.states[i];
+				var sb = this.states[j];
+				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
+				{ 
+					res = sa[proName]+(ctime-sa.timestamp) * (sb[proName]-sa[proName]) / (sb.timestamp-sa.timestamp);
+					break;
+				}
+				if (sb.timestamp < ctime)
+					break;
+			}
+			return res;
+		},
+
 		calculateElapsedAverage : function(ctime) 
 		{
 			var res=null;
@@ -253,11 +342,11 @@ Class("Participant",
 					ok=true;
 					break;
 				}
-				/*if (sb.timestamp < ctime) {
+				if (sb.timestamp < ctime) {
 					this.setSignalLostDelay(ctime-sb.timestamp);
 					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
 					return null;
-				}*/
+				}
 			}
 			if (!ok) {
 				if (this.states.length >= 2)
@@ -283,6 +372,12 @@ Class("Participant",
 			return {elapsed : ssume,timestamp : ssumt};
 		},
 
+		pingCalculated : function(obj) {
+			var state = new ParticipantState(obj);
+			//console.warn(state);
+			this.addState(state);
+		},
+		
 		ping : function(pos,freq,isSOS,ctime,alt,overallRank,groupRank,genderRank,_ELAPSED)
 		{
 			var llt = (new Date()).getTime(); 
@@ -292,6 +387,7 @@ Class("Participant",
 			this.setLastPingTimestamp(llt);			
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
 			//isSOS=true;
+			
 			if (isSOS) {
 				this.setIsSOS(true); 
 				this.addState(state);
@@ -319,18 +415,18 @@ Class("Participant",
 			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
 			if (!result)
 				result=[];
-			
-			//console.log("FOUND "+result.length);
+			//console.log("FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
+			//for (var i=0;i<this.track.route.length-1;i++) {
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
-				var res = interceptOnCircle(tg[i],tg[i+1],pos,rr);
+				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
 					// has intersection (2 points)
-					var d1 = distp(res[0],tg[i]);
-					var d2 = distp(res[1],tg[i]);
-					var d3 = distp(tg[i],tg[i+1]);
+					var d1 = Utils.distp(res[0],tg[i]);
+					var d2 = Utils.distp(res[1],tg[i]);
+					var d3 = Utils.distp(tg[i],tg[i+1]);
 					var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
 					var el2 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d2/d3;
 					//console.log("Intersection candidate at "+i+" | "+el1+" | "+el2);
@@ -346,10 +442,10 @@ Class("Participant",
 				}
 			}
 			
-			if (minf == null)
+			/*if (minf == null)
 				console.error("MINF NULL ("+result.length+") COEF="+coef);
 			else
-				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m) COEF="+coef);
+				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m) COEF="+coef);*/
 			
 			// ?? OK SKIP DISCARD!!!
 			if (minf == null) 
@@ -359,7 +455,7 @@ Class("Participant",
 			if (minf != null) 
 				bestm=minf;
 			
-			console.log("BESTM FOR PING : "+bestm);
+			//console.log("BESTM FOR PING : "+bestm);
 			//-----------------------------------------------------------
 			//bestm = _ELAPSED; //(TEST HACK ONLY)
 			if (bestm != null) 
@@ -401,7 +497,7 @@ Class("Participant",
 			}
 			//-----------------------------------------------------------
 			this.addState(state);
-			if (GUI.isDebug && !this.getIsDiscarded()) 
+			if (typeof GUI != "undefined" && GUI.isDebug && !this.getIsDiscarded()) 
 			{
 				var feature = new ol.Feature();
 				var geom = new ol.geom.Point(state.gps);
@@ -417,14 +513,6 @@ Class("Participant",
 			this.states.push(state);
 			if (this.states.length > CONFIG.constraints.maxParticipantStateHistory && !this.isSOS)
 				this.states.shift();
-			// REMOVE DEBUG TEST
-			/*for (var i=0;i<this.states.length-1;i++) {
-				if (this.states[i].timestamp > this.states[i+1].timestamp)
-				{
-					console.error("ERROR ADD STATE ORDER!!!");
-					debugger;
-				}
-			}*/
 		},
 
 		getLastState: function() {

@@ -1,6 +1,7 @@
 require('joose');
-var Utils = require('./Utils');
-var CONFIG = require('./Config');
+var Utils = require('./../app/Utils');
+var Config = require('./Config');
+var requestJSON = require('request-json');
 Class("StreamData",
 {
     has:
@@ -68,26 +69,24 @@ Class("StreamData",
                         //----------------------------------
                         var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
                         part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
-                        console.log(part.code+" | PING AT POS "+c[0]+" | "+c[1]+" TIME="+ctime/1000.0+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
+                        console.log(part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
                 	}
                 }
+                //console.log("STREAM DATA JSON");
+                //console.log(json);
                 if (json.length) 
                 {
-                	$.ajax({
-                	    type: "POST",
-                	    url: url,
-                	    data: JSON.stringify(json),
-                	    contentType: "application/json; charset=utf-8",
-                	    dataType: "json",
-                	    success: function(data){
-                	    	processData(data);
-                	    },
-                	    failure: function(errMsg) {
-                	    	console.log("ERROR "+errMsg)
-                	    }
-                	});
+        			var client = requestJSON.createClient("http://liverank-portal.de");
+        			function onReqDone(err, res, body) 
+        			{
+        				if (err)
+        					console.log("Error geting server live data "+err);
+        				else
+        					processData(body);
+        			}
+        			client.post(url, json, onReqDone);
                 }                		
-                setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
+                setTimeout(doTick,Config.network.pingInterval*1000);
         	}
         	doTick();
         }

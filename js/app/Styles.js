@@ -178,8 +178,12 @@ var STYLES=
 	
 	"participant" : function(feature,resolution) 
 	{
-		var etxt="";
+		// SKIP DRAW (TODO OPTIMIZE)
 		var part = feature.participant;
+		if (!part.isFavorite)
+			return [];
+		
+		var etxt="";
 		var lstate = null;
 		if (part.states.length) {
 			lstate = part.states[part.states.length-1];
