@@ -39,8 +39,8 @@ for (var i in Config.participants)
 		part.setCountry(p.nationality);
 		part.setStartPos(parseInt(p.startNo));
 		part.setGender(p.sex);
-		part.setIcon("img/data/"+devId+".jpg");
-		part.setImage("img/data/"+devId+".jpg");
+		part.setIcon("img/data/"+id+".jpg");
+		part.setImage("img/data/"+id+".jpg");
 		trackedParticipants.push(part);
 		partLookupByIMEI[devId]=part;
 		//-----------------------------
