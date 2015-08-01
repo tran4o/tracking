@@ -25,6 +25,7 @@
 <div id='map' style='position:absolute;top:0;left:0;right:0;bottom:0;background-color:white;'>
 </div>
 <script>
+var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 var aliases={};
 var aliasesR={};
 $.ajax({
@@ -139,7 +140,7 @@ function style(feature,resolution)
 				  color: [255, 255, 255, 0.5],
 				  width: 4
 				}),
-				text : formatTime(new Date(feature.data.EPOCH)),
+				text : formatTime(new Date(feature.data.EPOCH+delay)),
 				offsetX : 0,
 				offsetY : 18
 		})
@@ -217,7 +218,6 @@ function doGet()
 	if (inGET)
 		return;
 	inGET=true;
-	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var from = ((new Date()).getTime()-delay-1000*60*60*1 /* 1 hour */);
 	var to = ((new Date()).getTime()-delay);
 	var url = "/triathlon/rest/seen/all?from="+from+"&to="+to;
