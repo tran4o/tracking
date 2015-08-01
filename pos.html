@@ -24,6 +24,27 @@
 </div>
 <div style="position:absolute;top:6px;right:165px;width:auto;line-height:1.5em;background-color: white;padding-left:5px;padding-right:5px;"/>IMEI</div>
 <script>
+
+
+var aliases={};
+var aliasesR={};
+$.ajax({
+	type: "GET",
+	url: "data/aliases.xml",
+	dataType: "xml",
+	success: function(xml) {
+		var xmlDoc = $.parseXML( xml );
+		var $xml = $( xmlDoc );
+		var $title = $xml.find( "M2MDevice" ).each(function() {
+			var devId=$(this).attr("m2mDeviceId");
+			var imei=$(this).attr("imeiNumber");
+			aliases[imei]=devId;
+			aliasesR[devId]=imei;
+			console.log(imei+" > "+devId);
+		});
+	}
+});
+
 var onlyFavorites = false;
 var map;
 var popup;
@@ -191,7 +212,6 @@ function onData(data,from,to)
 		firstOnData=false;
 	}
 }
-
 
 var inGET = false;
 function doGet() 
