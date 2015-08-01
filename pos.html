@@ -206,7 +206,7 @@ function onData(data,from,to)
 		feature.setGeometry(geom);
 		gps.getSource().addFeature(feature);
 	}
-	if (firstOnData) {
+	if (firstOnData && minx != null) {
 		map.getView().fitExtent([minx,miny,maxx,maxy],map.getSize());
 		firstOnData=false;
 	}
