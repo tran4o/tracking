@@ -33,8 +33,7 @@ $.ajax({
 	url: "data/aliases.xml",
 	dataType: "xml",
 	success: function(xml) {
-		var xmlDoc = $.parseXML( xml );
-		var $xml = $( xmlDoc );
+		var $xml = $(xml);
 		var $title = $xml.find( "M2MDevice" ).each(function() {
 			var devId=$(this).attr("m2mDeviceId");
 			var imei=$(this).attr("imeiNumber");
