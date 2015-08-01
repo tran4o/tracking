@@ -201,7 +201,7 @@ function doGet()
 	inGET=true;
 	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var from = ((new Date()).getTime()-delay-1000*60*60*1 /* 1 hour */);
-	var top = ((new Date()).getTime()-delay);
+	var to = ((new Date()).getTime()-delay);
 	var url = "/triathlon/rest/seen/all?from="+from+"&to="+to;
 	$.getJSON(url, function(result)
 	{
