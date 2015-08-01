@@ -14,7 +14,7 @@
 	],	
 	"simulation" : 
 	{
-		"enabled" : 0,
+		"enabled" : 1,
 		"singleParticipant" : 0,
 		"startElapsed" : 0.30,		
 		"speedCoef" : 1,
@@ -29,7 +29,5 @@
 	},
 	"cams" : 
 	[
-		 {"code" : "CAM0001", "name" : "MovingCamera One", "deviceId" : "353816054923703", "icon" : "img/camera1.svg"},
-		 {"code" : "CAM0002", "name" : "MovingCamera Two", "deviceId" : "353816054940715", "icon" : "img/camera2.svg"}
 	]	
 }

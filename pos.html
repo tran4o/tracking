@@ -86,7 +86,7 @@ function style(feature,resolution)
 	{
 		zIndex : feature.data.EPOCH, 
 		image : new ol.style.Circle({
-			radius: 5,
+			radius: 8,
 			fill: new ol.style.Fill({
 				color: isSOS ? "rgba(255,0,0,0.7)" : "rgba(0,255,0,0.7)"
 			}),
@@ -96,7 +96,7 @@ function style(feature,resolution)
 			})
 		}),
 		text: new ol.style.Text({
-				font: 'bold 9px Arial,Lucida Grande,Tahoma,Verdana',
+				font: 'bold 13px Arial,Lucida Grande,Tahoma,Verdana',
 				fill: new ol.style.Fill({
 				  color: "#000000"
 				}),
@@ -143,7 +143,7 @@ if (onlyFavorites)
 	}
 }
 var firstOnData=true;
-function onData(data) 
+function onData(data,from,to) 
 {
 	gps.getSource().clear();
 	if (!data.length)
@@ -156,11 +156,12 @@ function onData(data)
 		if (onlyFavorites && !favs[e.IMEI]) {			
 			return;
 		}
-		
+		if (from && to && !(e.EPOCH >= from && e.EPOCH <= to))
+			continue;
 		delete e._id;
 		delete e.TS;		
 		e.LON=parseInt(e.LON);
-		e.LAT=parseInt(e.LAT);
+		e.LAT=parseInt(e.LAT);		
 		if (isNaN(e.LON) || isNaN(e.LAT))
 			continue;
 		if (e.ALT)
@@ -200,14 +201,17 @@ function doGet()
 	if (inGET)
 		return;
 	inGET=true;
-	var url = "/triathlon/rest/seen/all";
-	$.getJSON(url, function(result) 	
+	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
+	var from = ((new Date()).getTime()-delay-1000*60*60*1 /* 1 hour */);
+	var top = ((new Date()).getTime()-delay);
+	var url = "/triathlon/rest/seen/all?from="+from+"&to="+to;
+	$.getJSON(url, function(result)
 	{
 		inGET=false;
 		if (!(result instanceof Array) && result.data)
 			result=result.data;			
 		if (result instanceof Array)		
-			onData(result);
+			onData(result,from,to);
 		else{
 			inGET=true;
 			alert("ERROR : "+JSON.stringify(result));
