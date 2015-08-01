@@ -122,7 +122,7 @@ function style(feature,resolution)
 				  color: [255, 255, 255, 0.5],
 				  width: 4
 				}),
-				text : feature.data.IMEI,
+				text : aliases[feature.data.IMEI] ? aliases[feature.data.IMEI] : feature.data.IMEI,
 				offsetX : 0,
 				offsetY : -18
 		})
