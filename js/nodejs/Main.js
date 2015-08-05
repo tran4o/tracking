@@ -195,6 +195,7 @@ app.get('/participants', function (req, res)
 
 app.get('/event', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
+	res.header("Access-Control-Allow-Origin", "http://localhost");
 	var parr=[];
 	var cams=[];
 	for (var i in Tracking.trackedParticipants) 
