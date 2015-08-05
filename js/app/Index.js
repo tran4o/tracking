@@ -329,6 +329,10 @@ function showDetails() {
 }
 
 //--------------------------------------------------------------------------
+// use this if you want to bypass all the NodeJS dynamic event get
+// it will simulate a static data return by "demo_simulation_data.json"
+window.isDEMO_SIMULATION = true;
+
 window.TRACK = new Track();
 window.GUI = new Gui({ track : TRACK });
 window.PARTICIPANTS=[];
@@ -358,11 +362,24 @@ $(document).ready( function ()
 {
 	if (Utils.mobileAndTabletCheck())
 		$("body").addClass("mobile");
+
+	// Event data loading - realtime or hard simulated
 	//--------------------------------------------------------------------------
-	var baseurl = (window.location.host.indexOf("localhost") == 0 || window.location.host.indexOf("127.0.0.1") == 0) ? "http://localhost:3000/" : "node/"; 
-	//--------------------------------------------------------------------------
-	$.getJSON(baseurl+"event",function(data) 
-	{
+	var eventDataUrl;
+	if (window.isDEMO_SIMULATION === true) {
+		// load the demo simulation generator
+		var demoSimulation = require('./DemoSimulation');
+		// this is the data with the demo participants/cams
+		eventDataUrl = "data/demo_simulation_data.json";
+
+		CONFIG.math.displayDelay = 10; // fix this animation display delay time
+	} else {
+		var baseurl = (window.location.host.indexOf("localhost") == 0 ||
+		window.location.host.indexOf("127.0.0.1") == 0) ? "http://localhost:3000/" : "node/";
+		eventDataUrl = baseurl+"event";
+	}
+
+	$.getJSON(eventDataUrl).done(function (data) {
 		var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 		var camc = 0;
 		TRACK.setBikeStartKM(data.bikeStartKM);
@@ -370,8 +387,9 @@ $(document).ready( function ()
 		TRACK.setRoute(data.route);
 		CONFIG.times={begin : data.times.startTime+delay, end : data.times.endTime+delay };
 		GUI.init({skipExtent:true});
-		function processEntry(pdata,isCam) {
-			var part; 
+
+		function processEntry(pdata, isCam) {
+			var part;
 			if (isCam)
 				part=TRACK.newMovingCam(pdata.id,pdata.deviceId,pdata.code,camc++);
 			else
@@ -386,47 +404,56 @@ $(document).ready( function ()
 			part.setImage(pdata.image);
 			if (isCam || localStorage.getItem("favorite-"+part.id) == 1)
 				part.setIsFavorite(true);
-			if (!isCam) 
+			if (!isCam)
 				PARTICIPANTS.push(part);
-		}
-		for (var i in data.participants) 
-			processEntry(data.participants[i],false);
-		for (var i in data.cams) 
-			processEntry(data.cams[i],true);
-		if (CONFIG.settings.noMiddleWare) 
-		{
-			function doHTTP(url,json,onReqDone) 
-			{
-			    if (json.length) 
-			    {
-	                $.ajax({
-	                    type: "POST",
-	                    url: url,
-	                    data: JSON.stringify(json),
-	                    contentType: "application/json; charset=utf-8",
-	                    dataType: "json",
-	                    success: function(data){
-	                    	onReqDone(data);
-	                    },
-	                    failure: function(errMsg) {
-	                        console.error("ERROR get data from backend "+errMsg)
-	                    }
-	                });
-			    }                		
+
+			// if this is a demo simulation then start it for each single favourite-participant or cam
+			if (window.isDEMO_SIMULATION === true) {
+				if (isCam || part.getIsFavorite()) {
+					demoSimulation.simulateParticipant(part);
+				}
 			}
-			var stream = new StreamData();
-			stream.start(TRACK,function() {return true;},10,doHTTP); // 10 sec ping int.
-		} else {
-			// NORMAL CASE
-			var stream = new BackendStream();
-			stream.start(TRACK); 									
+		}
+		for (var i in data.participants)
+			processEntry(data.participants[i],false);
+		for (var i in data.cams)
+			processEntry(data.cams[i],true);
+
+		// if this is not a demo simulation start listening for the realtime pings
+		if (window.isDEMO_SIMULATION !== true) {
+			if (CONFIG.settings.noMiddleWare) {
+				function doHTTP(url,json,onReqDone) {
+					if (json.length) {
+						$.ajax({
+							type: "POST",
+							url: url,
+							data: JSON.stringify(json),
+							contentType: "application/json; charset=utf-8",
+							dataType: "json",
+							success: function(data){
+								onReqDone(data);
+							},
+							failure: function(errMsg) {
+								console.error("ERROR get data from backend "+errMsg)
+							}
+						});
+					}
+				}
+				var stream = new StreamData();
+				stream.start(TRACK,function() {return true;},10,doHTTP); // 10 sec ping int.
+			} else {
+				// NORMAL CASE
+				var stream = new BackendStream();
+				stream.start(TRACK);
+			}
 		}
 
 		initGUI();
 	}).fail(function() {
-    	console.error("Error get event configuration from backend!");
+		console.error("Error get event configuration from backend!");
 	});
 	//--------------------------------------------------------------------------
+
 	$("#button_swim").css("background-color",CONFIG.appearance.trackColorSwim).click(function() {
 		if ($(this).hasClass("inactive"))
 		{
