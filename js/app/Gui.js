@@ -381,11 +381,17 @@ Class("Gui",
 				if (p.isFavorite) 
 				{
 					p.interpolate();
-					arr.push(ip);
+					if (!p.__skipTrackingPos)
+						arr.push(ip);
 				}
 			}
 			//-------------------------------------------------------
-			for (var ip=0;ip<arr.length;ip++) 
+			// TODO Rumen - we have to sort them otherwise this __pos is irrelevant
+			//arr.sort(function(a, b){
+			//	return TRACK.participants[a].getElapsed()-TRACK.participants[b].getElapsed();
+			//});
+
+			for (var ip=0;ip<arr.length;ip++)
 			{
 				TRACK.participants[arr[ip]].__pos=ip;
 				if (ip == 0)

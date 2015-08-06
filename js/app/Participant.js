@@ -680,7 +680,7 @@ Class("Participant",
 			
 			var rank="-";
 			if (this.__pos != undefined)
-				rank=this.track.participants.length-this.__pos;
+				rank=this.__pos;
 			
 			
 			html="<div class='popup_content_prg'><div style='width:"+p1+"%;height:6px;background-color:"+CONFIG.appearance.trackColorSwim+";float:left;'></div><div style='width:"+p2+"%;height:6px;background-color:"+CONFIG.appearance.trackColorBike+";float:left;'></div><div style='width:"+p3+"%;height:6px;background-color:"+CONFIG.appearance.trackColorRun+";float:left;'></div>";
@@ -694,22 +694,22 @@ Class("Participant",
 			if (pass == 0) {
 				if (this.__pos != undefined) 
 				{
-					parseFloat(Math.round(elkm * 100) / 100).toFixed(2)
+					parseFloat(Math.round(elkm * 100) / 100).toFixed(2);
 
-					if (this.__next && this.getSpeed()) {
+					if (this.__next && this.__next.__pos != undefined && this.getSpeed()) {
 						var pel = this.__next.calculateElapsedAverage(ctime);
 						var dnext = ((pel-elapsed)*this.track.getTrackLength() / this.getSpeed())/60.0;
 						dnext = parseFloat(Math.round(dnext * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l3'>GAP P"+(this.track.participants.length-this.__next.__pos)+" : "+dnext+" Min</div>";
+						html+="<div class='popup_content_l3'>GAP P"+(this.__next.__pos)+" : "+dnext+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
 					}
 					
-					if (this.__prev && this.__prev.getSpeed()) {
+					if (this.__prev && this.__prev.__pos != undefined && this.__prev.getSpeed()) {
 						var pel = this.__prev.calculateElapsedAverage(ctime);
 						var dprev = ((elapsed-pel)*this.track.getTrackLength() / this.__prev.getSpeed())/60.0;
 						dprev = parseFloat(Math.round(dprev * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l2'>GAP P"+(this.track.participants.length-this.__prev.__pos)+" : "+dprev+" Min</div>";
+						html+="<div class='popup_content_l2'>GAP P"+(this.__prev.__pos)+" : "+dprev+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
 					} 

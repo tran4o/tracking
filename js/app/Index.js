@@ -381,7 +381,6 @@ $(document).ready( function ()
 
 	$.getJSON(eventDataUrl).done(function (data) {
 		var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
-		var camc = 0;
 		TRACK.setBikeStartKM(data.bikeStartKM);
 		TRACK.setRunStartKM(data.runStartKM);
 		TRACK.setRoute(data.route);
@@ -391,7 +390,7 @@ $(document).ready( function ()
 		function processEntry(pdata, isCam) {
 			var part;
 			if (isCam)
-				part=TRACK.newMovingCam(pdata.id,pdata.deviceId,pdata.code,camc++);
+				part=TRACK.newMovingCam(pdata.id,pdata.deviceId,pdata.code);
 			else
 				part=TRACK.newParticipant(pdata.id,pdata.deviceId,pdata.code);
 			part.setColor(pdata.color);
@@ -409,7 +408,7 @@ $(document).ready( function ()
 
 			// if this is a demo simulation then start it for each single favourite-participant or cam
 			if (window.isDEMO_SIMULATION === true) {
-				if (isCam || part.getIsFavorite()) {
+				if (part.getIsFavorite()) {
 					demoSimulation.simulateParticipant(part);
 				}
 			}

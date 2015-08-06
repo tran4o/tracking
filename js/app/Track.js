@@ -28,9 +28,9 @@ Class("Track",
 			is:   "rw",
 			init : []
 		},
-		movingCams : {
+		camsCount : {
 			is:   "rw",
-			init : []
+			init: 0
 		},
 		// in EPSG 3857
 		feature : {
@@ -315,6 +315,10 @@ Class("Track",
 				this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
 			}
 		},
+
+		getRealParticipantsCount : function() {
+			return this.participants.length - this.camsCount;
+		},
 		
 		newParticipant : function(id,deviceId,name)
 		{
@@ -325,12 +329,13 @@ Class("Track",
 			return part;
 		},
 
-		newMovingCam : function(id,deviceId,name,seqId)
+		newMovingCam : function(id,deviceId,name)
 		{
 			var cam = new MovingCam({id:id,deviceId:deviceId,code:name});
 			cam.init(this.route[0],this);
-			cam.setSeqId(seqId);
-			cam.__skipTracking=true;
+			cam.setSeqId(this.camsCount);
+			this.camsCount++;
+			cam.__skipTrackingPos=true;
 			this.participants.push(cam);
 			return cam;
 		},
