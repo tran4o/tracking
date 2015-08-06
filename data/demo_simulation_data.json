@@ -22,7 +22,7 @@
         {
             "id": "9999990FEBE3BA000005ED32",
             "code": "Nils Frommhold",
-            "color": "#ff1200",
+            "color": "#00ff00",
             "ageGroup": "MPM",
             "age": 29,
             "country": "GER",
@@ -35,7 +35,7 @@
         {
             "id": "9999990FEBE3BA000005EE37",
             "code": "Horst Reichel",
-            "color": "#ff2400",
+            "color": "#0000ff",
             "ageGroup": "MPM",
             "age": 33,
             "country": "GER",
