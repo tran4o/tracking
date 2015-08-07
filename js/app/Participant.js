@@ -680,7 +680,7 @@ Class("Participant",
 			
 			var rank="-";
 			if (this.__pos != undefined)
-				rank=this.__pos;
+				rank=this.__pos + 1;   // the first pos - the FASTEST is 0
 			
 			
 			html="<div class='popup_content_prg'><div style='width:"+p1+"%;height:6px;background-color:"+CONFIG.appearance.trackColorSwim+";float:left;'></div><div style='width:"+p2+"%;height:6px;background-color:"+CONFIG.appearance.trackColorBike+";float:left;'></div><div style='width:"+p3+"%;height:6px;background-color:"+CONFIG.appearance.trackColorRun+";float:left;'></div>";
@@ -696,24 +696,33 @@ Class("Participant",
 				{
 					parseFloat(Math.round(elkm * 100) / 100).toFixed(2);
 
-					if (this.__next && this.__next.__pos != undefined && this.getSpeed()) {
-						var pel = this.__next.calculateElapsedAverage(ctime);
-						var dnext = ((pel-elapsed)*this.track.getTrackLength() / this.getSpeed())/60.0;
-						dnext = parseFloat(Math.round(dnext * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l3'>GAP P"+(this.__next.__pos)+" : "+dnext+" Min</div>";
+					// this.__next is the participant behind this one (e.g the slower one with lest elapsed index)
+					// and this.__prev is the one before us
+					// so if participant is in position 3 the one before him will be 2 and the one behind him will be 4
+					// (e.g. "this.__pos == 3" => this.__prev.__pos == 2 and this.__prev.__next == 4
+					// for the
+
+					if (this.__prev && this.__prev.__pos != undefined && this.getSpeed()) {
+						// what is the difference between current one and the one before - we will run so our speed
+						// what time we are short - so will add a minus in front of the time
+						var elapsedprev = this.__prev.calculateElapsedAverage(ctime);
+						var dprev = ((elapsedprev - elapsed)*this.track.getTrackLength() / this.getSpeed())/60.0;
+						dprev = parseFloat(Math.round(dprev * 100) / 100).toFixed(2);
+						html+="<div class='popup_content_l2'>GAP P"+(this.__prev.__pos + 1)+" : -"+dprev+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
 					}
-					
-					if (this.__prev && this.__prev.__pos != undefined && this.__prev.getSpeed()) {
-						var pel = this.__prev.calculateElapsedAverage(ctime);
-						var dprev = ((elapsed-pel)*this.track.getTrackLength() / this.__prev.getSpeed())/60.0;
-						dprev = parseFloat(Math.round(dprev * 100) / 100).toFixed(2);
-						html+="<div class='popup_content_l2'>GAP P"+(this.__prev.__pos)+" : "+dprev+" Min</div>";
+
+					if (this.__next && this.__next.__pos != undefined && this.__next.getSpeed()) {
+						// what is the difference between current one and the one behind - this other one will run so his speed
+						// waht time we are ahead - so a positive time
+						var elapsednext = this.__next.calculateElapsedAverage(ctime);
+						var dnext = ((elapsed - elapsednext)*this.track.getTrackLength() / this.__next.getSpeed())/60.0;
+						dnext = parseFloat(Math.round(dnext * 100) / 100).toFixed(2);
+						html+="<div class='popup_content_l3'>GAP P"+(this.__next.__pos + 1)+" : "+dnext+" Min</div>";
 					} else {
 						html+="<div class='popup_content_l2'>&nbsp;</div>";
-					} 
-					
+					}
 				}
 			} else {
 				html+="<div class='popup_content_l2'>MORE TO  "+tpartMore+": "+(isDummy ? "-" : parseFloat(Math.round((targetKM-elkm) * 100) / 100).toFixed(2) /* rekm */ +" km")+"</div>";

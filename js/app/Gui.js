@@ -365,32 +365,34 @@ Class("Gui",
     		}
         },
         
-		showError : function(msg,onCloseCallback) 
+		showError : function(msg,onCloseCallback)
 		{
 			alert("ERROR : "+msg);
 			if (onCloseCallback) 
 				onCloseCallback();
 		},
 		
-		onAnimation : function() 
+		onAnimation : function()
 		{
 			var arr=[];
-			for (var ip=0;ip<TRACK.participants.length;ip++)  
+			for (var ip=0;ip<TRACK.participants.length;ip++)
 			{
 				var p = TRACK.participants[ip];
-				if (p.isFavorite) 
+				if (p.isFavorite)
 				{
 					p.interpolate();
+
+					// this will add in the ranking positing only the participants the has to be tracked
+					// so moving cams are skipped
 					if (!p.__skipTrackingPos)
 						arr.push(ip);
 				}
 			}
 			//-------------------------------------------------------
-			// TODO Rumen - we have to sort them otherwise this __pos is irrelevant
-			//arr.sort(function(a, b){
-			//	return TRACK.participants[a].getElapsed()-TRACK.participants[b].getElapsed();
-			//});
-
+			// we have to sort them otherwise this __pos, __prev, __next are irrelevant
+			arr.sort(function(ip1, id2){
+				return TRACK.participants[id2].getElapsed() - TRACK.participants[ip1].getElapsed();
+			});
 			for (var ip=0;ip<arr.length;ip++)
 			{
 				TRACK.participants[arr[ip]].__pos=ip;
