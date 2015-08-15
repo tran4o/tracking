@@ -477,6 +477,7 @@ table.dataTable td {
 
 #map {
 	padding : 0;
+	overflow: hidden;
 }
 
 #left_pane {
