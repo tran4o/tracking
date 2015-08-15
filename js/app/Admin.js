@@ -1,6 +1,7 @@
 require('./Track');
 require('./GUI');
 require('./Participant');
+window.CONFIG=require('./Config');
 
 var draw;
 var modify;
