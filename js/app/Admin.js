@@ -7,7 +7,7 @@ var modify;
 var select;
 
 window.TRACK = new Track();
-window.GUI = new GUI(
+window.GUI = new Gui(
 {
 		track		: TRACK,
 		initialZoom : 2
