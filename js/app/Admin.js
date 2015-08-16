@@ -168,7 +168,7 @@ $(document).ready( function ()
             },
             edit: {
                 type: 'PUT',
-                url:  '../participants?id=_id_'
+                url:  '../participants'
             },
             remove: {
                 type: 'DELETE',
