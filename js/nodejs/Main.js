@@ -169,6 +169,8 @@ app.get('/participant/:id', function (req, res)
 app.put('/participants', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	console.log(req.query);
+	console.log(req.body);
+	console.log(req.params);
 });
 
 app.get('/participants', function (req, res) 
