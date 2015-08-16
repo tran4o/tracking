@@ -192,7 +192,7 @@ app.get('/participants', function (req, res)
 		function DEF(val,def) {
 			if (val == null || val === undefined)
 				return def;
-			returnv val;
+			return val;
 		}
 		var r = [];
 		for (var i in Config.participants) 
