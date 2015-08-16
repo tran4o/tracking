@@ -178,7 +178,7 @@ function partDataTablesJSON(part) {
 		id:DEF(part.idParticipant,"0"),
 		firstname:DEF(part.firstname,""),
 		lastname:DEF(part.lastname,""),
-		birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),""),
+		birthDate: part.birthDate && part.birthDate > 0 ? Utils.formatDate(new Date(part.birthDate)) : "",
 		nationality:DEF(part.nationality,""),
 		club:DEF(part.club,""),
 		gender:DEF(part.sex,""),
