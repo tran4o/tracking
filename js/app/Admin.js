@@ -171,32 +171,39 @@ $(document).ready( function ()
 		},
 		table: "#table-participants",
 		idSrc: "id",
-		fields: [ {
+		fields: [ 
+		    {
+				label: "Start No",
+				name: "startNo"
+			},{
+				label: "First name",
+				name: "firstname"
+			},{
+				label: "Last name",
+				name: "lastname"
+			},{
+				label: "Gender",
+				name: "gender"
+			},{
+				label: "Nationality",
+				name: "nationality"
+			},{
+				label: "Start group",
+				name: "startGroup"
+			},{
+				label: "Club",
+				name: "club"
+			},{
+				label: "Birth date",
+				name: "birthDate",
+				type: "dateTime", 
+				timeFormat: " YYYY.MM.dd",
+				dateFormat: " YYYY.MM.dd"
+			},{
 				label: "Id",
 				name: "id",
 				type : "readonly"
-			},{
-				label: "Code",
-				name: "code"
-			}, {
-				label: "Name",
-				name: "name"
-			}, {
-				label: "BIB",
-				name: "bib"
-			}, {
-				label: "Country",
-				name: "country"
-			}, {
-				label: "Age",
-				name: "age"
-			}, {
-				label: "Gender",
-				name: "gender"
-			}, {
-				label: "Occupation",
-				name: "occupation"
-			}
+			}			
 		]
 	} );
 
