@@ -268,22 +268,7 @@ $(document).ready( function ()
 			{ data: "nationality"},
 			{ data: "startGroup" },
 			{ data: "club"},
-			{ 
-				// birth date 
-				data: null,
-				render: function ( data, type, row ) 
-				{
-					var dt = data.birthDate;
-					if (!dt)
-						return "";
-					var res="";
-					try {
-						res = formatDate(new Date(dt));
-					} catch(e) {
-					}
-					return res;
-				} 
-			},
+			{ data: "birthDate",className : "dt-body-right" },
 			{ data: "id" }
 		],
 		tableTools: {
