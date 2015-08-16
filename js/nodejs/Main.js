@@ -175,6 +175,7 @@ app.put('/participants', function (req, res) {
 			var part = req.body.data[id];
 			if (part.birthDate && part.birthDate != "") {
 				part.birthDate=moment(part.birthDate, "MM-DD-YYYY");
+				console.log("VALID="+part.birthDate.isValid());
 				if (part.birthDate.isValid()) {
 					part.birthDate=part.birthDate.getTime();
 				} else {
