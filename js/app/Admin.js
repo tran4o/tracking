@@ -159,7 +159,7 @@ $(document).ready( function ()
 	window.EDITOR1 = new $.fn.dataTable.Editor( {
 		ajax: 
 		{
-			url : CONFIG.server.prefix+"rest/participant/",
+			url : "../participants",
 			data: function ( d ) {
 				if (d.action == "remove") 
 				    return JSON.stringify({"delete":d.id});
