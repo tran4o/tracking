@@ -114,6 +114,7 @@ function updateParticipant(id,json)
 	}
 	return "Participant not found";
 }
+exports.updateParticipant=updateParticipant;
 //-----------------------------------
 //assignIMEI("ABC1","123A");
 //--------------------------------------------------------------------------------------
