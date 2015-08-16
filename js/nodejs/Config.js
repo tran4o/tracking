@@ -105,9 +105,9 @@ exports.assignIMEI=assignIMEI;
 //-----------------------------------
 function updateParticipant(id,json) 
 {
-	for (var i in exports.partitipants) 
+	for (var i in exports.participants) 
 	{
-		var part = exports.partitipants[i];
+		var part = exports.participants[i];
 		console.log("TEST "+part.idParticipant);
 		if (part.idParticipant == id) {
 			// UNMAP TO BE DONE!
