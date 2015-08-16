@@ -5832,7 +5832,7 @@ __dataSources.dataTable = {
 			row = dt.row( '#'+rowId );
 
 			// If not found, then we need to do it the slow way
-			if ( !row || !row.any || ! row.any() ) {
+			if ( ! row.any() ) {
 				row = dt.row( function ( rowIdx, rowData, rowNode ) {
 					return rowId === idFn( rowData );
 				} );
