@@ -254,32 +254,30 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../participants?mode=dtbl",
 		columns: [
-			{ data: "code" },
-			{ data: "name" },
-			{ data: "bib" ,className : "dt-body-right" },
-			{ data: "country" },
-			{ data: "age" ,className : "dt-body-right" },
+			{ data: "id" },
+			{ data: "firstname" },
+			{ data: "lastname" },
+			{ data: "gender" },
 			{ 
-				// age GROUP
+				// birth date 
 				data: null,
 				render: function ( data, type, row ) 
 				{
-					var age = parseInt(data.age);
-					for (var i=0;i<CONFIG.constants.ageGroups.length;i++) 
-					{
-						if (
-								(!CONFIG.constants.ageGroups[i].from || age >= CONFIG.constants.ageGroups[i].from) && 
-								(!CONFIG.constants.ageGroups[i].to || age <= CONFIG.constants.ageGroups[i].to)
-						   ) {
-							age = CONFIG.constants.ageGroups[i].code;
-							break;
-						}
-					} 
-					return age;
+					var dt = data["birtDate"];
+					if (!dt)
+						return "";
+					var res="";
+					try {
+						res = formatDate(new Date(dt));
+					} catch(e) {
+					}
+					return res;
 				} 
 			},
-			{ data: "gender" },
-			{ data: "occupation" }
+			{ data: "nationality"},
+			{ data: "club"},
+			{ data: "startGroup" },
+			{ data: "startNo",className : "dt-body-right" },
 		],
 		tableTools: {
 			sRowSelect: "os",

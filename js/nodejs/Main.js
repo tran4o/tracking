@@ -189,7 +189,20 @@ app.get('/participants', function (req, res)
 		}
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "dtbl") {
-		res.send(JSON.stringify({data : Config.participants}, null, 4));
+		var r = [];
+		for (var i in Config.participants) 
+		{
+			var part = Config.participants[i];
+			r.push({
+					id:part.idParticipant,
+					firstname:part.firstname,
+					lastname:part.lastname,
+					birthDate:part.birthDate,
+					nationality:part.nationality,
+					startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
+				  });
+		}
+		res.send(JSON.stringify({data : r}, null, 4));
 	} else {
 		res.send(JSON.stringify(Config.participants, null, 4));
 	}
