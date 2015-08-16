@@ -189,19 +189,24 @@ app.get('/participants', function (req, res)
 		}
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "dtbl") {
+		function DEF(val,def) {
+			if (val == null || val === undefined)
+				return def;
+			returnv val;
+		}
 		var r = [];
 		for (var i in Config.participants) 
 		{
 			var part = Config.participants[i];
 			r.push({
-					id:part.idParticipant,
-					firstname:part.firstname,
-					lastname:part.lastname,
-					birthDate:part.birthDate,
-					nationality:part.nationality,
-					club:part.club,
-					gender:part.sex,
-					startGroup:part.startGroup,
+					id:DEF(part.idParticipant,"0"),
+					firstname:DEF(part.firstname,""),
+					lastname:DEF(part.lastname,""),
+					birthDate:DEF(part.birthDate,0),
+					nationality:DEF(part.nationality,""),
+					club:DEF(part.club,""),
+					gender:DEF(part.sex,""),
+					startGroup:DEF(part.startGroup,""),
 					startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
 				  });
 		}
