@@ -219,7 +219,7 @@ function updatePart(req,res) {
 	{
 		for (var id in req.body.data) 
 		{
-			if (!deletePart(id)) {
+			if (!Config.deleteParticipant(id)) {
 				res.send(JSON.stringify({error:"Participant not found!"}, null, 4));
 				return;
 			}
