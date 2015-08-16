@@ -179,15 +179,17 @@ app.put('/participants', function (req, res) {
 				if (part.birthDate.isValid()) {
 					part.birthDate=part.birthDate.getTime();
 				} else {
-					 res.status(500).send('birth date not valid!');
+					res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
+					return;
 				}
 			} else 
 				delete part.birthDate;
 
 			part.startNo=parseInt(part.startNo);
-			if (isNaN(part.startNo) || part.startNo < 0)
-				 res.status(500).send('Start No not valid!');
-
+			if (isNaN(part.startNo) || part.startNo < 0) {
+				res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
+				return;
+			}
 			console.log("UPDATE ID = "+id);
 			console.log(part);
 		}
