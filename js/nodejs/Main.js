@@ -189,7 +189,7 @@ app.get('/participants', function (req, res)
 		}
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "dtbl") {
-		res.send(JSON.stringify(Config.participants, null, 4));
+		res.send(JSON.stringify({data : Config.participants}, null, 4));
 	} else {
 		res.send(JSON.stringify(Config.participants, null, 4));
 	}
