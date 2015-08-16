@@ -257,7 +257,6 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../participants?mode=dtbl",
 		columns: [
-			{ data: "id" },
 			{ data: "firstname" },
 			{ data: "lastname" },
 			{ data: "gender" },
@@ -281,6 +280,7 @@ $(document).ready( function ()
 			{ data: "club"},
 			{ data: "startGroup" },
 			{ data: "startNo",className : "dt-body-right" },
+			{ data: "id" }
 		],
 		tableTools: {
 			sRowSelect: "os",
