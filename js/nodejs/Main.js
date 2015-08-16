@@ -211,9 +211,9 @@ app.put('/participants', function (req, res) {
 			}
 			console.log("UPDATE ID = "+id);
 			console.log(part);
-			var res = Config.updateParticipant(id,part);
-			if (res) {
-				res.send(JSON.stringify({error:res}, null, 4));
+			var r = Config.updateParticipant(id,part);
+			if (r) {
+				res.send(JSON.stringify({error:r}, null, 4));
 				return;
 			}
 			res.send(JSON.stringify({data:partDataTablesJSON(part)}, null, 4));
