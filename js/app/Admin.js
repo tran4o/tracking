@@ -257,12 +257,12 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../participants?mode=dtbl",
 		columns: [
-			{ data: "startGroup" },
 			{ data: "startNo",className : "dt-body-right" },
 			{ data: "firstname" },
 			{ data: "lastname" },
 			{ data: "gender" },
 			{ data: "nationality"},
+			{ data: "startGroup" },
 			{ data: "club"},
 			{ 
 				// birth date 
