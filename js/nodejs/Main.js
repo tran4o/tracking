@@ -183,8 +183,6 @@ app.put('/participants', function (req, res) {
 				}
 			} else 
 				delete part.birthDate;
-
-			console.log("T")
 			part.startNo=parseInt(part.startNo);
 			if (isNaN(part.startNo) || part.startNo < 0) {
 				res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));

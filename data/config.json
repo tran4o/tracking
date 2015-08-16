@@ -14,7 +14,7 @@
 	],	
 	"simulation" : 
 	{
-		"enabled" : 1,
+		"enabled" : 0,
 		"singleParticipant" : 0,
 		"startElapsed" : 0.30,		
 		"speedCoef" : 1,
