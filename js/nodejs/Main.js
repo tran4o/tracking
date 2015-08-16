@@ -199,6 +199,9 @@ app.get('/participants', function (req, res)
 					lastname:part.lastname,
 					birthDate:part.birthDate,
 					nationality:part.nationality,
+					club:part.club,
+					gender:part.sex,
+					startGroup:part.startGroup,
 					startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
 				  });
 		}
