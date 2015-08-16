@@ -169,8 +169,11 @@ app.get('/participant/:id', function (req, res)
 app.put('/participants', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	if (req.body.action == "edit") {
-		var id = req.body.data.id;
-		console.log("UPDATE ID = "+id);
+		for (var id in req.body.data) 
+		{
+			 var part = req.body.data[id];
+			console.log("UPDATE ID = "+id);
+		}
 	} else {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
