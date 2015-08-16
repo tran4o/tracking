@@ -103,11 +103,18 @@ function lookupIMEI(id) {
 }
 exports.assignIMEI=assignIMEI;
 //-----------------------------------
-function updateParticipant(id,json) {
-	
+function updateParticipant(id,json) 
+{
+	for (var id in exports.partitipants) 
+	{
+		var part = exports.partitipants[i];
+		if (part.id == id) {
+			return null;
+		}
+	}
+	return "Participant not found";
 }
-
-
+//-----------------------------------
 //assignIMEI("ABC1","123A");
 //--------------------------------------------------------------------------------------
 console.log("Found "+Object.keys(assignments).length+" assignments\n");

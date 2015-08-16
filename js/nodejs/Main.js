@@ -167,9 +167,35 @@ app.get('/participant/:id', function (req, res)
 	res.send(JSON.stringify({}));
 });
 
+
+function partDataTablesJSON(part) {
+	function DEF(val,def) {
+		if (val == null || val === undefined)
+			return def;
+		return val;
+	}
+	return ({
+		id:DEF(part.idParticipant,"0"),
+		firstname:DEF(part.firstname,""),
+		lastname:DEF(part.lastname,""),
+		birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),""),
+		nationality:DEF(part.nationality,""),
+		club:DEF(part.club,""),
+		gender:DEF(part.sex,""),
+		startGroup:DEF(part.startGroup,""),
+		startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
+	  });
+}
+
 app.put('/participants', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
-	if (req.body.action == "edit") {
+	if (req.body.action == "edit") 
+	{
+		if (req.body.data.length != 1)
+		{
+			res.send(JSON.stringify({error:"Single edit only implemented!"}, null, 4));
+			return;
+		}
 		for (var id in req.body.data) 
 		{
 			var part = req.body.data[id];
@@ -190,6 +216,13 @@ app.put('/participants', function (req, res) {
 			}
 			console.log("UPDATE ID = "+id);
 			console.log(part);
+			var res = Config.updateParticipant(id,part);
+			if (res) {
+				res.send(JSON.stringify({error:res}, null, 4));
+				return;
+			}
+			res.send(JSON.stringify({data:partDataTablesJSON(part)}, null, 4));
+			return;
 		}
 	} else {
 		console.log("UNKNOWN ACTION "+req.body.action);
@@ -219,26 +252,11 @@ app.get('/participants', function (req, res)
 		}
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "dtbl") {
-		function DEF(val,def) {
-			if (val == null || val === undefined)
-				return def;
-			return val;
-		}
 		var r = [];
 		for (var i in Config.participants) 
 		{
 			var part = Config.participants[i];
-			r.push({
-					id:DEF(part.idParticipant,"0"),
-					firstname:DEF(part.firstname,""),
-					lastname:DEF(part.lastname,""),
-					birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),""),
-					nationality:DEF(part.nationality,""),
-					club:DEF(part.club,""),
-					gender:DEF(part.sex,""),
-					startGroup:DEF(part.startGroup,""),
-					startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
-				  });
+			r.push(partDataTablesJSON(part));
 		}
 		res.send(JSON.stringify({data : r}, null, 4));
 	} else {
