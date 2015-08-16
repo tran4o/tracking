@@ -108,7 +108,8 @@ function updateParticipant(id,json)
 	for (var id in exports.partitipants) 
 	{
 		var part = exports.partitipants[i];
-		if (part.id == id) {
+		if (part.idParticipant == id) {
+			// UNMAP TO BE DONE!
 			return null;
 		}
 	}
