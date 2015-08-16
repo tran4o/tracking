@@ -191,11 +191,6 @@ app.put('/participants', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	if (req.body.action == "edit") 
 	{
-		if (req.body.data.length != 1)
-		{
-			res.send(JSON.stringify({error:"Single edit only implemented!"}, null, 4));
-			return;
-		}
 		for (var id in req.body.data) 
 		{
 			var part = req.body.data[id];
