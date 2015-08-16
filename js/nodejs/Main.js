@@ -183,7 +183,7 @@ function partDataTablesJSON(part) {
 		club:DEF(part.club,""),
 		gender:DEF(part.sex,""),
 		startGroup:DEF(part.startGroup,""),
-		startNo : isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo)  
+		startNo : ""+(isNaN(parseInt(part.startNo)) ? 0 : parseInt(part.startNo))  
 	  });
 }
 
