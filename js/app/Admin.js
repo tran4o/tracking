@@ -263,7 +263,7 @@ $(document).ready( function ()
 				data: null,
 				render: function ( data, type, row ) 
 				{
-					var dt = data["birtDate"];
+					var dt = data.birthDate;
 					if (!dt)
 						return "";
 					var res="";
