@@ -182,8 +182,13 @@ app.put('/participants', function (req, res) {
 				}
 			} else 
 				delete part.birthDate;
-			
-			console.log("UPDATE ID = "+id+" | "+part.birthDate+" | "+new Date(part.birthDate)));
+
+			part.startNo=parseInt(part.startNo);
+			if (isNaN(part.startNo) || part.startNo < 0)
+				 res.status(500).send('Start No not valid!');
+
+			console.log("UPDATE ID = "+id);
+			console.log(part);
 		}
 	} else {
 		console.log("UNKNOWN ACTION "+req.body.action);
