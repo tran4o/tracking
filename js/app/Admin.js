@@ -252,7 +252,7 @@ $(document).ready( function ()
 
 	var tableParticipants = $('#table-participants').DataTable( {
 		dom: "Tfrtip",
-		ajax: CONFIG.server.prefix+"rest/participant/",
+		ajax: "../participants",
 		columns: [
 			{ data: "code" },
 			{ data: "name" },
