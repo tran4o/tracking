@@ -216,7 +216,8 @@ app.put('/participants', function (req, res) {
 				res.send(JSON.stringify({error:r}, null, 4));
 				return;
 			}
-			res.send(JSON.stringify({data:[partDataTablesJSON(r)]}, null, 4));
+			res.send(JSON.stringify({data:[part]}, null, 4));
+			//res.send(JSON.stringify({data:[partDataTablesJSON(r)]}, null, 4));
 			return;
 		}
 	} else {
