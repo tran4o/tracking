@@ -166,9 +166,9 @@ app.get('/participant/:id', function (req, res)
 	res.send(JSON.stringify({}));
 });
 
-app.post('/participants', function (req, res) {
+app.put('/participants', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
-	console.log(JSON.stringify(req.body));
+	console.log(req.query);
 });
 
 app.get('/participants', function (req, res) 

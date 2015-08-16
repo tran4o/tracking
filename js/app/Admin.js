@@ -162,12 +162,18 @@ $(document).ready( function ()
 	window.EDITOR1 = new $.fn.dataTable.Editor( {
 		ajax: 
 		{
-			url : "../participants",
-			data: function ( d ) {
-				if (d.action == "remove") 
-				    return JSON.stringify({"delete":d.id});
-			    return JSON.stringify( d.data );
-			}
+			create: {
+                type: 'POST',
+                url:  '../participants'
+            },
+            edit: {
+                type: 'PUT',
+                url:  '../participants?id=_id_'
+            },
+            remove: {
+                type: 'DELETE',
+                url:  '../participants?id=_id_'
+            }
 		},
 		table: "#table-participants",
 		idSrc: "id",
