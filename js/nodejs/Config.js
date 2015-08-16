@@ -99,36 +99,42 @@ function assignIMEI(mikaId,imei)
 function lookupIMEI(id) {
 	if (assignments[id] && assignments[id].length)
 		return assignments[id]; 
-	return null;
+	return null
 }
 exports.assignIMEI=assignIMEI;
 //-----------------------------------
 function updateParticipant(id,json) 
-{
+{	
+	function doIt(part) 
+	{
+		// UNMAP TO BE DONE!
+		part.deviceId=id;
+		part.firstname=json.firstname;
+		part.lastname=json.lastname;
+		if (json.birthDate)
+			part.birthDate=json.birthDate;
+		else
+			delete part.birthDate;
+		part.nationality=json.nationality;
+		part.club=json.club;
+		part.sex=json.gender;
+		part.startGroup=json.startGroup;
+		if (json.startNo == undefined)
+			delete part.startNo;
+		else
+			part.startNo=json.startNo;
+		return part;
+	}
 	for (var i in exports.participants) 
 	{
 		var part = exports.participants[i];
-		if (part.idParticipant == id) {
-			// UNMAP TO BE DONE!
-			part.deviceId=id;
-			part.firstname=json.firstname;
-			part.lastname=json.lastname;
-			if (json.birthDate)
-				part.birthDate=json.birthDate;
-			else
-				delete part.birthDate;
-			part.nationality=json.nationality;
-			part.club=json.club;
-			part.sex=json.gender;
-			part.startGroup=json.startGroup;
-			if (json.startNo == undefined)
-				delete part.startNo;
-			else
-				part.startNo=json.startNo;
-			return part;
-		}
+		if (part.idParticipant == id) 
+			return doIt(part);
 	}
-	return "Participant not found";
+	var part = doIt({});
+	exports.participants.push(part);
+	// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
+	return part;
 }
 exports.updateParticipant=updateParticipant;
 //-----------------------------------

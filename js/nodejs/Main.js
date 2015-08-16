@@ -187,44 +187,63 @@ function partDataTablesJSON(part) {
 	  });
 }
 
-app.put('/participants', function (req, res) {
+function updatePart(req,res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
-	if (req.body.action == "edit") 
+	function doIt(part) 
+	{
+		if (part.birthDate && part.birthDate != "") {
+			part.birthDate=moment(part.birthDate, "DD.MM.YYYY");
+			if (part.birthDate.isValid()) {
+				part.birthDate=part.birthDate.toDate().getTime();
+			} else {
+				res.send(JSON.stringify({error:"Birth date not valid!"}, null, 4));
+				return;
+			}
+		} else 
+			delete part.birthDate;
+		part.startNo=parseInt(part.startNo);
+		if (isNaN(part.startNo) || part.startNo < 0) {
+			res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
+			return;
+		}
+		var r = Config.updateParticipant(part.id,part);
+		if (typeof r == "string") {
+			res.send(JSON.stringify({error:r}, null, 4));
+			return;
+		}
+		//res.send(JSON.stringify({data:[part]}, null, 4));
+		res.send(JSON.stringify({data:[partDataTablesJSON(r)]}, null, 4));
+		return;
+	}
+	if (req.body.action == "create") 
 	{
 		for (var id in req.body.data) 
 		{
 			var part = req.body.data[id];
-			if (part.birthDate && part.birthDate != "") {
-				part.birthDate=moment(part.birthDate, "DD.MM.YYYY");
-				if (part.birthDate.isValid()) {
-					part.birthDate=part.birthDate.toDate().getTime();
-				} else {
-					res.send(JSON.stringify({error:"Birth date not valid!"}, null, 4));
-					return;
-				}
-			} else 
-				delete part.birthDate;
-			part.startNo=parseInt(part.startNo);
-			if (isNaN(part.startNo) || part.startNo < 0) {
-				res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
-				return;
+			function guid() 
+			{
+				  function s4() {
+				    return Math.floor((1 + Math.random()) * 0x10000)
+				      .toString(16)
+				      .substring(1).toUpperCase();
+				  }
+				  return s4() + s4() + s4() + s4() + s4() + s4(); 
 			}
-			console.log("UPDATE ID = "+id);
-			console.log(part);
-			var r = Config.updateParticipant(id,part);
-			if (typeof r == "string") {
-				res.send(JSON.stringify({error:r}, null, 4));
-				return;
-			}
-			//res.send(JSON.stringify({data:[part]}, null, 4));
-			res.send(JSON.stringify({data:[partDataTablesJSON(r)]}, null, 4));
-			return;
+			part.id=guid();
+			doIt(part);
+		}
+	} else if (req.body.action == "edit") {
+		for (var id in req.body.data) 
+		{
+			var part = req.body.data[id];
+			doIt(part);
 		}
 	} else {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
-});
-
+}
+app.put('/participants', updatePart);
+app.post('/participants', updatePart);
 app.get('/participants', function (req, res) 
 {
 	//console.log(req.query);
