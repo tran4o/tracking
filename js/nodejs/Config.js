@@ -111,7 +111,22 @@ function updateParticipant(id,json)
 		console.log("TEST "+part.idParticipant);
 		if (part.idParticipant == id) {
 			// UNMAP TO BE DONE!
-			return null;
+			part.deviceId=id;
+			part.firstname=json.firstname;
+			part.lastname=json.lastname;
+			if (json.birthDate)
+				part.birthDate=json.birthDate;
+			else
+				delete part.birthDate;
+			part.nationality=json.nationality;
+			part.club=json.club;
+			part.sex=json.gender;
+			part.startGroup=json.startGroup;
+			if (json.startNo == undefined)
+				delete part.startNo;
+			else
+				part.startNo=json.startNo;
+			return part;
 		}
 	}
 	return "Participant not found";

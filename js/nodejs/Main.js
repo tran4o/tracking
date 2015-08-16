@@ -212,11 +212,11 @@ app.put('/participants', function (req, res) {
 			console.log("UPDATE ID = "+id);
 			console.log(part);
 			var r = Config.updateParticipant(id,part);
-			if (r) {
+			if (typeof r == "string") {
 				res.send(JSON.stringify({error:r}, null, 4));
 				return;
 			}
-			res.send(JSON.stringify({data:partDataTablesJSON(part)}, null, 4));
+			res.send(JSON.stringify({data:partDataTablesJSON(r)}, null, 4));
 			return;
 		}
 	} else {
