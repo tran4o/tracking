@@ -160,21 +160,7 @@ $(document).ready( function ()
 	});
 	//----------------------------------------
 	window.EDITOR1 = new $.fn.dataTable.Editor( {
-		ajax: 
-		{
-			create: {
-                type: 'POST',
-                url:  '../participants'
-            },
-            edit: {
-                type: 'PUT',
-                url:  '../participants'
-            },
-            remove: {
-                type: 'DELETE',
-                url:  '../participants?id=_id_'
-            }
-		},
+		ajax: '../participants',
 		table: "#table-participants",
 		idSrc: "id",
 		fields: [ 
