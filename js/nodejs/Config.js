@@ -107,8 +107,7 @@ function updateParticipant(id,json)
 {	
 	function doIt(part) 
 	{
-		// UNMAP TO BE DONE!
-		part.deviceId=id;
+		part.participantId=id;
 		part.firstname=json.firstname;
 		part.lastname=json.lastname;
 		if (json.birthDate)
