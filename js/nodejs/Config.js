@@ -102,6 +102,12 @@ function lookupIMEI(id) {
 	return null;
 }
 exports.assignIMEI=assignIMEI;
+//-----------------------------------
+function updateParticipant(id,json) {
+	
+}
+
+
 //assignIMEI("ABC1","123A");
 //--------------------------------------------------------------------------------------
 console.log("Found "+Object.keys(assignments).length+" assignments\n");

@@ -2,6 +2,7 @@ var express = require('express');
 var compress = require('compression');
 var extend = require('util')._extend;
 var bodyParser = require('body-parser');
+var moment = require('moment');
 //--------------------------------------------------------------------
 var Utils = require('./../app/Utils');
 var Config = require('./Config');
@@ -171,8 +172,18 @@ app.put('/participants', function (req, res) {
 	if (req.body.action == "edit") {
 		for (var id in req.body.data) 
 		{
-			 var part = req.body.data[id];
-			console.log("UPDATE ID = "+id);
+			var part = req.body.data[id];
+			if (part.birthDate && part.birthDate != "") {
+				part.birthDate=moment(part.birthDate, "MM-DD-YYYY");
+				if (part.birthDate.isValid()) {
+					part.birthDate=part.birthDate.getTime();
+				} else {
+					 res.status(500).send('birth date not valid!');
+				}
+			} else 
+				delete part.birthDate;
+			
+			console.log("UPDATE ID = "+id+" | "+part.birthDate+" | "+new Date(part.birthDate)));
 		}
 	} else {
 		console.log("UNKNOWN ACTION "+req.body.action);
@@ -215,7 +226,7 @@ app.get('/participants', function (req, res)
 					id:DEF(part.idParticipant,"0"),
 					firstname:DEF(part.firstname,""),
 					lastname:DEF(part.lastname,""),
-					birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),"01.01.2000"),
+					birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),""),
 					nationality:DEF(part.nationality,""),
 					club:DEF(part.club,""),
 					gender:DEF(part.sex,""),
