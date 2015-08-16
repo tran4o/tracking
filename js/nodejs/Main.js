@@ -176,7 +176,7 @@ app.put('/participants', function (req, res) {
 			if (part.birthDate && part.birthDate != "") {
 				part.birthDate=moment(part.birthDate, "DD.MM.YYYY");
 				if (part.birthDate.isValid()) {
-					part.birthDate=part.birthDate.getTime();
+					part.birthDate=part.birthDate.toDate().getTime();
 				} else {
 					res.send(JSON.stringify({error:"Birth date not valid!"}, null, 4));
 					return;
