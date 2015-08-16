@@ -174,17 +174,17 @@ app.put('/participants', function (req, res) {
 		{
 			var part = req.body.data[id];
 			if (part.birthDate && part.birthDate != "") {
-				part.birthDate=moment(part.birthDate, "MM-DD-YYYY");
-				console.log("VALID="+part.birthDate.isValid());
+				part.birthDate=moment(part.birthDate, "MM.DD.YYYY");
 				if (part.birthDate.isValid()) {
 					part.birthDate=part.birthDate.getTime();
 				} else {
-					res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
+					res.send(JSON.stringify({error:"birth date not valid!"}, null, 4));
 					return;
 				}
 			} else 
 				delete part.birthDate;
 
+			console.log("T")
 			part.startNo=parseInt(part.startNo);
 			if (isNaN(part.startNo) || part.startNo < 0) {
 				res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
