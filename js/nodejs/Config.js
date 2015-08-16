@@ -103,6 +103,25 @@ function lookupIMEI(id) {
 }
 exports.assignIMEI=assignIMEI;
 //-----------------------------------
+function deleteParticipant(id) {
+	var npart=[];
+	var ok=false;
+	for (var i in exports.participants) 
+	{
+		var part = exports.participants[i];
+		if (part.idParticipant == id) {
+			ok=true;
+			continue;
+		}
+		npart.push(part);
+	}
+	if (ok) {
+		exports.participants=npart;
+		// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
+	}
+	return ok;
+}
+exports.deleteParticipant=deleteParticipant;
 function updateParticipant(id,json) 
 {	
 	function doIt(part) 
@@ -122,17 +141,17 @@ function updateParticipant(id,json)
 			delete part.startNo;
 		else
 			part.startNo=json.startNo;
+		// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
 		return part;
 	}
 	for (var i in exports.participants) 
 	{
 		var part = exports.participants[i];
-		if (part.idParticipant == id) 
+		if (part.idParticipant == id)  
 			return doIt(part);
 	}
 	var part = doIt({});
 	exports.participants.push(part);
-	// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
 	return part;
 }
 exports.updateParticipant=updateParticipant;

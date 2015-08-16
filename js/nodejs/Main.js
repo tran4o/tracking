@@ -215,8 +215,18 @@ function updatePart(req,res) {
 		res.send(JSON.stringify({data:[partDataTablesJSON(r)]}, null, 4));
 		return;
 	}
-	if (req.body.action == "create") 
+	if (req.body.action == "remove") 
 	{
+		for (var id in req.body.data) 
+		{
+			if (!deletePart(id)) {
+				res.send(JSON.stringify({error:"Participant not found!"}, null, 4));
+				return;
+			}
+			res.send(JSON.stringify({}), null, 4);
+			return;
+		}
+	} else if (req.body.action == "create") {
 		for (var id in req.body.data) 
 		{
 			var part = req.body.data[id];
