@@ -188,6 +188,8 @@ app.get('/participants', function (req, res)
 			r.push({value:""+p.startPos(),data:data});
 		}
 		res.send(JSON.stringify(r, null, 4));
+	} else if (req.query.mode == "dtbl") {
+		res.send(JSON.stringify(Config.participants, null, 4));
 	} else {
 		res.send(JSON.stringify(Config.participants, null, 4));
 	}
