@@ -194,12 +194,6 @@ $(document).ready( function ()
 				label: "Club",
 				name: "club"
 			},{
-				label: "Birth date",
-				name: "birthDate",
-				type: "dateTime", 
-				timeFormat: " YYYY.MM.dd",
-				dateFormat: " YYYY.MM.dd"
-			},{
 				label: "Id",
 				name: "id",
 				type : "readonly"
