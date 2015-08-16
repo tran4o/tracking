@@ -210,7 +210,7 @@ $(document).ready( function ()
 		]
 	} );
 
-	window.EDITOR2 = new $.fn.dataTable.Editor( {
+	/*window.EDITOR2 = new $.fn.dataTable.Editor( {
 		ajax: 
 		{
 			url : CONFIG.server.prefix+"rest/event/",
@@ -261,7 +261,7 @@ $(document).ready( function ()
 	            name:  "run-start"
 	        }
 			]
-	} );
+	} );*/
 
 	var tableParticipants = $('#table-participants').DataTable( {
 		dom: "Tfrtip",
@@ -287,7 +287,7 @@ $(document).ready( function ()
 		}
 	} );	
 	
-	var tableEvents = $('#table-events').DataTable( {
+	/*var tableEvents = $('#table-events').DataTable( {
 		dom: "Tfrtip",
 		ajax: CONFIG.server.prefix+"rest/event/",
 		columns: [
@@ -361,7 +361,10 @@ $(document).ready( function ()
            ]
 		}
 	} );
+	*/
+	
 	//-----------------------------------------------
+	
 	/*
 	$("#nav1").click(function() {
 		$("#nav1").addClass("active");
