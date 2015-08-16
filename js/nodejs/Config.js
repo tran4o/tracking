@@ -107,7 +107,7 @@ function updateParticipant(id,json)
 {	
 	function doIt(part) 
 	{
-		part.participantId=id;
+		part.idParticipant=id;
 		part.firstname=json.firstname;
 		part.lastname=json.lastname;
 		if (json.birthDate)
