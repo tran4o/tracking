@@ -202,7 +202,7 @@ app.get('/participants', function (req, res)
 					id:DEF(part.idParticipant,"0"),
 					firstname:DEF(part.firstname,""),
 					lastname:DEF(part.lastname,""),
-					birthDate:DEF(part.birthDate,0),
+					birthDate:DEF(Utils.formatDate(new Date(part.birthDate)),"01.01.2000"),
 					nationality:DEF(part.nationality,""),
 					club:DEF(part.club,""),
 					gender:DEF(part.sex,""),

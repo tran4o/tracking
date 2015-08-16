@@ -194,6 +194,9 @@ $(document).ready( function ()
 				label: "Club",
 				name: "club"
 			},{
+				label: "Birth date",
+				name: "birthDate",
+			},{
 				label: "Id",
 				name: "id",
 				type : "readonly"
