@@ -210,8 +210,8 @@ function updateStart(req,res) {
 			res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
 			return;
 		}
-		start.fromStartNo=parseInt(part.fromStartNo);
-		start.toStartNo=parseInt(part.toStartNo);
+		start.fromStartNo=parseInt(start.fromStartNo);
+		start.toStartNo=parseInt(start.toStartNo);
 		if (isNaN(start.fromStartNo)) {
 			res.send(JSON.stringify({error:"From start not valid!"}, null, 4));
 			return;
