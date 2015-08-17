@@ -332,8 +332,8 @@ function updatePart(req,res) {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
 }
-app.put('/starts', updatePart);
-app.post('/starts', updatePart);
+app.put('/starts', updateStart);
+app.post('/starts', updateStart);
 app.get('/starts', function (req, res) 
 {
 	//console.log(req.query);
