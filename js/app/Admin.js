@@ -242,74 +242,17 @@ $(document).ready( function ()
 	
 	var tableStarts = $('#table-starts').DataTable( {
 		dom: "Tfrtip",
-		ajax: CONFIG.server.prefix+"rest/event/",
+		ajax: "../starts",
 		columns: [
-			{ data: "code" },
-			{ data: "name" },
-			{ 
-				// date 
-				data: null,
-				render: function ( data, type, row ) 
-				{
-					var dt = data["date"];
-					if (!dt)
-						return "";
-					var res="";
-					try {
-						res = formatDate(new Date(dt));
-					} catch(e) {
-					}
-					return res;
-				} 
-			},
-			{ 
-				// track
-				data: null,
-				render: function ( data, type, row ) 
-				{
-					if (!data["track"])
-						return "";
-					var tpos = null;
-					try {
-						tpos=JSON.parse(data["track"]);
-					} catch(e) {
-					}
-					var res;
-					if (!tpos || !tpos.length)
-						res="0 km";
-					else {
-						var tr = new Track();
-						tr.setRoute(tpos);
-						res = formatNumber2(tr.getTrackLength()/1000.0)+" km";
-					}
-					if (data["run-count"] && parseInt(data["run-count"]) > 1)
-						res="<b>"+data["run-count"]+"x</b> "+res;
-					if (data["begin-time"] && data["end-time"])
-						res=data["begin-time"]+"-"+data["end-time"]+" ("+res+")";
-					return res;
-				} 
-			}
+			{ data: "fromStartNo" },
+			{ data: "toStartNo" },
+			{ data: "startTime" }
 		],
 		tableTools: {
 			sRowSelect: "os",
 			aButtons: [
-				{ sExtends: "editor_create", editor : EDITOR2 },
-				{ sExtends: "editor_edit",   fnClick : function () {
-					EDITOR2
-                    .title( 'Edit track' )
-                    .buttons( [
-                               { label: 'Save', fn: function() { this.submit(); } },
-                               { label: 'Map', fn: function() {
-                            	   var dt = tableStarts.rows(".selected").data()[0];
-                            	   var that=this;
-                            	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bike-start").val(),$("#DTE_Field_run-start").val(),function(data) {
-                            		   $("#DTE_Field_track").val(data);
-                            	   });
-                                } }
-                    	] )
-                    .edit( tableStarts.row( '.selected' ).node() );
-					
-				} },
+				{ sExtends: "editor_create", editor: EDITOR2 },
+				{ sExtends: "editor_edit",   editor: EDITOR2 },
 				{ sExtends: "editor_remove", editor: EDITOR2 }
            ]
 		}
