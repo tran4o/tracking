@@ -9,20 +9,32 @@ console.log("Loading server configuration...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ encoding: 'utf8' });
 console.log("Config data length "+data.length+" bytes");
 var json=JSON.parse(data);
+//------------------------------------------------------------------------------------------
+data = fs.readFileSync(path.join(__dirname, "../../data/event.json"),{ encoding: 'utf8' });
+console.log("Event data length "+data.length+" bytes");
+var ejson=JSON.parse(data);
 var now = (new Date()).getTime();
-json.event.startTime = json.simulation.enabled ? new Date() : new Date(moment(json.event.startTime, "DD.MM.YYYY HH:mm"));
-json.event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(json.event.endTime, "DD.MM.YYYY HH:mm"));
-console.log("\nEvent configration ["+Utils.formatDateTime(json.event.startTime)+"  >  "+Utils.formatDateTime(json.event.endTime)+"]");
+json.event.startTime = json.simulation.enabled ? new Date() : new Date(moment(ejson.startTime, "DD.MM.YYYY HH:mm"));
+json.event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(ejson.endTime, "DD.MM.YYYY HH:mm"));
+console.log("\nEvent configration ["+Utils.formatDateTime(ejson.startTime)+"  >  "+Utils.formatDateTime(ejson.endTime)+"]");
 console.log("Now is "+Utils.formatDateTime(new Date(now)));
-console.log((json.event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
+console.log((ejson.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
+json.event=ejson;
+//------------------------------------------------------------------------------------------
+data = fs.readFileSync(path.join(__dirname, "../../data/event.json"),{ encoding: 'utf8' });
+console.log("Starts data length "+data.length+" bytes");
+var sjson=JSON.parse(data);
+json.starts=sjson;
+//------------------------------------------------------------------------------------------
 for (var i in json.starts) 
 {
 	var str = json.starts[i];
-	str.start = json.simulation.enabled ?  new Date() : new Date(moment(str.startTime, "DD.MM.YYYY HH:mm"));
+	str.start = json.simulation.enabled ?  new Date() : new Date(moment( moment(json.event.startTime).format("DD.MM.YYYY ")+str.startTime, "DD.MM.YYYY HH:mm"));
 	//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
 }
 for (var i in json)
 	exports[i]=json[i];
+//--------------------------------------------------------------------------------------
 var startTimes =  json.starts;
 exports.getStartTimeFromStartPos = function(startPos) 
 {
@@ -34,6 +46,7 @@ exports.getStartTimeFromStartPos = function(startPos)
 	}
 	return 0;
 }
+exports.starts=startTimes;
 //--------------------------------------------------------------------------------------
 console.log("\nLoading participants list...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/participants.json"),{ encoding: 'utf8' });
@@ -156,6 +169,47 @@ function updateParticipant(id,json)
 }
 exports.updateParticipant=updateParticipant;
 //-----------------------------------
+function deleteStart(id) {
+	var nstart=[];
+	var ok=false;
+	for (var i in exports.starts) 
+	{
+		var start = exports.starts[i];
+		if (start.id == id) {
+			ok=true;
+			continue;
+		}
+		nstart.push(start);
+	}
+	if (ok) {
+		exports.starts=nstart;
+		// TODO SIGNAL ON STARTS UPDATE?!?
+	}
+	return ok;
+}
+exports.deleteStart=deleteStart;
+function updateStart(id,json) 
+{	
+	function doIt(start) 
+	{
+		start.id=id;
+		start.fromStartNo=json.fromStartNo;
+		start.toStartNo=json.toStartNo;
+		start.startTime=json.startTime;
+		return start;
+	}
+	for (var i in exports.starts) 
+	{
+		var start = exports.starts[i];
+		if (start.id == id)  
+			return doIt(part);
+	}
+	var start = doIt({});
+	exports.starts.push(start);
+	return start;
+}
+exports.updateStart=updateStart;
+//--------------------------------------------------------------------------------------
 //assignIMEI("ABC1","123A");
 //--------------------------------------------------------------------------------------
 console.log("Found "+Object.keys(assignments).length+" assignments\n");

@@ -9,8 +9,8 @@
 	},
 	"starts" : 
 	[
-		{ "fromStartNo" : 1, "toStartNo" : 3201 , "startTime" : "12.07.2015 09:30" },
-		{ "fromStartNo" : 4000 , "toStartNo" : 4400   , "startTime" : "12.07.2015 11:00" }
+		{ "fromStartNo" : 1, "toStartNo" : 3201 , "startTime" : "09:30" },
+		{ "fromStartNo" : 4000 , "toStartNo" : 4400   , "startTime" : "11:00" }
 	],	
 	"simulation" : 
 	{

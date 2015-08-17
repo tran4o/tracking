@@ -187,6 +187,86 @@ function partDataTablesJSON(part) {
 	  });
 }
 
+function startDataTablesJSON(part) {
+	function DEF(val,def) {
+		if (val == null || val === undefined)
+			return def;
+		return val;
+	}
+	return ({
+		id:DEF(part.idParticipant,"0"),
+		fromStartNo:DEF(part.fromStartNo,"0"),
+		toStartNo:DEF(part.toStartNo,"0"),
+		startTime:DEF(part.startTime,"00:00")
+	  });
+}
+
+
+function updateStart(req,res) {
+	res.header("Content-Type", "application/json; charset=utf-8");
+	function doIt(start) 
+	{
+		if (!moment(start.startTime, "HH:mm").isValid()) {
+			res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
+			return;
+		}
+		start.fromStartNo=parseInt(part.fromStartNo);
+		start.toStartNo=parseInt(part.toStartNo);
+		if (isNaN(start.fromStartNo)) {
+			res.send(JSON.stringify({error:"From start not valid!"}, null, 4));
+			return;
+		}
+		if (isNaN(start.toStartNo)) {
+			res.send(JSON.stringify({error:"To start not valid!"}, null, 4));
+			return;
+		}
+		var r = Config.updateStart(start.id,start);
+		if (typeof r == "string") {
+			res.send(JSON.stringify({error:r}, null, 4));
+			return;
+		}
+		res.send(JSON.stringify({data:[startDataTablesJSON(r)]}, null, 4));
+		return;
+	}
+	if (req.body.action == "remove") 
+	{
+		for (var id in req.body.data) 
+		{
+			if (!Config.deleteStart(id)) {
+				res.send(JSON.stringify({error:"Start not found!"}, null, 4));
+				return;
+			}
+			res.send(JSON.stringify({}), null, 4);
+			return;
+		}
+	} else if (req.body.action == "create") {
+		for (var id in req.body.data) 
+		{
+			var start = req.body.data[id];
+			function guid() 
+			{
+				  function s4() {
+				    return Math.floor((1 + Math.random()) * 0x10000)
+				      .toString(16)
+				      .substring(1).toUpperCase();
+				  }
+				  return s4() + s4(); 
+			}
+			start.id=guid();
+			doIt(start);
+		}
+	} else if (req.body.action == "edit") {
+		for (var id in req.body.data) 
+		{
+			var start = req.body.data[id];
+			doIt(start);
+		}
+	} else {
+		console.log("UNKNOWN ACTION "+req.body.action);
+	}
+}
+
+
 function updatePart(req,res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	function doIt(part) 
@@ -252,6 +332,20 @@ function updatePart(req,res) {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
 }
+app.put('/starts', updatePart);
+app.post('/starts', updatePart);
+app.get('/starts', function (req, res) 
+{
+	//console.log(req.query);
+	res.header("Content-Type", "application/json; charset=utf-8");
+	var r = [];
+	for (var i in Config.starts) 
+	{
+		var start = Config.participants[i];
+		r.push(startDataTablesJSON(start));
+	}
+	res.send(JSON.stringify({data : r}, null, 4));
+});
 app.put('/participants', updatePart);
 app.post('/participants', updatePart);
 app.get('/participants', function (req, res) 

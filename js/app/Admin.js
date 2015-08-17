@@ -196,58 +196,25 @@ $(document).ready( function ()
 		]
 	} );
 
-	/*window.EDITOR2 = new $.fn.dataTable.Editor( {
-		ajax: 
-		{
-			url : CONFIG.server.prefix+"rest/event/",
-			data: function ( d ) 
-			{
-				if (d.action == "remove") 
-				    return JSON.stringify({"delete":d.id});
-			    return JSON.stringify( d.data );
-			}
-		},
-		data: function ( d ) {
-		    return JSON.stringify( d );
-		},
-		table: "#table-events",
+	window.EDITOR2 = new $.fn.dataTable.Editor( {
+		ajax: '../starts',
+		table: "#table-starts",
 		idSrc: "id",
-		fields: [ {
-				label: "Id",
-				name: "id",
-				type : "readonly"
-			}, {
-				label: "Code",
-				name: "code"
-			}, {
-				label: "Name",
-				name: "name"
-			}, {
-				label: "Date",
-				name: "date",
-				dateFormat: "mm-dd-yyyy",
-				type: "date"
-			}, {
-				label: "Begin time",
-				name: "begin-time"
-			}, {
-				label: "End time",
-				name: "end-time"
-			},{
-	            label: "track JSON data",
-	            name:  "track"
-	        },{
-	            label: "track run count",
-	            name:  "run-count"
-	        },{
-	            label: "bike start km.",
-	            name:  "bike-start"
-	        },{
-	            label: "run start km.",
-	            name:  "run-start"
-	        }
-			]
-	} );*/
+		fields: [{
+					label: "Id",
+					name: "id",
+					type : "readonly"
+				}, {
+					label: "From No",
+					name: "fromStartNo"
+				}, {
+					label: "To No",
+					name: "toStartNo"
+				}, {
+					label: "Start Time",
+					name: "startTime"
+				}]
+	} );
 
 	var tableParticipants = $('#table-participants').DataTable( {
 		dom: "Tfrtip",
@@ -273,7 +240,7 @@ $(document).ready( function ()
 		}
 	} );	
 	
-	/*var tableEvents = $('#table-events').DataTable( {
+	var tableStarts = $('#table-starts').DataTable( {
 		dom: "Tfrtip",
 		ajax: CONFIG.server.prefix+"rest/event/",
 		columns: [
@@ -333,21 +300,20 @@ $(document).ready( function ()
                     .buttons( [
                                { label: 'Save', fn: function() { this.submit(); } },
                                { label: 'Map', fn: function() {
-                            	   var dt = tableEvents.rows(".selected").data()[0];
+                            	   var dt = tableStarts.rows(".selected").data()[0];
                             	   var that=this;
                             	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bike-start").val(),$("#DTE_Field_run-start").val(),function(data) {
                             		   $("#DTE_Field_track").val(data);
                             	   });
                                 } }
                     	] )
-                    .edit( tableEvents.row( '.selected' ).node() );
+                    .edit( tableStarts.row( '.selected' ).node() );
 					
 				} },
 				{ sExtends: "editor_remove", editor: EDITOR2 }
            ]
 		}
 	} );
-	*/
 	
 	//-----------------------------------------------
 	
