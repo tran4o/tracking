@@ -42,7 +42,6 @@ for (var i in Config.participants)
 		part.setCountry(p.nationality);
 		part.setStartPos(parseInt(p.startNo));
 		part.setGender(p.sex);
-
 		var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
 		if (fs.existsSync(apath)) {
 			part.setIcon("img/data/"+id+".jpg");

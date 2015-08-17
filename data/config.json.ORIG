@@ -1,0 +1,20 @@
+{
+	"simulation" : 
+	{
+		"enabled" : 0,
+		"singleParticipant" : 0,
+		"startElapsed" : 0.30,		
+		"speedCoef" : 1,
+		"debugStarts" : 0
+	},
+	"interpolation" : 
+	{
+		"displayDelay" : 40
+	},
+	"network" : {
+		"pingInterval" : 10 		
+	},
+	"cams" : 
+	[
+	]	
+}

@@ -1,5 +1,10 @@
+log
+pid
+widget
 node_modules
 *.db
+data/event.json
+data/config.json
 data/participants.json
 data/assignments.json
 data/img/*.jpg
