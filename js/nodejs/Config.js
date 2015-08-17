@@ -14,8 +14,8 @@ data = fs.readFileSync(path.join(__dirname, "../../data/event.json"),{ encoding:
 console.log("Event data length "+data.length+" bytes");
 var ejson=JSON.parse(data);
 var now = (new Date()).getTime();
-json.event.startTime = json.simulation.enabled ? new Date() : new Date(moment(ejson.startTime, "DD.MM.YYYY HH:mm"));
-json.event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(ejson.endTime, "DD.MM.YYYY HH:mm"));
+ejson.startTime = json.simulation.enabled ? new Date() : new Date(moment(ejson.startTime, "DD.MM.YYYY HH:mm"));
+ejson.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(ejson.endTime, "DD.MM.YYYY HH:mm"));
 console.log("\nEvent configration ["+Utils.formatDateTime(ejson.startTime)+"  >  "+Utils.formatDateTime(ejson.endTime)+"]");
 console.log("Now is "+Utils.formatDateTime(new Date(now)));
 console.log((ejson.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
