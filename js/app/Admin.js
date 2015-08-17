@@ -244,9 +244,9 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../starts",
 		columns: [
-			{ data: "fromStartNo" },
-			{ data: "toStartNo" },
-			{ data: "startTime" }
+			{ data: "fromStartNo",className : "dt-body-right" },
+			{ data: "toStartNo",className : "dt-body-right" },
+			{ data: "startTime",className : "dt-body-right" }
 		],
 		tableTools: {
 			sRowSelect: "os",
