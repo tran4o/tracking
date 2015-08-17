@@ -216,6 +216,33 @@ $(document).ready( function ()
 				}]
 	} );
 
+	window.EDITOR3 = new $.fn.dataTable.Editor( {
+		ajax: '../events',
+		table: "#table-events",
+		idSrc: "id",
+		fields: [{
+					label: "Id",
+					name: "id",
+					type : "readonly"
+				}, {
+					label: "Start",
+					name: "startTime"
+				}, {
+					label: "End",
+					name: "endTime"
+				}, {
+					label: "Track",
+					name: "trackData"
+				}, {
+					label: "Bike start km",
+					name: "bikeStartKM"
+				}, {
+					label: "Run start km",
+					name: "runStartKM"
+				}]
+	});
+
+	
 	var tableParticipants = $('#table-participants').DataTable( {
 		dom: "Tfrtip",
 		ajax: "../participants?mode=dtbl",
@@ -254,6 +281,39 @@ $(document).ready( function ()
 				{ sExtends: "editor_create", editor: EDITOR2 },
 				{ sExtends: "editor_edit",   editor: EDITOR2 },
 				{ sExtends: "editor_remove", editor: EDITOR2 }
+           ]
+		}
+	} );
+	var tableEvents = $('#table-events').DataTable( {
+		dom: "Tfrtip",
+		ajax: "../events",
+		columns: [
+			{ data: "startTime",className : "dt-body-right" },
+			{ data: "endTime",className : "dt-body-right" },
+			{ data: "bikeStartKM",className : "dt-body-right" },
+			{ data: "runStartKM",className : "dt-body-right" }
+		],
+		tableTools: {
+			sRowSelect: "os",
+			aButtons: [
+			    { sExtends: "editor_create", editor : EDITOR3 },
+				{ sExtends: "editor_edit",   fnClick : function () {
+					EDITOR3
+		            .title( 'Edit event configuration' )
+		            .buttons( [
+                               { label: 'Save', fn: function() { this.submit(); } },
+                               { label: 'Map', fn: function() {
+                            	   var dt = tableStarts.rows(".selected").data()[0];
+                            	   var that=this;
+                            	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bike-start").val(),$("#DTE_Field_run-start").val(),function(data) {
+                            		   $("#DTE_Field_track").val(data);
+                            	   });
+                                } }
+                             ] )
+		                    .edit( tableStarts.row( '.selected' ).node() );
+				     } 
+				},
+				{ sExtends: "editor_remove", editor: EDITOR3 }
            ]
 		}
 	} );
