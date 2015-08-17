@@ -3,6 +3,7 @@ pid
 widget
 node_modules
 *.db
+data/starts.json
 data/event.json
 data/config.json
 data/participants.json
