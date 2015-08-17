@@ -341,7 +341,7 @@ app.get('/starts', function (req, res)
 	var r = [];
 	for (var i in Config.starts) 
 	{
-		var start = Config.participants[i];
+		var start = Config.starts[i];
 		r.push(startDataTablesJSON(start));
 	}
 	res.send(JSON.stringify({data : r}, null, 4));
