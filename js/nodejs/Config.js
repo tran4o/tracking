@@ -202,7 +202,7 @@ function updateStart(id,json)
 	{
 		var start = exports.starts[i];
 		if (start.id == id)  
-			return doIt(part);
+			return doIt(start);
 	}
 	var start = doIt({});
 	exports.starts.push(start);
