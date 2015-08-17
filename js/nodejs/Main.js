@@ -187,17 +187,17 @@ function partDataTablesJSON(part) {
 	  });
 }
 
-function startDataTablesJSON(part) {
+function startDataTablesJSON(start) {
 	function DEF(val,def) {
 		if (val == null || val === undefined)
 			return def;
 		return val;
 	}
 	return ({
-		id:DEF(part.idParticipant,"0"),
-		fromStartNo:DEF(part.fromStartNo,"0"),
-		toStartNo:DEF(part.toStartNo,"0"),
-		startTime:DEF(part.startTime,"00:00")
+		id:DEF(start.id,"0"),
+		fromStartNo:DEF(start.fromStartNo,"0"),
+		toStartNo:DEF(start.toStartNo,"0"),
+		startTime:DEF(start.startTime,"00:00")
 	  });
 }
 
