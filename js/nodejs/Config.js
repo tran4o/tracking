@@ -21,7 +21,7 @@ console.log("Now is "+Utils.formatDateTime(new Date(now)));
 console.log((ejson.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
 json.event=ejson;
 //------------------------------------------------------------------------------------------
-data = fs.readFileSync(path.join(__dirname, "../../data/event.json"),{ encoding: 'utf8' });
+data = fs.readFileSync(path.join(__dirname, "../../data/starts.json"),{ encoding: 'utf8' });
 console.log("Starts data length "+data.length+" bytes");
 var sjson=JSON.parse(data);
 json.starts=sjson;
