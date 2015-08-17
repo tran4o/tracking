@@ -4,7 +4,7 @@ widget
 node_modules
 *.db
 data/starts.json
-data/event.json
+data/events.json
 data/config.json
 data/participants.json
 data/assignments.json
