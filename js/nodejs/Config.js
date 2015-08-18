@@ -29,7 +29,7 @@ json.starts=sjson;
 for (var i in json.starts) 
 {
 	var str = json.starts[i];
-	str.start = json.simulation.enabled ?  new Date() : new Date(moment( moment(json.event.startTime).format("DD.MM.YYYY ")+str.startTime, "DD.MM.YYYY HH:mm"));
+	str.start = json.simulation.enabled ?  new Date() : new Date(moment( moment(json.event.startTime).format("DD.MM.YYYY")+str.startTime, "DD.MM.YYYY HH:mm"));
 	//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
 }
 for (var i in json)

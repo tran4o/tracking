@@ -174,8 +174,8 @@ function onData(data,from,to)
 		if (onlyFavorites && !favs[e.IMEI]) {			
 			return;
 		}
-		if (from && to && !(e.EPOCH >= from && e.EPOCH <= to))
-			continue;
+		/*if (from && to && !(e.EPOCH >= from && e.EPOCH <= to))
+			continue;*/
 		delete e._id;
 		delete e.TS;		
 		e.LON=parseInt(e.LON);
