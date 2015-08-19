@@ -124,31 +124,30 @@ function mapEdit(id,json,valBikeStart,valRunStart,onSubmit)
 	$("#map").css("display","block");
 	initGUI();
 	GUI.trackLayer.getSource().clear();
+	var trackData;
 	try {
-		var trackData = JSON.parse(json);
-		TRACK.setRoute(trackData);
-		TRACK.bikeStartKM=parseFloat(valBikeStart);
-		TRACK.runStartKM=parseFloat(valRunStart);
-		if (isNaN(TRACK.bikeStartKM))
-			TRACK.bikeStartKM=3.86;
-		if (isNaN(TRACK.runStartKM))
-			TRACK.runStartKM=180.25+TRACK.bikeStartKM;
-		if (json && json != "") 
-		{
-			$("#route_text_area").val(json);
-
-			var str = (TRACK.getTrackLength()/1000.0)+" km";
-			$("#route_info").val(str);
-
-			GUI.addTrackFeature();
-			GUI.zoomToTrack();
-			GUI.map.removeInteraction(draw);
-			GUI.map.addInteraction(select);
-			GUI.map.addInteraction(modify);
-		}		
+		trackData = JSON.parse(json);
 	} catch (e) {
 		console.log("Unable to do mapEdit for "+json);
-		console.error("Exception on mapEdit "+e);
+		trackData=[];
+	}		
+	TRACK.setRoute(trackData);
+	TRACK.bikeStartKM=parseFloat(valBikeStart);
+	TRACK.runStartKM=parseFloat(valRunStart);
+	if (isNaN(TRACK.bikeStartKM))
+		TRACK.bikeStartKM=3.86;
+	if (isNaN(TRACK.runStartKM))
+		TRACK.runStartKM=180.25+TRACK.bikeStartKM;
+	if (json && json != "") 
+	{
+		$("#route_text_area").val(json);
+		var str = (TRACK.getTrackLength()/1000.0)+" km";
+		$("#route_info").val(str);
+		GUI.addTrackFeature();
+		GUI.zoomToTrack();
+		GUI.map.removeInteraction(draw);
+		GUI.map.addInteraction(select);
+		GUI.map.addInteraction(modify);
 	}		
 	GUI.onEditSave = function(data) {
 		$("#map").css("display","none");
