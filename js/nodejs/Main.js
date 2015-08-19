@@ -453,6 +453,7 @@ app.get('/events', function (req, res)
 	//console.log(req.query);
 	var eventId = req.params.id;
 	res.header("Content-Type", "application/json; charset=utf-8");
+	var r=[];
 	for (var j in Config.events) 
 	{
 		var event = Config.events[j];
