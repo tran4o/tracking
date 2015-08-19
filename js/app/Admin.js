@@ -86,7 +86,6 @@ function initGUI()
 		GUI.map.addInteraction(select);
 		GUI.map.addInteraction(modify);
 		store(false,e);
-		TRACK.updateFeature();
 	});
 	//-------------------------------------------------
 	GUI.map.removeInteraction(select);
