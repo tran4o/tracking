@@ -16,9 +16,9 @@ app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
 app.use(bodyParser.urlencoded({     
-  extended: true
+  extended: true,
+  limit: '50mb'
 })); 
-app.use(bodyParser.urlencoded({limit: '50mb'}));
 app.use(bodyParser.json({limit: '50mb'}));
 app.get('/raceStart/:id', function (req, res) {
 	var event = Config.getCurrentOrNextEvent();
