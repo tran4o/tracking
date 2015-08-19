@@ -23,13 +23,7 @@ var eid = params.id;
 //---------------------------------------
 if (!eid)
 	return;
-var eid = $("#DTE_Field_id").val();
-if (!eid || !eid.length) {
-	alert("Only on saved event possible!");
-	return;
-}
 $("#starts").css("display","block");
-
 var EDITOR2 = new $.fn.dataTable.Editor( {
 	ajax: '../starts/'+eid,
 	table: "#table-starts",
