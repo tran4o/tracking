@@ -193,15 +193,23 @@ function saveEvents()
 	console.log(JSON.stringify(evts));
 	for (var i in evts) {
 		var e = evts[i];
-		if (e.startTime)
-			e.startTime=moment(e.startTime).format("DD.MM.YYYY HH:mm");
-		if (e.endTime)
-			e.endTime=moment(e.endTime).format("DD.MM.YYYY HH:mm");
+		var oe = exports.events[i];
+		if (oe.startTime)
+			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
+		else
+			delete e.startTime;
+		
+		if (oe.endTime)
+			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
+		else
+			delete e.startTime;
+
 		if (e.starts)
 		for (var k in e.starts) {
 			var s = e.starts[k];
-			if (s.startTime)
-				s.startTime=moment(s.startTime).format("DD.MM.YYYY HH:mm");
+			var os = oe.starts[k];
+			if (os.startTime)
+				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
 		}
 	}
 	console.log(JSON.stringify(evts, null, 4));
