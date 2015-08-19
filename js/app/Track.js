@@ -298,7 +298,7 @@ Class("Track",
 			}
 			this.rTree.load(arr);
 			//----------------- ---------------------------------------------
-			if (typeof window != "undefined") 
+			if (typeof window != "undefined" && this.route && this.route.length) 
 			{
 				var wkt = [];
 				for (var i=0;i<this.route.length;i++) {
@@ -313,6 +313,8 @@ Class("Track",
 				}
 				this.feature.track=this;
 				this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
+			} else {
+				delete this.feature;
 			}
 		},
 
