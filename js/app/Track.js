@@ -249,9 +249,10 @@ Class("Track",
 			this.updateFeature();
 			if (typeof window != "undefined" && this.feature) { 
 				GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
+				console.log("Current extent : "+JSON.stringify(this.feature.getGeometry().getExtent()));
 			} else {
+				GUI.map.getView().fitExtent([1234592.3637345568,6282706.889676435,1264348.464373766,6325694.743164725]);
 			}
-			console.log(JSON.stringify(this.feature.getGeometry().getExtent()));
 		},
 		
 		getTrackPart : function(elapsed) {
