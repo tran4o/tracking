@@ -673,5 +673,5 @@ table.dataTable td {
 }
 
 .button-assignments:hover,.button-status:hover {
-	border : 2px solid black;	
+	border : 2px solid red;	
 }
