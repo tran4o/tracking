@@ -321,7 +321,7 @@ $(document).ready( function ()
                                { label: 'Map', fn: function() {
                             	   var dt = tableEvents.rows(".selected").data()[0];
                             	   var that=this;
-                            	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bike-start").val(),$("#DTE_Field_run-start").val(),function(data) {
+                            	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bikeStartKM").val(),$("#DTE_Field_runStartKM").val(),function(data) {
                             		   $("#DTE_Field_track").val(data);
                             	   });
                                 } }
