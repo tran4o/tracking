@@ -87,6 +87,7 @@ setInterval(function()
 			event.TRACK.setRunStartKM(event.runStartKM);
 			event.TRACK.setRoute(event.trackData);
 			event.TRACK.init();
+			console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
 			//----------------------------------------------------------------------------------------------------------------------------------
 			for (var i in Config.participants) 
 			{
@@ -119,7 +120,6 @@ setInterval(function()
 				}
 				if (Config.simulation.enabled) 
 					Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
-				console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
 			}
 			if (!Config.simulation.singleParticipant)
 			for (var i in Config.cams) 
