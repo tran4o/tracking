@@ -190,18 +190,17 @@ exports.assignIMEI=assignIMEI;
 function saveEvents() 
 {
 	var evts = deepcopy(exports.events);
-	console.log(JSON.stringify(evts));
 	for (var i in evts) 
 	{
 		var e = evts[i];
 		var oe = exports.events[i];
 		if (oe.startTime)
-			e.startTime=moment(oe.startTime.getTime()).format("DD.MM.YYYY HH:mm");
+			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.startTime;
 		
 		if (oe.endTime)
-			e.endTime=moment(oe.endTime.getTime()).format("DD.MM.YYYY HH:mm");
+			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.endTime;
 
@@ -210,10 +209,10 @@ function saveEvents()
 			var s = e.starts[k];
 			var os = oe.starts[k];
 			if (os.startTime)
-				s.startTime=moment(os.startTime.getTime()).format("DD.MM.YYYY HH:mm");
+				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
 		}
 	}
-	//console.log(JSON.stringify(evts, null, 4));
+	console.log(JSON.stringify(evts, null, 4));
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
 function saveParticipants() {
