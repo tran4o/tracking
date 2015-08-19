@@ -87,6 +87,22 @@ function initGUI()
 		GUI.map.addInteraction(select);
 		GUI.map.addInteraction(modify);
 		store(false,e);
+		// POST CLEANUP OF DOBLE FEATURE (on draw submit)
+		setTimeout(function() 
+		{
+			var feats = GUI.trackLayer.getSource().getFeatures();
+			var todel=[];
+			for (var i in feats) {
+				var feat = feats[i];
+				if (!feat.track) {
+					todel.push(feat);
+				}
+			}
+			for (var i in todel) {
+				var feat = todel[i];
+				GUI.trackLayer.getSource().removeFeature(feat);
+			}
+		},0);
 	});
 	//-------------------------------------------------
 	GUI.map.removeInteraction(select);
