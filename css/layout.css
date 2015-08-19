@@ -659,3 +659,16 @@ table.dataTable td {
 #debugShowPosition span {
 	background-color: #d9d902;
 }
+
+.button-assignments {
+	display : block;
+	padding : 1em;
+	font-weight : bold;
+	font-size : 200%;
+	border : 2px solid gray;
+	border-radius : 5px;
+}
+
+.button-assignments:hover {
+	border : 2px solid black;	
+}
