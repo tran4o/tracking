@@ -218,7 +218,7 @@ function eventDataTablesJSON(event) {
 		id:DEF(event.id,"0"),
 		startTime:DEF(event.startTime,"01.01.2015 00:00"),
 		endTime:DEF(event.endTime,"01.01.2015 00:00"),
-		track:DEF(event.trackData,""),
+		track:event.trackData ? JSON.stringify(event.trackData) : "[]",
 		runStartKM:DEF(event.runStartKM,"0"),
 		bikeStartKM:DEF(event.bikeStartKM,"0")
 	  });
@@ -253,7 +253,7 @@ function updateEvent(req,res) {
 		{
 			var ok = false;
 			try {
-				JSON.parse(event.track);
+				event.trackData=JSON.parse(event.track);
 				ok=true;
 			} catch(e) {}
 			if (!ok) {
@@ -261,7 +261,7 @@ function updateEvent(req,res) {
 				return;
 			}
 		} else {
-			event.track="";
+			event.trackData=[];
 		}
 		var r = Config.updateEvent(event.id,event);
 		if (typeof r == "string") {
