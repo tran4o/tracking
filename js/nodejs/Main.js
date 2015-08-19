@@ -455,7 +455,7 @@ app.get('/events', function (req, res)
 	res.header("Content-Type", "application/json; charset=utf-8");
 	for (var j in Config.events) 
 	{
-		var event = Config.events[i];
+		var event = Config.events[j];
 		r.push(eventDataTablesJSON(event));
 	}
 	res.send(JSON.stringify({data : r}, null, 4));
