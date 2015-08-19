@@ -235,6 +235,45 @@ function updateParticipant(id,json)
 }
 exports.updateParticipant=updateParticipant;
 //-----------------------------------
+function deleteEvent(id) {
+	var nevent=[];
+	var ok=false;
+	for (var i in exports.events) 
+	{
+		var event = exports.events[i];
+		if (event.id == id) {
+			ok=true;
+			continue;
+		}
+		nevent.push(event);
+	}
+	if (ok)
+		exports.event=nevent;
+	return ok;
+}
+exports.deleteEvent=deleteEvent;
+function updateEvent(id,json) 
+{	
+	function doIt(event) 
+	{
+		event.id=id;
+		event.track=json.track;
+		event.bikeStartKM=json.bikeStartKM;
+		event.runStartKM=json.runStartKM;
+		return event;
+	}
+	for (var i in exports.events) 
+	{
+		var event = exports.events[i];
+		if (event.id == id)  
+			return doIt(event);
+	}
+	var event = doIt({});
+	exports.events.push(event);
+	return event;
+}
+exports.updateEvent=updateEvent;
+
 function deleteStart(event,id) {
 	var nstart=[];
 	var ok=false;

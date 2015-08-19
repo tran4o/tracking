@@ -208,6 +208,105 @@ function startDataTablesJSON(start) {
 }
 
 
+function eventDataTablesJSON(event) {
+	function DEF(val,def) {
+		if (val == null || val === undefined)
+			return def;
+		return val;
+	}
+	return ({
+		id:DEF(event.id,"0"),
+		startTime:DEF(start.startTime,"01.01.2015 00:00"),
+		endTime:DEF(start.endTime,"01.01.2015 00:00"),
+		track:DEF(start.track,"")
+	  });
+}
+
+
+function updateEvent(req,res) {
+	res.header("Content-Type", "application/json; charset=utf-8");
+	function doIt(event) 
+	{
+		if (!moment(event.startTime, "DD.MM.YYYY HH:mm").isValid()) {
+			res.send(JSON.stringify({error:"Start not valid!"}, null, 4));
+			return;
+		}
+		if (!moment(event.endTime, "DD.MM.YYYY HH:mm").isValid()) {
+			res.send(JSON.stringify({error:"End not valid!"}, null, 4));
+			return;
+		}
+		event.startTime=moment(event.startTime, "HH:mm").format("DD.MM.YYYY HH:mm");
+		event.endTime=moment(event.endTime, "HH:mm").format("DD.MM.YYYY HH:mm");
+		event.bikeStartKM=parseFloat(event.bikeStartKM);
+		if (isNaN(event.bikeStartKM)) {
+			res.send(JSON.stringify({error:"Bike start not valid!"}, null, 4));
+			return;
+		}
+		event.runStartKM=parseFloat(event.runStartKM);
+		if (isNaN(event.runStartKM)) {
+			res.send(JSON.stringify({error:"Run start not valid!"}, null, 4));
+			return;
+		}
+		if (event.track || event.track != "") 
+		{
+			var ok = false;
+			try {
+				JSON.parse(event.track);
+				ok=true;
+			} catch(e) {}
+			if (!ok) {
+				res.send(JSON.stringify({error:"Track not valid!"}, null, 4));
+				return;
+			}
+		} else {
+			event.track="";
+		}
+		var r = Config.updateEvent(event.id,event);
+		if (typeof r == "string") {
+			res.send(JSON.stringify({error:r}, null, 4));
+			return;
+		}
+		res.send(JSON.stringify({data:[eventDataTablesJSON(r)]}, null, 4));
+		return;
+	}
+	if (req.body.action == "remove") 
+	{
+		for (var id in req.body.data) 
+		{
+			if (!Config.deleteEvent(id)) {
+				res.send(JSON.stringify({error:"Event not found!"}, null, 4));
+				return;
+			}
+			res.send(JSON.stringify({}), null, 4);
+			return;
+		}
+	} else if (req.body.action == "create") {
+		for (var id in req.body.data) 
+		{
+			var event = req.body.data[id];
+			function guid() 
+			{
+				  function s4() {
+				    return Math.floor((1 + Math.random()) * 0x10000)
+				      .toString(16)
+				      .substring(1).toUpperCase();
+				  }
+				  return s4() + s4(); 
+			}
+			event.id=guid();
+			doIt(event);
+		}
+	} else if (req.body.action == "edit") {
+		for (var id in req.body.data) 
+		{
+			var event = req.body.data[id];
+			doIt(event);
+		}
+	} else {
+		console.log("UNKNOWN ACTION "+req.body.action);
+	}
+}
+
 function updateStart(req,res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var eventId = req.params.id;
@@ -347,6 +446,21 @@ function updatePart(req,res) {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
 }
+app.put('/events', updateEvent);
+app.post('/events', updateEvent);
+app.get('/events', function (req, res) 
+{
+	//console.log(req.query);
+	var eventId = req.params.id;
+	res.header("Content-Type", "application/json; charset=utf-8");
+	for (var j in Config.events) 
+	{
+		var event = Config.events[i];
+		r.push(eventDataTablesJSON(event));
+	}
+	res.send(JSON.stringify({data : r}, null, 4));
+});
+
 app.put('/starts/:id', updateStart);
 app.post('/starts/:id', updateStart);
 app.get('/starts/:id', function (req, res) 
