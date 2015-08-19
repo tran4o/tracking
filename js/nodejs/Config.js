@@ -197,14 +197,14 @@ function saveEvents()
 		var oe = exports.events[i];
 		console.log("OEEE : "+JSON.stringify(oe, null, 4))
 		if (oe.startTime)
-			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
+			e.startTime=moment(oe.startTime.getTime()).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.startTime;
 		
 		if (oe.endTime)
-			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
+			e.endTime=moment(oe.endTime.getTime()).format("DD.MM.YYYY HH:mm");
 		else
-			delete e.startTime;
+			delete e.endTime;
 
 		if (e.starts)
 		for (var k in e.starts) {
@@ -212,7 +212,7 @@ function saveEvents()
 			var os = oe.starts[k];
 			console.log("OS : "+JSON.stringify(os, null, 4))
 			if (os.startTime)
-				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
+				s.startTime=moment(os.startTime.getTime()).format("DD.MM.YYYY HH:mm");
 		}
 	}
 	//console.log(JSON.stringify(evts, null, 4));
