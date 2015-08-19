@@ -317,6 +317,7 @@ Class("Track",
 				}
 				this.feature.track=this;
 				this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
+				console.log("FEATURE TRACK : "+this.feature.track);
 			} else {
 				delete this.feature;
 			}
