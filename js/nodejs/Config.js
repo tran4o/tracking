@@ -191,9 +191,8 @@ function saveEvents()
 {
 	for (var i in exports.events) 
 	{
-		var oe = evts[i];
+		var oe = exports.events[i];
 		var e = {};
-		
 		e.id=oe.id;
 		if (oe.bikeStartKM != undefined) 
 			e.bikeStartKM=oe.bikeStartKM;
@@ -202,7 +201,7 @@ function saveEvents()
 		if (oe.participants != undefined) 
 			e.participants=oe.participants;
 		if (oe.trackData)
-			e.trackData=e.trackData;
+			e.trackData=oe.trackData;
 		if (oe.startTime)
 			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
