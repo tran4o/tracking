@@ -661,12 +661,14 @@ table.dataTable td {
 }
 
 .button-assignments {
-	display : block;
+	display : inline-block;
 	padding : 1em;
 	font-weight : bold;
-	font-size : 200%;
+	font-size : 150%;
 	border : 2px solid gray;
 	border-radius : 5px;
+	margin-left:10px;
+	margin-top:10px;
 }
 
 .button-assignments:hover {

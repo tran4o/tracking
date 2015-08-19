@@ -26,9 +26,6 @@ if (!eid)
 	return;
 $(document).ready( function () 
 {
-	$(".button-assignments").click(function() {
-		window.open("assignments.html", '_blank');
-	});
 	$(".page_title").html((params.title ? params.title : "Starts"));
 	var EDITOR2 = new $.fn.dataTable.Editor( {
 		ajax: '../starts/'+eid,

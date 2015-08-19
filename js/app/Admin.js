@@ -181,6 +181,9 @@ function mapEdit(id,json,valBikeStart,valRunStart,onSubmit)
 
 $(document).ready( function () 
 {
+	$(".button-assignments").click(function() {
+		window.open("assignment.html", '_blank');
+	});
 	$(".mobile-show i").click(function() {
 		$(".mobile-show").css("display","none"); 
 		$(".fw-nav").css("height","auto"); 
