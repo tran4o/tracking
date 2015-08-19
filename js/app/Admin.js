@@ -2,6 +2,7 @@ require('./Track');
 require('./GUI');
 require('./Participant');
 window.CONFIG=require('./Config');
+var STYLES=require('./Styles');
 var Utils=require('./Utils');
 for (var e in Utils) 
 	window[e]=Utils[e];
