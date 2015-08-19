@@ -341,7 +341,7 @@ $(document).ready( function ()
                                 		alert("Only on saved event possible!");
                                 		return;
                                 	}
-                                	 var win = window.open("starts.html?id="+eid+"&title="+encodeURIComponent($("#DTE_Field_startTime").val()+" > "+$("#DTE_Field_endTime").val()), '_blank');
+                                	 var win = window.open("starts.html?id="+eid+"&title="+encodeURIComponent($("#DTE_Field_code")+" "+$("#DTE_Field_startTime").val()+" > "+$("#DTE_Field_endTime").val()), '_blank');
                                 	 win.focus();
                                 } }
                              ] )
