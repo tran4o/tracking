@@ -381,6 +381,8 @@ function updateStart(event,id,json)
 			return doIt(start);
 	}
 	var start = doIt({});
+	if (!event.starts)
+		event.starts=[];
 	event.starts.push(start);
 	exports.updateCount++;
 	saveEvents();
