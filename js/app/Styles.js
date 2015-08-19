@@ -28,6 +28,10 @@ var STYLES=
 	{
 		var styles=[];
 		var track=feature.track;
+		if (!track) {
+			console.log("Rendering track feature without track object!");
+			return styles;
+		}
 		var coords=feature.getGeometry().getCoordinates();
 		var geomswim=coords;
 		var geombike;
