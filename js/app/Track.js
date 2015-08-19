@@ -247,8 +247,11 @@ Class("Track",
 				return;
 			// 1) calculate total route length in KM 
 			this.updateFeature();
-			if (typeof window != "undefined" && this.feature) 
+			if (typeof window != "undefined" && this.feature) { 
 				GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
+			} else {
+			}
+			console.log(JSON.stringify(this.feature.getGeometry().getExtent()));
 		},
 		
 		getTrackPart : function(elapsed) {
