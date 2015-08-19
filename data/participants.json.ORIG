@@ -1,5 +1,4 @@
-{
-  "participations": [
+[
     {
       "idParticipant": "0000170FEBE3BA000006140E",
       "idMeeting": "9999990FEBE3BA000000021D",
@@ -66,5 +65,4 @@
       "startGroup": "Grp 18 - 9:00 Uhr",
       "idTrack": "run"
     }
-  ]
- }
+]

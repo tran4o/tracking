@@ -12,8 +12,8 @@ var data = fs.readFileSync(ppath,{ encoding: 'utf8' });
 console.log("Participants data length "+data.length+" bytes");
 var json=JSON.parse(data);
 var now = (new Date()).getTime();
-exports.participants=json.participations;
-console.log(json.participations.length+" participants total loaded\n");
+exports.participants=json;
+console.log(json.length+" participants total loaded\n");
 
 var partByID;
 exports.updateCount=0;
