@@ -189,7 +189,7 @@ exports.assignIMEI=assignIMEI;
 
 function saveEvents() 
 {
-	var evts = deepcopy(Config.events);
+	var evts = deepcopy(exports.events);
 	console.log(JSON.stringify(evts));
 	for (var i in evts) {
 		var e = evts[i];
