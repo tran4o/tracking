@@ -333,7 +333,7 @@ $(document).ready( function ()
                                 	}
                                 	$("#starts").css("display","block");
                                 	var EDITOR2 = new $.fn.dataTable.Editor( {
-                                		ajax: '../starts',
+                                		ajax: '../starts/'+eid,
                                 		table: "#table-starts",
                                 		idSrc: "id",
                                 		fields: [{
