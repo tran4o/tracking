@@ -62,6 +62,7 @@ app.get('/status', function (req, res)
 		var ltmp = part.getLastPingTimestamp();
 		partStatus[part.id]=
 		{
+			name : part.getCode(),
 			imei : part.deviceId,
 			lon : pos[0],
 			lat : pos[1],

@@ -55,7 +55,7 @@
 <table>
 	<thead>	
 		<tr>
-			<td>ID</td>
+			<td>NAME</td>
 			<td>IMEI</td>
 			<td>ELAPSED %</td>
 			<td>LON</td>
@@ -98,7 +98,7 @@ function doGet()
 		{
 			rr.push("<tr>");
 			var dd = data.partStatus[id];
-			rr.push("<td>"+id+"</td>")
+			rr.push("<td>"+dd.name+"</td>")
 			rr.push("<td>"+dd.imei+"</td>")
 			rr.push("<td>"+formatNumber2(dd.elapsed)+"</td>")
 			rr.push("<td>"+dd.lon+"</td>")
