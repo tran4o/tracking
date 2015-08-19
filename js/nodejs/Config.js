@@ -230,7 +230,7 @@ function saveEvents()
 		}
 		ee.push(e);
 	}
-	console.log(JSON.stringify(e, null, 4));
+	console.log(JSON.stringify(ee, null, 4));
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
 function saveParticipants() {
