@@ -5,49 +5,6 @@ var xml2js = require('xml2js');
 var Utils = require("./../app/Utils");
 //var low = require('lowdb');
 //--------------------------------------------------------------------------------------
-console.log("Loading server configuration...");
-var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ encoding: 'utf8' });
-console.log("Config data length "+data.length+" bytes");
-var json=JSON.parse(data);
-//------------------------------------------------------------------------------------------
-data = fs.readFileSync(path.join(__dirname, "../../data/event.json"),{ encoding: 'utf8' });
-console.log("Event data length "+data.length+" bytes");
-var ejson=JSON.parse(data);
-var now = (new Date()).getTime();
-ejson.startTime = json.simulation.enabled ? new Date() : new Date(moment(ejson.startTime, "DD.MM.YYYY HH:mm"));
-ejson.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(ejson.endTime, "DD.MM.YYYY HH:mm"));
-console.log("\nEvent configration ["+Utils.formatDateTime(ejson.startTime)+"  >  "+Utils.formatDateTime(ejson.endTime)+"]");
-console.log("Now is "+Utils.formatDateTime(new Date(now)));
-console.log((ejson.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
-json.event=ejson;
-//------------------------------------------------------------------------------------------
-data = fs.readFileSync(path.join(__dirname, "../../data/starts.json"),{ encoding: 'utf8' });
-console.log("Starts data length "+data.length+" bytes");
-var sjson=JSON.parse(data);
-json.starts=sjson;
-//------------------------------------------------------------------------------------------
-for (var i in json.starts) 
-{
-	var str = json.starts[i];
-	str.start = json.simulation.enabled ?  new Date() : new Date(moment( moment(json.event.startTime).format("DD.MM.YYYY")+str.startTime, "DD.MM.YYYY HH:mm"));
-	//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.start));
-}
-for (var i in json)
-	exports[i]=json[i];
-//--------------------------------------------------------------------------------------
-var startTimes =  json.starts;
-exports.getStartTimeFromStartPos = function(startPos) 
-{
-	for (var i in startTimes) 
-	{
-		if (startPos >= startTimes[i].fromStartNo && startPos <= startTimes[i].toStartNo) {
-			return startTimes[i].start.getTime();
-		}
-	}
-	return 0;
-}
-exports.starts=startTimes;
-//--------------------------------------------------------------------------------------
 console.log("\nLoading participants list...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/participants.json"),{ encoding: 'utf8' });
 console.log("Participants data length "+data.length+" bytes");
@@ -55,6 +12,115 @@ var json=JSON.parse(data);
 var now = (new Date()).getTime();
 exports.participants=json.participations;
 console.log(json.participations.length+" participants total loaded\n");
+
+var partByID;
+function onParticipantsChanged() 
+{
+	partByID = {};
+	for (var i in json.participants) {
+		var p = json.participants[i];
+		var id = p.idParticipant;
+		partByID[id]=p;
+	}
+	for (var i in exports.events) 
+	{
+		var event = exports.events[i];
+		event.parts=[];
+		for (var k in event.participants) {
+			var p = event.participants[k];
+			if (partByID[p]) {
+				event.parts.push(partByID[p]);
+			}
+		}
+	} 
+}
+
+//--------------------------------------------------------------------------------------
+console.log("Loading server configuration...");
+var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ encoding: 'utf8' });
+console.log("Config data length "+data.length+" bytes");
+var json=JSON.parse(data);
+//------------------------------------------------------------------------------------------
+data = fs.readFileSync(path.join(__dirname, "../../data/events.json"),{ encoding: 'utf8' });
+console.log("Events data length "+data.length+" bytes");
+var ejson=JSON.parse(data);
+var now = (new Date()).getTime();
+json.events=ejson;
+//------------------------------------------------------------------------------------------
+for (var j in json.events) 
+{
+	var event = json.events[j];
+	event.startTime = json.simulation.enabled ? new Date() : new Date(moment(event.startTime, "DD.MM.YYYY HH:mm"));
+	event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(event.endTime, "DD.MM.YYYY HH:mm"));
+	console.log("\nEvent configration ["+Utils.formatDateTime(event.startTime)+"  >  "+Utils.formatDateTime(event.endTime)+"]");
+	console.log("Now is "+Utils.formatDateTime(new Date(now)));
+	console.log((event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
+	if (!event.starts)
+		event.starts=[];
+	if (!event.participants)
+		event.participants=[];	
+	for (var i in json.starts) 
+	{
+		var str = json.starts[i];
+		str.startTime = json.simulation.enabled ?  new Date() : new Date(moment( moment(event.startTime).format("DD.MM.YYYY")+str.startTime, "DD.MM.YYYY HH:mm"));
+		//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
+	}
+	var pp=[];
+	
+	if (json.simulation.enabled)
+		break;
+}
+//------------------------------------------------------------------------------------------
+for (var i in json)
+	exports[i]=json[i];
+onParticipantsChanged();
+//--------------------------------------------------------------------------------------
+exports.getCurrentEvent = function() 
+{
+	var ctime = (new Date()).getTime();
+	for (var i in Config.events) 
+	{
+		var event = Config.events[i];
+		var isTime = (ctime >= event.startTime.getTime() && ctime <= event.endTime.getTime());
+		if (isTime)
+			return event;
+	}
+	return null;
+}
+exports.getCurrentOrNextEvent = function() 
+{
+	var event = exports.getCurrentEvent();
+	if (event != null)
+		return event;
+	var ctime = (new Date()).getTime();
+	var min = null;
+	var event = null;
+	for (var i in Config.events) 
+	{
+		var e = Config.events[i];
+		var diff = (e.startTime.getTime()-ctime);
+		if (diff >= 0 && (min == null || min > diff) {
+			event=e;
+			min=diff;
+		}
+	}
+	return event;
+}
+//--------------------------------------------------------------------------------------
+exports.getStartTimeFromStartPos = function(startPos) 
+{
+	var event = getCurrentEvent();
+	if (!event)
+		return 0;
+	
+	for (var i in event.starts) 
+	{
+		if (startPos >= event.starts[i].fromStartNo && startPos <= event.starts[i].toStartNo) {
+			return event.starts[i].startTime.getTime();
+		}
+	}
+	return 0;
+}
 //--------------------------------------------------------------------------------------
 var data = fs.readFileSync(path.join(__dirname, "../../data/aliases.xml"),{ encoding: 'utf8' });
 var aliases={};
@@ -130,7 +196,7 @@ function deleteParticipant(id) {
 	}
 	if (ok) {
 		exports.participants=npart;
-		// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
+		onParticipantsChanged();
 	}
 	return ok;
 }
@@ -154,7 +220,7 @@ function updateParticipant(id,json)
 			delete part.startNo;
 		else
 			part.startNo=json.startNo;
-		// TODO SIGNAL ON PARTICIPANTS UPDATE?!?
+		onParticipantsChanged();
 		return part;
 	}
 	for (var i in exports.participants) 
@@ -169,26 +235,24 @@ function updateParticipant(id,json)
 }
 exports.updateParticipant=updateParticipant;
 //-----------------------------------
-function deleteStart(id) {
+function deleteStart(event,id) {
 	var nstart=[];
 	var ok=false;
-	for (var i in exports.starts) 
+	for (var i in event.starts) 
 	{
-		var start = exports.starts[i];
+		var start = event.starts[i];
 		if (start.id == id) {
 			ok=true;
 			continue;
 		}
 		nstart.push(start);
 	}
-	if (ok) {
-		exports.starts=nstart;
-		// TODO SIGNAL ON STARTS UPDATE?!?
-	}
+	if (ok)
+		event.starts=nstart;
 	return ok;
 }
 exports.deleteStart=deleteStart;
-function updateStart(id,json) 
+function updateStart(event,id,json) 
 {	
 	function doIt(start) 
 	{
@@ -198,14 +262,14 @@ function updateStart(id,json)
 		start.startTime=json.startTime;
 		return start;
 	}
-	for (var i in exports.starts) 
+	for (var i in event.starts) 
 	{
-		var start = exports.starts[i];
+		var start = event.starts[i];
 		if (start.id == id)  
 			return doIt(start);
 	}
 	var start = doIt({});
-	exports.starts.push(start);
+	event.starts.push(start);
 	return start;
 }
 exports.updateStart=updateStart;

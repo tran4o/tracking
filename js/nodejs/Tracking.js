@@ -10,13 +10,21 @@ var request = require('request-json');
 var fs = require('fs');
 var path = require('path');
 //------------------------------------------------------------------
-var TRACK = new Track();
-TRACK.setBikeStartKM(Config.event.bikeStartKM);
-TRACK.setRunStartKM(Config.event.runStartKM);
-TRACK.setRoute(Config.event.trackData);
-TRACK.init();
-console.log("Starting tracking engine for track with length "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(Config.event.bikeStartKM)+" + "+Utils.formatNumber2(Config.event.runStartKM-Config.event.bikeStartKM)+" + "+Utils.formatNumber2(TRACK.getTrackLength()/1000.0-Config.event.runStartKM)+") km");
-//------------------------------------------------------------------
+function doHTTP(url,json,onReqDone) 
+{
+    if (json.length) 
+    {
+		var client = requestJSON.createClient("http://liverank-portal.de");
+		function postDone(err, res, body) 
+		{
+			if (err)
+				console.log("Error geting server live data "+err);
+			else
+				onReqDone(body);
+		}
+		client.post(url, json, postDone);
+    }                		
+}
 function getAge(birthDate) {
     var today = new Date();
     var age = today.getFullYear() - birthDate.getFullYear();
@@ -26,69 +34,16 @@ function getAge(birthDate) {
     }
     return age;
 }
-var trackedParticipants=[];
-var partLookupByIMEI={};
-for (var i in Config.participants) 
-{
-	var p = Config.participants[i];
-	var id = p.idParticipant;
-	if (Config.assignments[id] && Config.assignments[id].length) 
-	{
-		var devId = Config.assignments[id];
-		var part = TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
-		part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,trackedParticipants.length));
-		part.setAgeGroup(p.ageGroup);
-		part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
-		part.setCountry(p.nationality);
-		part.setStartPos(parseInt(p.startNo));
-		part.setGender(p.sex);
-		var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
-		if (fs.existsSync(apath)) {
-			part.setIcon("img/data/"+id+".jpg");
-			part.setImage("img/data/"+id+".jpg");
-		} else {
-			part.setIcon("img/noimage.png");
-			part.setImage("img/noimage.png");			
-		}
-		trackedParticipants.push(part);
-		partLookupByIMEI[devId]=part;
-		//-----------------------------
-		part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
-		if (Config.simulation.singleParticipant)
-			break;
-	} 
-}
-if (!Config.simulation.singleParticipant)
-for (var i in Config.cams) 
-{
-	var cam = Config.cams[i];
-	var part = TRACK.newParticipant(cam.code,cam.deviceId,cam.name);
-	part.setAgeGroup("-");
-	part.setGender("-");
-	part.setCountry("Germany");
-	part.setIcon(cam.icon);
-	part.setImage(cam.icon);
-	part.setStartPos(0);
-	part.setAge(0);
-	trackedParticipants.push(part);
-	partLookupByIMEI[devId]=part;
-	part.setStartTime(1); /* placeholder not 0 */
-	part.__cam=1;
-}
-console.log(trackedParticipants.length+" tracked participants found");
-//--------------------------------------------------------------------------
-
 //--------------------------------------------------------------------------
 var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 var startTime = (new Date()).getTime() - 10*60*1000;	// 10 minutes before
-function inRaceChecker() {
-	var ctime = (new Date()).getTime();
-	var isTime = (ctime >= Config.event.startTime.getTime() && ctime <= Config.event.endTime.getTime());
-	return isTime;
-}
 //--------------------------------------------------------------------------
-if (Config.simulation.enabled) 
-	Simulator.startSimulation(TRACK,Config.simulation.speedCoef);	
+function inRaceChecker() {
+	var event = Config.getCurrentEvent();
+	if (!event)
+		return false;
+	return true;
+}
 //--------------------------------------------------------------------------
 exports.trackedParticipants=trackedParticipants;
 exports.partLookupByIMEI=partLookupByIMEI;
@@ -98,20 +53,92 @@ CONFIG.math.displayDelay = Config.interpolation.displayDelay;
 //--------------------------------------------------------------------------
 // EVERY 5 seconds interpolation and ranking calculations
 //--------------------------------------------------------------------------
-var stateStorage = {}; 
-function addState(imei,state) 
+function addState(event,imei,state) 
 {
-	if (!stateStorage[imei])
-		stateStorage[imei]=new BinarySearchTree();
-	stateStorage[imei].insert(state.getTimestamp(),state);	
-	if (stateStorage[imei].data.length > 3000)
-		stateStorage[imei].delete(stateStorage[imei].getMinKey());
+	if (!event.stateStorage)
+		event.stateStorage={};
+	if (!event.stateStorage[imei])
+		event.stateStorage[imei]=new BinarySearchTree();
+	event.stateStorage[imei].insert(state.getTimestamp(),state);	
+	if (event.stateStorage[imei].data.length > 3000)
+		event.stateStorage[imei].delete(event.stateStorage[imei].getMinKey());
 }
 //--------------------------------------------------------------------------
+var oldEvent = null;
+
 setInterval(function() 
 {
-	if (!inRaceChecker())
+	var event = Config.getCurrentEvent();
+	if (!event)
 		return;	
+	if (oldEvent != event) {
+		if (oldEvent) {
+			oldEvent.stream.isStopped=true;			
+		}
+		oldEvent=event;
+		event.trackedParticipants=[];
+		event.partLookupByIMEI={};
+		event.TRACK = new Track();
+		event.TRACK.setBikeStartKM(event.bikeStartKM);
+		event.TRACK.setRunStartKM(event.runStartKM);
+		event.TRACK.setRoute(event.trackData);
+		event.TRACK.init();
+		//----------------------------------------------------------------------------------------------------------------------------------
+		for (var i in Config.participants) 
+		{
+			var p = Config.participants[i];
+			var id = p.idParticipant;
+			if (Config.assignments[id] && Config.assignments[id].length) 
+			{
+				var devId = Config.assignments[id];
+				var part = event.TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
+				part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,trackedParticipants.length));
+				part.setAgeGroup(p.ageGroup);
+				part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
+				part.setCountry(p.nationality);
+				part.setStartPos(parseInt(p.startNo));
+				part.setGender(p.sex);
+				var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
+				if (fs.existsSync(apath)) {
+					part.setIcon("img/data/"+id+".jpg");
+					part.setImage("img/data/"+id+".jpg");
+				} else {
+					part.setIcon("img/noimage.png");
+					part.setImage("img/noimage.png");			
+				}
+				trackedParticipants.push(part);
+				partLookupByIMEI[devId]=part;
+				//-----------------------------
+				part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
+				if (Config.simulation.singleParticipant)
+					break;
+			}
+			if (Config.simulation.enabled) 
+				Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
+			console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
+		}
+		if (!Config.simulation.singleParticipant)
+		for (var i in Config.cams) 
+		{
+			var cam = Config.cams[i];
+			var part = event.TRACK.newParticipant(cam.code,cam.deviceId,cam.name);
+			part.setAgeGroup("-");
+			part.setGender("-");
+			part.setCountry("Germany");
+			part.setIcon(cam.icon);
+			part.setImage(cam.icon);
+			part.setStartPos(0);
+			part.setAge(0);
+			trackedParticipants.push(part);
+			partLookupByIMEI[devId]=part;
+			part.setStartTime(1); /* placeholder not 0 */
+			part.__cam=1;
+		}
+		console.log(trackedParticipants.length+" tracked participants found");
+		//---------------------------------------------------------------------
+		event.stream = new StreamData();
+		event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
+	}
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};
 	var genderRank={};
@@ -131,7 +158,7 @@ setInterval(function()
 		if (spd == 0)
 			val.push(999999999.0);
 		else {
-			var moredist = (1.0-elp)*TRACK.getTrackLength();
+			var moredist = (1.0-elp)*event.TRACK.getTrackLength();
 			val.push(moredist/spd);
 		}
 	}
@@ -210,20 +237,3 @@ exports.queryData = function(imei,from,to)
 	return res;
 }
 //--------------------------------------------------------------------------
-function doHTTP(url,json,onReqDone) 
-{
-    if (json.length) 
-    {
-		var client = requestJSON.createClient("http://liverank-portal.de");
-		function postDone(err, res, body) 
-		{
-			if (err)
-				console.log("Error geting server live data "+err);
-			else
-				onReqDone(body);
-		}
-		client.post(url, json, postDone);
-    }                		
-}
-var stream = new StreamData();
-stream.start(TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);

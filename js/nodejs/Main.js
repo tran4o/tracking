@@ -40,10 +40,13 @@ app.get('/raceStart/:id', function (req, res) {
 });
 
 app.get('/status', function (req, res) 
-{
+{	
 	res.header("Content-Type", "application/json; charset=utf-8");
+	var event = Config.getCurrentOrNextEvent();
+	if (event == null)
+		return;
 	var now = (new Date()).getTime();
-	var moretogo = (Config.event.startTime.getTime()-now);
+	var moretogo = (event.startTime.getTime()-now);
 	if (moretogo < 0) {
 		moretogo=0;
 	}	
@@ -65,7 +68,7 @@ app.get('/status', function (req, res)
 		};
 	}
 	res.send(JSON.stringify({
-		startStr : Utils.formatTimeSec(Config.event.startTime),
+		startStr : Utils.formatTimeSec(event.startTime),
 		startAfter : moretogo,
 		partStatus : partStatus
 	},null,4));
@@ -204,66 +207,74 @@ function startDataTablesJSON(start) {
 
 function updateStart(req,res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
-	function doIt(start) 
+	var eventId = req.params.id;
+	for (var j in Config.events) 
 	{
-		if (!moment(start.startTime, "HH:mm").isValid()) {
-			res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
-			return;
-		}
-		start.startTime=moment(start.startTime, "HH:mm").format("HH:mm");
-		start.fromStartNo=parseInt(start.fromStartNo);
-		start.toStartNo=parseInt(start.toStartNo);
-		if (isNaN(start.fromStartNo)) {
-			res.send(JSON.stringify({error:"From start not valid!"}, null, 4));
-			return;
-		}
-		if (isNaN(start.toStartNo)) {
-			res.send(JSON.stringify({error:"To start not valid!"}, null, 4));
-			return;
-		}
-		var r = Config.updateStart(start.id,start);
-		if (typeof r == "string") {
-			res.send(JSON.stringify({error:r}, null, 4));
-			return;
-		}
-		res.send(JSON.stringify({data:[startDataTablesJSON(r)]}, null, 4));
-		return;
-	}
-	if (req.body.action == "remove") 
-	{
-		for (var id in req.body.data) 
+		var event = Config.events[j];
+		if (event.id == eventId) 
 		{
-			if (!Config.deleteStart(id)) {
-				res.send(JSON.stringify({error:"Start not found!"}, null, 4));
+			function doIt(start) 
+			{
+				if (!moment(start.startTime, "HH:mm").isValid()) {
+					res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
+					return;
+				}
+				start.startTime=moment(start.startTime, "HH:mm").format("HH:mm");
+				start.fromStartNo=parseInt(start.fromStartNo);
+				start.toStartNo=parseInt(start.toStartNo);
+				if (isNaN(start.fromStartNo)) {
+					res.send(JSON.stringify({error:"From start not valid!"}, null, 4));
+					return;
+				}
+				if (isNaN(start.toStartNo)) {
+					res.send(JSON.stringify({error:"To start not valid!"}, null, 4));
+					return;
+				}
+				var r = Config.updateStart(event,start.id,start);
+				if (typeof r == "string") {
+					res.send(JSON.stringify({error:r}, null, 4));
+					return;
+				}
+				res.send(JSON.stringify({data:[startDataTablesJSON(r)]}, null, 4));
 				return;
 			}
-			res.send(JSON.stringify({}), null, 4);
-			return;
-		}
-	} else if (req.body.action == "create") {
-		for (var id in req.body.data) 
-		{
-			var start = req.body.data[id];
-			function guid() 
+			if (req.body.action == "remove") 
 			{
-				  function s4() {
-				    return Math.floor((1 + Math.random()) * 0x10000)
-				      .toString(16)
-				      .substring(1).toUpperCase();
-				  }
-				  return s4() + s4(); 
+				for (var id in req.body.data) 
+				{
+					if (!Config.deleteStart(event,id)) {
+						res.send(JSON.stringify({error:"Start not found!"}, null, 4));
+						return;
+					}
+					res.send(JSON.stringify({}), null, 4);
+					return;
+				}
+			} else if (req.body.action == "create") {
+				for (var id in req.body.data) 
+				{
+					var start = req.body.data[id];
+					function guid() 
+					{
+						  function s4() {
+						    return Math.floor((1 + Math.random()) * 0x10000)
+						      .toString(16)
+						      .substring(1).toUpperCase();
+						  }
+						  return s4() + s4(); 
+					}
+					start.id=guid();
+					doIt(start);
+				}
+			} else if (req.body.action == "edit") {
+				for (var id in req.body.data) 
+				{
+					var start = req.body.data[id];
+					doIt(start);
+				}
+			} else {
+				console.log("UNKNOWN ACTION "+req.body.action);
 			}
-			start.id=guid();
-			doIt(start);
 		}
-	} else if (req.body.action == "edit") {
-		for (var id in req.body.data) 
-		{
-			var start = req.body.data[id];
-			doIt(start);
-		}
-	} else {
-		console.log("UNKNOWN ACTION "+req.body.action);
 	}
 }
 
@@ -333,19 +344,28 @@ function updatePart(req,res) {
 		console.log("UNKNOWN ACTION "+req.body.action);
 	}
 }
-app.put('/starts', updateStart);
-app.post('/starts', updateStart);
-app.get('/starts', function (req, res) 
+app.put('/starts/:id', updateStart);
+app.post('/starts/:id', updateStart);
+app.get('/starts/:id', function (req, res) 
 {
 	//console.log(req.query);
+	var eventId = req.params.id;
 	res.header("Content-Type", "application/json; charset=utf-8");
-	var r = [];
-	for (var i in Config.starts) 
+	for (var j in Config.events) 
 	{
-		var start = Config.starts[i];
-		r.push(startDataTablesJSON(start));
+		var event = Config.events[j];
+		if (event.id == eventId) 
+		{
+			var r = [];
+			for (var i in event.starts) 
+			{
+				var start = event.starts[i];
+				r.push(startDataTablesJSON(start));
+			}
+			res.send(JSON.stringify({data : r}, null, 4));
+			break;
+		}
 	}
-	res.send(JSON.stringify({data : r}, null, 4));
 });
 app.put('/participants', updatePart);
 app.post('/participants', updatePart);
@@ -385,6 +405,9 @@ app.get('/participants', function (req, res)
 });
 
 app.get('/event', function (req, res) {
+	var event = Config.getCurrentOrNextEvent();
+	if (event == null)
+		return;
 	res.header("Content-Type", "application/json; charset=utf-8");
 	res.header("Access-Control-Allow-Origin", "http://localhost");
 	var parr=[];
@@ -415,14 +438,14 @@ app.get('/event', function (req, res) {
 	{
 		times: 
 		{
-			startTime : Config.event.startTime.getTime()-delay,
-			endTime : Config.event.endTime.getTime()-delay
+			startTime : event.startTime.getTime()-delay,
+			endTime : event.endTime.getTime()-delay
 		},
-		bikeStartKM : Config.event.bikeStartKM,
-		runStartKM : Config.event.runStartKM,
+		bikeStartKM : event.bikeStartKM,
+		runStartKM : event.runStartKM,
 		participants : parr,
 		cams : cams,
-		route : Config.event.trackData,
+		route : event.trackData,
 	};
 	res.send(JSON.stringify(rres, null, 4));
 });

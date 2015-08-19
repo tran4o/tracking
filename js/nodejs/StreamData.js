@@ -4,13 +4,17 @@ Class("StreamData",
 {
     has:
     {
+        isStopped : {
+            is:   "rw"
+            init : false	
+        }
     },
     //--------------------------------------
     methods:
     {
         start : function(track,checker,pingInterval,callBackFnc)
         {
-            var url = "http://liverank-portal.de/triathlon/rest/stream"; 
+            var url = "http://liveortung.de/triathlon/rest/stream"; 
         	var delay = -(new Date()).getTimezoneOffset()*60*1000;		// 120 for gmt+2
         	for (var i in track.participants) 
         	{
@@ -20,8 +24,12 @@ Class("StreamData",
         	//-------------------------------------------------------------------------        	
         	function doTick() 
         	{
-        		if (checker && !checker())
+        		if (this.isStopped)
         			return;
+        		if (checker && !checker()) {
+                    setTimeout(doTick,pingInterval*1000);
+        			return;
+        		}
                 var json=[];
                 var ctime = (new Date()).getTime();
                 var mmap = {};
