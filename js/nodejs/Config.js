@@ -6,7 +6,8 @@ var Utils = require("./../app/Utils");
 //var low = require('lowdb');
 //--------------------------------------------------------------------------------------
 console.log("\nLoading participants list...");
-var data = fs.readFileSync(path.join(__dirname, "../../data/participants.json"),{ encoding: 'utf8' });
+var ppath = path.join(__dirname, "../../data/participants.json"); 
+var data = fs.readFileSync(ppath,{ encoding: 'utf8' });
 console.log("Participants data length "+data.length+" bytes");
 var json=JSON.parse(data);
 var now = (new Date()).getTime();
@@ -43,7 +44,8 @@ var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ enco
 console.log("Config data length "+data.length+" bytes");
 var json=JSON.parse(data);
 //------------------------------------------------------------------------------------------
-data = fs.readFileSync(path.join(__dirname, "../../data/events.json"),{ encoding: 'utf8' });
+var epath = path.join(__dirname, "../../data/events.json");
+data = fs.readFileSync(epath,{ encoding: 'utf8' });
 console.log("Events data length "+data.length+" bytes");
 var ejson=JSON.parse(data);
 var now = (new Date()).getTime();
@@ -183,6 +185,30 @@ function lookupIMEI(id) {
 	return null
 }
 exports.assignIMEI=assignIMEI;
+
+function saveEvents() 
+{
+	var evts = jQuery.extend(true, {}, Config.events);
+	debugger;
+	for (var i in evts) {
+		var e = evts[i];
+		if (e.startTime)
+			e.startTime=moment(e.startTime).format("DD.MM.YYYY HH:mm");
+		if (e.endTime)
+			e.endTime=moment(e.endTime).format("DD.MM.YYYY HH:mm");
+		if (e.starts)
+		for (var k in e.starts) {
+			var s = e.starts[k];
+			if (s.startTime)
+				s.startTime=moment(s.startTime).format("DD.MM.YYYY HH:mm");
+		}
+	}
+	console.log(JSON.stringify(evts, null, 4));
+	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
+}
+function saveParticipants() {
+	
+}
 //-----------------------------------
 function deleteParticipant(id) {
 	var npart=[];
@@ -199,6 +225,7 @@ function deleteParticipant(id) {
 	if (ok) {
 		exports.participants=npart;
 		onParticipantsChanged();
+		saveParticipants();
 	}
 	return ok;
 }
@@ -223,6 +250,7 @@ function updateParticipant(id,json)
 		else
 			part.startNo=json.startNo;
 		onParticipantsChanged();
+		saveParticipants();
 		return part;
 	}
 	for (var i in exports.participants) 
@@ -233,6 +261,8 @@ function updateParticipant(id,json)
 	}
 	var part = doIt({});
 	exports.participants.push(part);
+	onParticipantsChanged();
+	saveParticipants();
 	return part;
 }
 exports.updateParticipant=updateParticipant;
@@ -252,6 +282,7 @@ function deleteEvent(id) {
 	if (ok) {
 		exports.event=nevent;
 		exports.updateCount++;
+		saveEvents();
 	}
 	return ok;
 }
@@ -267,6 +298,7 @@ function updateEvent(id,json)
 		event.bikeStartKM=json.bikeStartKM;
 		event.runStartKM=json.runStartKM;
 		exports.updateCount++;
+		saveEvents();
 		return event;
 	}
 	for (var i in exports.events) 
@@ -277,10 +309,11 @@ function updateEvent(id,json)
 	}
 	var event = doIt({});
 	exports.events.push(event);
+	exports.updateCount++;
+	saveEvents();
 	return event;
 }
 exports.updateEvent=updateEvent;
-
 function deleteStart(event,id) {
 	var nstart=[];
 	var ok=false;
@@ -293,8 +326,11 @@ function deleteStart(event,id) {
 		}
 		nstart.push(start);
 	}
-	if (ok)
+	if (ok) {
 		event.starts=nstart;
+		exports.updateCount++;
+		saveEvents();
+	}
 	return ok;
 }
 exports.deleteStart=deleteStart;
@@ -306,6 +342,8 @@ function updateStart(event,id,json)
 		start.fromStartNo=json.fromStartNo;
 		start.toStartNo=json.toStartNo;
 		start.startTime=json.startTime;
+		exports.updateCount++;
+		saveEvents();
 		return start;
 	}
 	for (var i in event.starts) 
@@ -316,6 +354,8 @@ function updateStart(event,id,json)
 	}
 	var start = doIt({});
 	event.starts.push(start);
+	exports.updateCount++;
+	saveEvents();
 	return start;
 }
 exports.updateStart=updateStart;
