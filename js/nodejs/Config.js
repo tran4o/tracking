@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var xml2js = require('xml2js');
 var Utils = require("./../app/Utils");
+var deepcopy = require('deepcopy');
 //var low = require('lowdb');
 //--------------------------------------------------------------------------------------
 console.log("\nLoading participants list...");
@@ -188,7 +189,7 @@ exports.assignIMEI=assignIMEI;
 
 function saveEvents() 
 {
-	var evts = jQuery.extend(true, {}, Config.events);
+	var evts = deepcopy(Config.events);
 	console.log(JSON.stringify(evts));
 	for (var i in evts) {
 		var e = evts[i];
