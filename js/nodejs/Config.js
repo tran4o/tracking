@@ -218,7 +218,7 @@ function saveEvents()
 			var os = oe.starts[k];
 			var s = {};
 			s.id=os.id;
-			s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
+			s.startTime=moment(os.startTime).format("HH:mm");
 			if (os.fromStartNo != undefined) 
 				s.fromStartNo=os.fromStartNo;
 			if (os.toStartNo != undefined)
