@@ -18,7 +18,7 @@ app.use(compress());
 app.use(bodyParser.urlencoded({     
   extended: true
 })); 
-app.use(bodyParser.json({ limit: '50mb' }));       
+app.use(bodyParser.json({ limit: '5mb' }));       
 app.get('/raceStart/:id', function (req, res) {
 	var event = Config.getCurrentOrNextEvent();
 	if (event == null)
@@ -253,7 +253,7 @@ function updateEvent(req,res) {
 		{
 			var ok = false;
 			try {
-				event.trackData=JSON.parse(event.track);
+				event.track=JSON.parse(event.track);
 				ok=true;
 			} catch(e) {}
 			if (!ok) {
@@ -261,7 +261,7 @@ function updateEvent(req,res) {
 				return;
 			}
 		} else {
-			event.trackData=[];
+			event.track=[];
 		}
 		var r = Config.updateEvent(event.id,event);
 		if (typeof r == "string") {
