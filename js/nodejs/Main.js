@@ -62,6 +62,7 @@ app.get('/status', function (req, res)
 		var ltmp = part.getLastPingTimestamp();
 		partStatus[part.id]=
 		{
+			name : part.getCode(),
 			imei : part.deviceId,
 			lon : pos[0],
 			lat : pos[1],
@@ -204,7 +205,7 @@ function startDataTablesJSON(start) {
 		id:DEF(start.id,"0"),
 		fromStartNo:DEF(start.fromStartNo,"0"),
 		toStartNo:DEF(start.toStartNo,"0"),
-		startTime:DEF(start.startTime,"00:00")
+		startTime:start.startTime ? start.startTime.format("HH:mm") : "00:00"
 	  });
 }
 
@@ -217,6 +218,7 @@ function eventDataTablesJSON(event) {
 	}
 	return ({
 		id:DEF(event.id,"0"),
+		code:DEF(event.code,""),
 		startTime:event.startTime ? moment(event.startTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
 		endTime:event.endTime ? moment(event.endTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
 		track:event.trackData ? JSON.stringify(event.trackData) : "[]",
@@ -250,6 +252,8 @@ function updateEvent(req,res) {
 			res.send(JSON.stringify({error:"Run start not valid!"}, null, 4));
 			return;
 		}
+		if (!event.code)
+			event.code="";
 		if (event.track || event.track != "") 
 		{
 			var ok = false;
@@ -324,7 +328,7 @@ function updateStart(req,res) {
 					res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
 					return;
 				}
-				start.startTime=moment(start.startTime, "HH:mm").format("HH:mm");
+				start.startTime=moment(start.startTime, "HH:mm").toDate();
 				start.fromStartNo=parseInt(start.fromStartNo);
 				start.toStartNo=parseInt(start.toStartNo);
 				if (isNaN(start.fromStartNo)) {

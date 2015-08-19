@@ -78,68 +78,71 @@ setInterval(function()
 		}
 		oldEvent=event;
 		oldUpdateCount=Config.updateCount;
-		event.trackedParticipants=[];
-		event.partLookupByIMEI={};
-		event.TRACK = new Track();
-		event.TRACK.setBikeStartKM(event.bikeStartKM);
-		event.TRACK.setRunStartKM(event.runStartKM);
-		event.TRACK.setRoute(event.trackData);
-		event.TRACK.init();
-		//----------------------------------------------------------------------------------------------------------------------------------
-		for (var i in Config.participants) 
+		if (event != null)
 		{
-			var p = Config.participants[i];
-			var id = p.idParticipant;
-			if (Config.assignments[id] && Config.assignments[id].length) 
+			event.trackedParticipants=[];
+			event.partLookupByIMEI={};
+			event.TRACK = new Track();
+			event.TRACK.setBikeStartKM(event.bikeStartKM);
+			event.TRACK.setRunStartKM(event.runStartKM);
+			event.TRACK.setRoute(event.trackData);
+			event.TRACK.init();
+			console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
+			//----------------------------------------------------------------------------------------------------------------------------------
+			for (var i in Config.participants) 
 			{
-				var devId = Config.assignments[id];
-				var part = event.TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
-				part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,event.trackedParticipants.length));
-				part.setAgeGroup(p.ageGroup);
-				part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
-				part.setCountry(p.nationality);
-				part.setStartPos(parseInt(p.startNo));
-				part.setGender(p.sex);
-				var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
-				if (fs.existsSync(apath)) {
-					part.setIcon("img/data/"+id+".jpg");
-					part.setImage("img/data/"+id+".jpg");
-				} else {
-					part.setIcon("img/noimage.png");
-					part.setImage("img/noimage.png");			
+				var p = Config.participants[i];
+				var id = p.idParticipant;
+				if (Config.assignments[id] && Config.assignments[id].length) 
+				{
+					var devId = Config.assignments[id];
+					var part = event.TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
+					part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,event.trackedParticipants.length));
+					part.setAgeGroup(p.ageGroup);
+					part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
+					part.setCountry(p.nationality);
+					part.setStartPos(parseInt(p.startNo));
+					part.setGender(p.sex);
+					var apath = path.join(__dirname, "../../img/data/"+id+".jpg");
+					if (fs.existsSync(apath)) {
+						part.setIcon("img/data/"+id+".jpg");
+						part.setImage("img/data/"+id+".jpg");
+					} else {
+						part.setIcon("img/noimage.png");
+						part.setImage("img/noimage.png");			
+					}
+					event.trackedParticipants.push(part);
+					event.partLookupByIMEI[devId]=part;
+					//-----------------------------
+					part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
+					if (Config.simulation.singleParticipant)
+						break;
 				}
+				if (Config.simulation.enabled) 
+					Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
+			}
+			if (!Config.simulation.singleParticipant)
+			for (var i in Config.cams) 
+			{
+				var cam = Config.cams[i];
+				var part = event.TRACK.newParticipant(cam.code,cam.deviceId,cam.name);
+				part.setAgeGroup("-");
+				part.setGender("-");
+				part.setCountry("Germany");
+				part.setIcon(cam.icon);
+				part.setImage(cam.icon);
+				part.setStartPos(0);
+				part.setAge(0);
 				event.trackedParticipants.push(part);
 				event.partLookupByIMEI[devId]=part;
-				//-----------------------------
-				part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
-				if (Config.simulation.singleParticipant)
-					break;
+				part.setStartTime(1); /* placeholder not 0 */
+				part.__cam=1;
 			}
-			if (Config.simulation.enabled) 
-				Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
-			console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
+			console.log(event.trackedParticipants.length+" tracked participants found");
+			//---------------------------------------------------------------------
+			event.stream = new StreamData();
+			event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
 		}
-		if (!Config.simulation.singleParticipant)
-		for (var i in Config.cams) 
-		{
-			var cam = Config.cams[i];
-			var part = event.TRACK.newParticipant(cam.code,cam.deviceId,cam.name);
-			part.setAgeGroup("-");
-			part.setGender("-");
-			part.setCountry("Germany");
-			part.setIcon(cam.icon);
-			part.setImage(cam.icon);
-			part.setStartPos(0);
-			part.setAge(0);
-			event.trackedParticipants.push(part);
-			event.partLookupByIMEI[devId]=part;
-			part.setStartTime(1); /* placeholder not 0 */
-			part.__cam=1;
-		}
-		console.log(event.trackedParticipants.length+" tracked participants found");
-		//---------------------------------------------------------------------
-		event.stream = new StreamData();
-		event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
 	}
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};

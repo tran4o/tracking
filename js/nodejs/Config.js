@@ -12,8 +12,8 @@ var data = fs.readFileSync(ppath,{ encoding: 'utf8' });
 console.log("Participants data length "+data.length+" bytes");
 var json=JSON.parse(data);
 var now = (new Date()).getTime();
-exports.participants=json.participations;
-console.log(json.participations.length+" participants total loaded\n");
+exports.participants=json;
+console.log(json.length+" participants total loaded\n");
 
 var partByID;
 exports.updateCount=0;
@@ -64,11 +64,11 @@ for (var j in json.events)
 		event.starts=[];
 	if (!event.participants)
 		event.participants=[];	
-	for (var i in json.starts) 
+	for (var i in event.starts) 
 	{
-		var str = json.starts[i];
-		str.startTime = json.simulation.enabled ?  new Date() : new Date(moment( moment(event.startTime).format("DD.MM.YYYY")+str.startTime, "DD.MM.YYYY HH:mm"));
-		//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
+		var str = event.starts[i];
+		str.startTime = json.simulation.enabled ?  new Date() : moment( moment(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
+		console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
 	var pp=[];
 	
@@ -114,7 +114,7 @@ exports.getCurrentOrNextEvent = function()
 //--------------------------------------------------------------------------------------
 exports.getStartTimeFromStartPos = function(startPos) 
 {
-	var event = getCurrentEvent();
+	var event = exports.getCurrentEvent();
 	if (!event)
 		return 0;
 	
@@ -189,37 +189,52 @@ exports.assignIMEI=assignIMEI;
 
 function saveEvents() 
 {
-	var evts = deepcopy(exports.events);
-	console.log(JSON.stringify(evts));
-	for (var i in evts) 
+	var ee=[];
+	for (var i in exports.events) 
 	{
-		var e = evts[i];
 		var oe = exports.events[i];
-		console.log("OEEE : "+JSON.stringify(oe, null, 4))
+		var e = {};
+		e.id=oe.id;
+		if (oe.code)
+			e.code=oe.code;
+		if (oe.bikeStartKM != undefined) 
+			e.bikeStartKM=oe.bikeStartKM;
+		if (oe.runStartKM != undefined) 
+			e.runStartKM=oe.runStartKM;
+		if (oe.participants != undefined) 
+			e.participants=oe.participants;
+		if (oe.trackData)
+			e.trackData=oe.trackData;
 		if (oe.startTime)
 			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.startTime;
-		
 		if (oe.endTime)
 			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
 		else
-			delete e.startTime;
-
-		if (e.starts)
-		for (var k in e.starts) {
-			var s = e.starts[k];
+			delete e.endTime;
+		e.starts=[];
+		if (oe.starts)
+		for (var k in oe.starts) 
+		{
 			var os = oe.starts[k];
-			console.log("OS : "+JSON.stringify(os, null, 4))
-			if (os.startTime)
-				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
+			var s = {};
+			s.id=os.id;
+			s.startTime=moment(os.startTime).format("HH:mm");
+			if (os.fromStartNo != undefined) 
+				s.fromStartNo=os.fromStartNo;
+			if (os.toStartNo != undefined)
+				s.toStartNo=os.toStartNo;
+			e.starts.push(s);
+			//console.log("KEY = "+k);
+			//console.log(JSON.stringify(s, null, 4));
 		}
+		ee.push(e);
 	}
-	//console.log(JSON.stringify(evts, null, 4));
-	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
+	fs.writeFileSync(epath, JSON.stringify(ee, null, 4));
 }
 function saveParticipants() {
-	
+	fs.writeFileSync(ppath, JSON.stringify(exports.participants, null, 4));
 }
 //-----------------------------------
 function deleteParticipant(id) {
@@ -304,6 +319,7 @@ function updateEvent(id,json)
 	function doIt(event) 
 	{
 		event.id=id;
+		event.code=json.code;
 		event.trackData=json.track;
 		event.startTime=json.startTime;
 		event.endTime=json.endTime;
@@ -365,6 +381,8 @@ function updateStart(event,id,json)
 			return doIt(start);
 	}
 	var start = doIt({});
+	if (!event.starts)
+		event.starts=[];
 	event.starts.push(start);
 	exports.updateCount++;
 	saveEvents();

@@ -187,6 +187,9 @@ $(document).ready( function ()
 	$(".button-status").click(function() {
 		window.open("status.html", '_blank');
 	});
+	$(".button-gpx").click(function() {
+		window.open("gpx.html", '_blank');
+	});
 	$(".mobile-show i").click(function() {
 		$(".mobile-show").css("display","none"); 
 		$(".fw-nav").css("height","auto"); 
@@ -234,10 +237,9 @@ $(document).ready( function ()
 		table: "#table-events",
 		idSrc: "id",
 		fields: [{
-					label: "Id",
-					name: "id",
-					type : "readonly"
-				}, {
+					label: "Code",
+					name: "code"
+				 },{
 					label: "Start",
 					name: "startTime"
 				}, {
@@ -252,6 +254,10 @@ $(document).ready( function ()
 				}, {
 					label: "Run start km",
 					name: "runStartKM"
+				},{
+					label: "Id",
+					name: "id",
+					type : "readonly"
 				}]
 	});
 
@@ -283,6 +289,7 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../events",
 		columns: [
+			{ data: "code" },
 			{ data: "startTime" },
 			{ data: "endTime" },
 			{ 
@@ -337,7 +344,7 @@ $(document).ready( function ()
                                 		alert("Only on saved event possible!");
                                 		return;
                                 	}
-                                	 var win = window.open("starts.html?id="+eid+"&title="+encodeURIComponent($("#DTE_Field_startTime").val()+" > "+$("#DTE_Field_endTime").val()), '_blank');
+                                	 var win = window.open("starts.html?id="+eid+"&title="+encodeURIComponent($("#DTE_Field_code").val()+" "+$("#DTE_Field_startTime").val()+" > "+$("#DTE_Field_endTime").val()), '_blank');
                                 	 win.focus();
                                 } }
                              ] )
