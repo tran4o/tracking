@@ -217,6 +217,7 @@ function eventDataTablesJSON(event) {
 	}
 	return ({
 		id:DEF(event.id,"0"),
+		code:DEF(event.code,""),
 		startTime:event.startTime ? moment(event.startTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
 		endTime:event.endTime ? moment(event.endTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
 		track:event.trackData ? JSON.stringify(event.trackData) : "[]",
@@ -250,6 +251,8 @@ function updateEvent(req,res) {
 			res.send(JSON.stringify({error:"Run start not valid!"}, null, 4));
 			return;
 		}
+		if (!event.code)
+			event.code="";
 		if (event.track || event.track != "") 
 		{
 			var ok = false;

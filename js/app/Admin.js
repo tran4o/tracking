@@ -234,10 +234,9 @@ $(document).ready( function ()
 		table: "#table-events",
 		idSrc: "id",
 		fields: [{
-					label: "Id",
-					name: "id",
-					type : "readonly"
-				}, {
+					label: "Code",
+					name: "code"
+				 },{
 					label: "Start",
 					name: "startTime"
 				}, {
@@ -252,6 +251,10 @@ $(document).ready( function ()
 				}, {
 					label: "Run start km",
 					name: "runStartKM"
+				},{
+					label: "Id",
+					name: "id",
+					type : "readonly"
 				}]
 	});
 
@@ -283,6 +286,7 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../events",
 		columns: [
+			{ data: "code" },
 			{ data: "startTime" },
 			{ data: "endTime" },
 			{ 
