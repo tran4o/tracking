@@ -660,7 +660,7 @@ table.dataTable td {
 	background-color: #d9d902;
 }
 
-.button-assignments {
+.button-assignments,.button-status {
 	display : inline-block;
 	padding : 1em;
 	font-weight : bold;
@@ -669,8 +669,9 @@ table.dataTable td {
 	border-radius : 5px;
 	margin-left:10px;
 	margin-top:10px;
+	cursor : pointer;
 }
 
-.button-assignments:hover {
+.button-assignments:hover,.button-status:hover {
 	border : 2px solid black;	
 }
