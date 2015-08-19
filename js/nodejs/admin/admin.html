@@ -14,7 +14,7 @@
 	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/responsive/1.0.5/css/dataTables.responsive.css">
 	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/tabletools/2.2.4/css/dataTables.tableTools.css">
 
-	<script src="../../js/ol3/ol-debug.js" type="text/javascript"></script>
+	<script src="../../js/ol3/ol.js" type="text/javascript"></script>
 	<script src="../../js/ol3/ol3-popup.js" type="text/javascript"></script>
 	<script src="../../js/joose.min.js" type="text/javascript"></script>
     <script src="../../js/rbush.js" type="text/javascript"></script>
@@ -109,6 +109,30 @@
 				</table>
 			</div>
 		</div>
+		<div id="starts" class="map_fullscreen" style="z-index:9998;background-color:white;display:none;">
+				<div class="content" id="tab1">
+					<h1 class="page_title">Starts</h1>
+					<div class="info">
+						<p>Starts depending on start position</p>
+					</div>
+					<table id="table-starts" class="display responsive nowrap" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>From No</th>
+								<th>To No</th>
+								<th>Start time</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th>From No</th>
+								<th>To No</th>
+								<th>Start time</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>		
+		</div>		
 		<div class="fw-footer">
 			<div class="copyright">
 				Copyright...
@@ -116,31 +140,6 @@
 		</div>
 	</div>
 
-	<div id="starts" class="map_fullscreen" style="z-index:9998;background-color:white;display:none;">
-			<div class="content" id="tab1">
-				<h1 class="page_title">Starts</h1>
-				<div class="info">
-					<p>Starts depending on start position</p>
-				</div>
-				<table id="table-starts" class="display responsive nowrap" cellspacing="0" width="100%">
-					<thead>
-						<tr>
-							<th>From No</th>
-							<th>To No</th>
-							<th>Start time</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th>From No</th>
-							<th>To No</th>
-							<th>Start time</th>
-						</tr>
-					</tfoot>
-				</table>
-			</div>		
-	</div>		
-	
 	<div id="map" class="map_fullscreen" style="display:none;z-index:9999;background-color:white;">		
 		<div class="map_buttons">
 			<div id="button_erase" class="map_button">

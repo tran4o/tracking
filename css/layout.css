@@ -659,3 +659,11 @@ table.dataTable td {
 #debugShowPosition span {
 	background-color: #d9d902;
 }
+
+#starts {
+	position : absolute;
+	left : 0;
+	top : 0;
+	right : 0;
+	bottom : 0;
+}

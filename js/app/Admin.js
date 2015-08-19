@@ -331,9 +331,7 @@ $(document).ready( function ()
                                 		alert("Only on saved event possible!");
                                 		return;
                                 	}
-                                	$(".fw-container").css("display","none");
                                 	$("#starts").css("display","block");
-                                	
                                 	var EDITOR2 = new $.fn.dataTable.Editor( {
                                 		ajax: '../starts',
                                 		table: "#table-starts",
