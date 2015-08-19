@@ -26,7 +26,7 @@ if (!eid)
 	return;
 $(document).ready( function () 
 {
-	$(".page_title").html("Starts for event<br/>"+(params.title ? params.title : ""));
+	$(".page_title").html((params.title ? params.title : "Starts"));
 	var EDITOR2 = new $.fn.dataTable.Editor( {
 		ajax: '../starts/'+eid,
 		table: "#table-starts",
