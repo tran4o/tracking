@@ -212,7 +212,7 @@ $(document).ready( function ()
 					name: "endTime"
 				}, {
 					label: "Track",
-					name: "trackData"
+					name: "track"
 				}, {
 					label: "Bike start km",
 					name: "bikeStartKM"
@@ -250,8 +250,8 @@ $(document).ready( function ()
 		dom: "Tfrtip",
 		ajax: "../events",
 		columns: [
-			{ data: "startTime",className : "dt-body-right" },
-			{ data: "endTime",className : "dt-body-right" },
+			{ data: "startTime" },
+			{ data: "endTime" },
 			{ 
 				// track
 				data: null,
