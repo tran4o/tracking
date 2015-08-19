@@ -327,12 +327,33 @@ $(document).ready( function ()
                                 } },
                                 { label: 'Starts', fn: function() {
                                 	var eid = $("#DTE_Field_id").val();
-                                	if (!eid || !eid.length()) {
+                                	if (!eid || !eid.length) {
                                 		alert("Only on saved event possible!");
                                 		return;
                                 	}
                                 	$(".fw-container").css("display","none");
                                 	$("#starts").css("display","block");
+                                	
+                                	var EDITOR2 = new $.fn.dataTable.Editor( {
+                                		ajax: '../starts',
+                                		table: "#table-starts",
+                                		idSrc: "id",
+                                		fields: [{
+                                					label: "Id",
+                                					name: "id",
+                                					type : "readonly"
+                                				}, {
+                                					label: "From No",
+                                					name: "fromStartNo"
+                                				}, {
+                                					label: "To No",
+                                					name: "toStartNo"
+                                				}, {
+                                					label: "Start Time",
+                                					name: "startTime"
+                                				}]
+                                	} );
+                                	
                                 	var tableStarts = $('#table-starts').DataTable( {
                                 		dom: "Tfrtip",
                                 		ajax: "../starts/"+eid,
