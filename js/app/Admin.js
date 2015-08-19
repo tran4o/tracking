@@ -48,8 +48,10 @@ function initGUI()
 		for (var i=0;i<trackData.length;i++)
 			trackData[i]=ol.proj.transform(trackData[i], 'EPSG:3857','EPSG:4326');			
 		$("#route_text_area").val(JSON.stringify(trackData));
-		TRACK.setRoute(trackData);
 		
+		TRACK.setRoute(trackData);
+		TRACK.updateFeature();
+
 		var str = (TRACK.getTrackLength()/1000.0)+" km";
 		$("#route_info").val(str);
 		return JSON.stringify(trackData);
