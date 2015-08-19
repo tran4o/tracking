@@ -92,6 +92,7 @@ function initGUI()
 		GUI.map.removeInteraction(modify);
 		GUI.map.addInteraction(draw);
 		store();
+		GUI.getTrackLayer().getSource().getFeatures().clear();
 		delete TRACK.feature;
 	});
 	$("#button_navigate").click(function(){
