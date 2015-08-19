@@ -42,7 +42,7 @@ var tableParticipants = null;
 
 function showMap() {
     $("#left_pane").addClass('hide');
-    $("#map").removeClass('col-sm-6').removeClass('col-md-8').removeClass('hidden-xs').addClass('col-sm-12');
+    $("#map").removeClass('col-sm-6 col-md-8 hidden-xs').addClass('col-sm-12');
     $(window).resize();
     if (GUI.map)
         GUI.map.updateSize();
@@ -106,9 +106,12 @@ function initTableParticipants() {
                     className: "dt-body-center",
                     data: null,
                     render: function (data, type, row) {
+                        var favImgSrc;
                         if (data.follow == 1)
-                            return "<div class='invisible'>1</div><img onclick='changeFavorite(\"" + data.id + "\")' src='img/favorite.png' class='table-favorite-add'/>";
-                        return "<div class='invisible'>0</div><img onclick='changeFavorite(\"" + data.id + "\")' src='img/favorite-add.png' class='table-favorite-add'/>";
+                            favImgSrc = "star_solid.svg";
+                        else
+                            favImgSrc = "star.svg";
+                        return "<img data-id='" + data.id + "' src='img/" + favImgSrc + "' class='table-favorite-add'/>";
                     }
                 },
 
@@ -437,6 +440,11 @@ $(document).ready(function () {
         } else {
             open();
         }
+    });
+
+    $("#table-participants").on("click", ".table-favorite-add", function() {
+        var id = $(this).data('id');
+        changeFavorite(id);
     });
 });
 

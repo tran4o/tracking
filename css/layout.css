@@ -202,16 +202,10 @@ BODY
 }
 
 #header {
-	z-index : 999999;
-	position:absolute;
 	top:0;
-	left:50%;
 	height : 80px;
 	line-height : 60px;
-	width:500px;
-	margin-left : -250px;
   	background-color: white;
-	padding: 10px 330px 10px 10px;
 	border : 3px solid #4c4c4c;
   	border-top : none;
 	border-radius: 0 0 40px 40px;
@@ -230,13 +224,8 @@ BODY
 }
 
 #toolbar_map {
-	z-index : 999999;
-	position:absolute;
 	bottom:0;
-	left:50%;
 	height : 104px;
-	margin-left : -250px;
-	width:500px;
   	background-color: rgba(0,0,0,.6);
   	border-radius: 40px;
   	padding: 2px;	
@@ -294,10 +283,10 @@ BODY
 #button_rank img,
 #button_favorites img,
 #button_participants img {
-	width : 50px;
-	height : 50px;
-	padding-left : 14px;
-	padding-top : 14px;
+	width : 40px;
+	height : 40px;
+	margin-left : 12px;
+	margin-top : 12px;
 	cursor: pointer;
 }
 
@@ -570,11 +559,6 @@ table.dataTable td {
 #liveStream, #partners, #legalNotice {
 	position: absolute;
 	top: 0;
-	left: 50%;
-	margin-left: -250px;
-	width: 500px;
-	z-index: 999998;
-
 	background: white;
 	border-radius: 0 0 40px 40px;
 	border: solid 3px;
@@ -674,4 +658,136 @@ table.dataTable td {
 
 .button-assignments:hover,.button-status:hover {
 	border : 2px solid red;	
+}
+
+#header, #toolbar_map, #liveStream {
+	margin-left: -250px;
+	width: 500px;
+	left: 50%;
+	z-index: 999998;
+	position:absolute;
+}
+
+@media screen and (max-width: 500px) {
+	#header, #toolbar_map, #liveStream {
+		margin-left: -165px;
+		width: 330px;
+	}
+
+	#header {
+		height: 70px;
+		background-size: 150px auto, 150px auto;
+	}
+
+	#button_liveStream,
+	#button_rank,
+	#button_favorites,
+	#button_participants,
+	#toolbar_track {
+		width: 42px;
+		height: 42px;
+		border-radius: 21px;
+	}
+	#button_liveStream img,
+	#button_rank img,
+	#button_favorites img,
+	#button_participants img {
+		height: 28px;
+		width: 28px;
+		margin-left: 4px;
+		margin-top: 4px;
+	}
+	#button_participants {
+		margin-left: -62px;
+	}
+	#button_favorites {
+		margin-left: -109px;
+	}
+	#button_rank {
+		margin-left: -154px;
+	}
+
+	#toolbar_track {
+		width: 127px;
+		margin-left: 27px;
+		padding-left: 8px;
+		padding-top: 2px;
+	}
+	#button_run,
+	#button_bike,
+	#button_swim {
+		width: 32px;
+		height: 32px;
+		border-radius: 16px;
+		border-width: 2px;
+	}
+	#button_run img,
+	#button_bike img,
+	#button_swim img {
+		height: 28px;
+		width: 28px;
+		padding-left: 3px;
+		padding-top: 3px;
+	}
+
+	#liverank-logo {
+		margin-left: -84px;
+		width: 168px;
+	}
+	#link_partners {
+		margin-right: 85px;
+	}
+	#link_legalNotice {
+		margin-left: 85px;
+	}
+}
+
+@media screen and (max-width: 320px) {
+	#header, #toolbar_map, #liveStream {
+		margin-left: -140px;
+		width: 280px;
+	}
+
+	#header {
+		height: 60px;
+		background-size: 130px auto, 130px auto;
+	}
+
+	#button_participants {
+		margin-left: -56px;
+	}
+	#button_favorites {
+		margin-left: -98px;
+	}
+	#button_rank {
+		margin-left: -140px;
+	}
+
+	#toolbar_track {
+		margin-left: 26px;
+		padding-left: 4px;
+		width: 118px;
+	}
+}
+
+/* Tweak the data tables CSS */
+
+
+table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before, table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child::before {
+	content: "";
+	background-color: transparent;
+	border: none;
+	border-radius: unset;
+	box-shadow: none;
+
+	background-image: url(../img/plus_solid.svg);
+	background-size: 16px;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child::before {
+	content: "";
+	background-color: transparent;
+
+	background-image: url(../img/plus.svg);
+	background-size: 16px;
 }
