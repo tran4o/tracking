@@ -191,9 +191,11 @@ function saveEvents()
 {
 	var evts = deepcopy(exports.events);
 	console.log(JSON.stringify(evts));
-	for (var i in evts) {
+	for (var i in evts) 
+	{
 		var e = evts[i];
 		var oe = exports.events[i];
+		console.log("OEEE : "+JSON.stringify(oe, null, 4))
 		if (oe.startTime)
 			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
@@ -208,11 +210,12 @@ function saveEvents()
 		for (var k in e.starts) {
 			var s = e.starts[k];
 			var os = oe.starts[k];
+			console.log("OS : "+JSON.stringify(os, null, 4))
 			if (os.startTime)
 				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
 		}
 	}
-	console.log(JSON.stringify(evts, null, 4));
+	//console.log(JSON.stringify(evts, null, 4));
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
 function saveParticipants() {
