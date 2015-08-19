@@ -187,6 +187,9 @@ $(document).ready( function ()
 	$(".button-status").click(function() {
 		window.open("status.html", '_blank');
 	});
+	$(".button-gpx").click(function() {
+		window.open("gpx.html", '_blank');
+	});
 	$(".mobile-show i").click(function() {
 		$(".mobile-show").css("display","none"); 
 		$(".fw-nav").css("height","auto"); 
