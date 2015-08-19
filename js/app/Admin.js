@@ -185,7 +185,7 @@ $(document).ready( function ()
 		window.open("assignment.html", '_blank');
 	});
 	$(".button-status").click(function() {
-		window.open("assignment.html", '_blank');
+		window.open("status.html", '_blank');
 	});
 	$(".mobile-show i").click(function() {
 		$(".mobile-show").css("display","none"); 
