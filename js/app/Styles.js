@@ -47,8 +47,9 @@ var STYLES=
 		if (track && !isNaN(track.bikeStartKM)) 
 		{
 			for (var i=0;i<track.distances.length;i++) {
-				if (track.distances[i] >= track.bikeStartKM*1000)
+				if (track.distances[i] >= track.bikeStartKM*1000) {
 					break;
+				}
 			}
 			var j;
 			if (!isNaN(track.runStartKM)) {

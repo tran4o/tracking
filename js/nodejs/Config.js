@@ -258,6 +258,8 @@ function updateEvent(id,json)
 	{
 		event.id=id;
 		event.trackData=json.track;
+		event.startTime=json.startTime;
+		event.endTime=json.endTime;
 		event.bikeStartKM=json.bikeStartKM;
 		event.runStartKM=json.runStartKM;
 		return event;
