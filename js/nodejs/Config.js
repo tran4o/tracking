@@ -67,7 +67,7 @@ for (var j in json.events)
 	for (var i in json.starts) 
 	{
 		var str = json.starts[i];
-		str.startTime = json.simulation.enabled ?  new Date() : new Date(moment( moment(event.startTime).format("DD.MM.YYYY")+str.startTime, "DD.MM.YYYY HH:mm"));
+		str.startTime = json.simulation.enabled ?  new Date() : moment( moment(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
 		//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
 	var pp=[];

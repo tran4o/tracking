@@ -204,7 +204,7 @@ function startDataTablesJSON(start) {
 		id:DEF(start.id,"0"),
 		fromStartNo:DEF(start.fromStartNo,"0"),
 		toStartNo:DEF(start.toStartNo,"0"),
-		startTime:DEF(start.startTime,"00:00")
+		startTime:start.startTime ? start.startTime.format("HH:mm") : "00:00"
 	  });
 }
 
@@ -324,7 +324,7 @@ function updateStart(req,res) {
 					res.send(JSON.stringify({error:"Start time not valid!"}, null, 4));
 					return;
 				}
-				start.startTime=moment(start.startTime, "HH:mm").format("HH:mm");
+				start.startTime=moment(start.startTime, "HH:mm").toDate();
 				start.fromStartNo=parseInt(start.fromStartNo);
 				start.toStartNo=parseInt(start.toStartNo);
 				if (isNaN(start.fromStartNo)) {
