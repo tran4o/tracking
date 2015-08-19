@@ -218,7 +218,7 @@ function eventDataTablesJSON(event) {
 		id:DEF(event.id,"0"),
 		startTime:event.startTime ? moment(event.startTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
 		endTime:event.endTime ? moment(event.endTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
-		track:"", //event.trackData ? JSON.stringify(event.trackData) : "[]",
+		track:event.trackData ? JSON.stringify(event.trackData) : "[]",
 		runStartKM:DEF(event.runStartKM,"0"),
 		bikeStartKM:DEF(event.bikeStartKM,"0")
 	  });
