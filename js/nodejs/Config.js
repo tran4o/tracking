@@ -114,7 +114,7 @@ exports.getCurrentOrNextEvent = function()
 //--------------------------------------------------------------------------------------
 exports.getStartTimeFromStartPos = function(startPos) 
 {
-	var event = getCurrentEvent();
+	var event = exports.getCurrentEvent();
 	if (!event)
 		return 0;
 	
