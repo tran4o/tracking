@@ -189,7 +189,7 @@ exports.assignIMEI=assignIMEI;
 function saveEvents() 
 {
 	var evts = jQuery.extend(true, {}, Config.events);
-	debugger;
+	console.log(JSON.stringify(evts));
 	for (var i in evts) {
 		var e = evts[i];
 		if (e.startTime)
