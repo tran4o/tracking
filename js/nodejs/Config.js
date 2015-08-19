@@ -195,7 +195,6 @@ function saveEvents()
 	{
 		var e = evts[i];
 		var oe = exports.events[i];
-		console.log("OEEE : "+JSON.stringify(oe, null, 4))
 		if (oe.startTime)
 			e.startTime=moment(oe.startTime.getTime()).format("DD.MM.YYYY HH:mm");
 		else
@@ -210,7 +209,6 @@ function saveEvents()
 		for (var k in e.starts) {
 			var s = e.starts[k];
 			var os = oe.starts[k];
-			console.log("OS : "+JSON.stringify(os, null, 4))
 			if (os.startTime)
 				s.startTime=moment(os.startTime.getTime()).format("DD.MM.YYYY HH:mm");
 		}
