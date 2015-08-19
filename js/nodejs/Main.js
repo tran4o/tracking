@@ -216,9 +216,11 @@ function eventDataTablesJSON(event) {
 	}
 	return ({
 		id:DEF(event.id,"0"),
-		startTime:DEF(start.startTime,"01.01.2015 00:00"),
-		endTime:DEF(start.endTime,"01.01.2015 00:00"),
-		track:DEF(start.track,"")
+		startTime:DEF(event.startTime,"01.01.2015 00:00"),
+		endTime:DEF(event.endTime,"01.01.2015 00:00"),
+		track:DEF(event.track,""),
+		runStartKM:DEF(event.runStartKM,"0"),
+		bikeStartKM:DEF(event.bikeStartKM,"0")
 	  });
 }
 

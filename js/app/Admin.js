@@ -278,7 +278,7 @@ $(document).ready( function ()
 						res=data["begin-time"]+"-"+data["end-time"]+" ("+res+")";
 					return res;
 				} 
-			}
+			},
 			{ data: "bikeStartKM",className : "dt-body-right" },
 			{ data: "runStartKM",className : "dt-body-right" }
 		],
