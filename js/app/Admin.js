@@ -37,7 +37,7 @@ function initGUI()
 		var feat;
 		if (!GUI.getTrackLayer().getSource().getFeatures().length) {
 			if (e && e.feature) {
-				feat=e.feature;
+				feat=e.feature;    
 			}
 			return null;
 		} else {
