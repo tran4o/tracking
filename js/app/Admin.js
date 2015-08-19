@@ -32,12 +32,18 @@ function initGUI()
 	GUI.is_init=1;
 	GUI.init({skipExtent:true});
 	//-------------------------------------------------
-	function store(forceClose) 
+	function store(forceClose,e) 
 	{
+		var feat;
 		if (!GUI.getTrackLayer().getSource().getFeatures().length) {
+			if (e && e.feature) {
+				feat=e.feature;
+			}
 			return null;
+		} else {
+			feat = GUI.getTrackLayer().getSource().getFeatures()[0];
 		}
-		var trackData=GUI.getTrackLayer().getSource().getFeatures()[0].getGeometry().getCoordinates();
+		var trackData=feat.getGeometry().getCoordinates();
 		if (forceClose) 
 		{
 			if (trackData[0][0] != trackData[trackData.length-1][0] || trackData[0][1] != trackData[trackData.length-1][1]) {
@@ -77,7 +83,7 @@ function initGUI()
 		GUI.map.removeInteraction(draw);
 		GUI.map.addInteraction(select);
 		GUI.map.addInteraction(modify);
-		store();
+		store(false,e);
 		TRACK.updateFeature();
 	});
 	//-------------------------------------------------
