@@ -15,10 +15,10 @@ var app = express();
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
-app.use(bodyParser.json({ limit: '5mb' }));       
 app.use(bodyParser.urlencoded({     
   extended: true
 })); 
+app.use(bodyParser.json({ limit: '50mb' }));       
 app.get('/raceStart/:id', function (req, res) {
 	var event = Config.getCurrentOrNextEvent();
 	if (event == null)
