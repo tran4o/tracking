@@ -14,6 +14,7 @@ exports.participants=json.participations;
 console.log(json.participations.length+" participants total loaded\n");
 
 var partByID;
+exports.updateCount=0;
 function onParticipantsChanged() 
 {
 	partByID = {};
@@ -33,6 +34,7 @@ function onParticipantsChanged()
 			}
 		}
 	} 
+	exports.updateCount++;
 }
 
 //--------------------------------------------------------------------------------------
@@ -247,8 +249,10 @@ function deleteEvent(id) {
 		}
 		nevent.push(event);
 	}
-	if (ok)
+	if (ok) {
 		exports.event=nevent;
+		exports.updateCount++;
+	}
 	return ok;
 }
 exports.deleteEvent=deleteEvent;
@@ -262,6 +266,7 @@ function updateEvent(id,json)
 		event.endTime=json.endTime;
 		event.bikeStartKM=json.bikeStartKM;
 		event.runStartKM=json.runStartKM;
+		exports.updateCount++;
 		return event;
 	}
 	for (var i in exports.events) 

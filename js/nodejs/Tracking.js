@@ -62,19 +62,22 @@ function addState(event,imei,state)
 }
 //--------------------------------------------------------------------------
 var oldEvent = null;
-
+var oldUpdateCount = Config.updateCount;
 setInterval(function() 
 {
 	var event = Config.getCurrentEvent();
 	if (!event)
 		return;	
-	if (oldEvent != event) {
+	if (oldEvent != event || oldUpdateCount != Config.updateCount) 
+	{
+		console.log("Reset tracking event to "+event.id+" | OLD="+(oldEvent ? oldEvent.id : ""));
 		if (oldEvent) {
 			oldEvent.stream.isStopped=true;
 			delete oldEvent.trackedParticipants;
 			delete oldEvent.partLookupByIMEI;
 		}
 		oldEvent=event;
+		oldUpdateCount=Config.updateCount;
 		event.trackedParticipants=[];
 		event.partLookupByIMEI={};
 		event.TRACK = new Track();
