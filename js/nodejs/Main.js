@@ -216,9 +216,9 @@ function eventDataTablesJSON(event) {
 	}
 	return ({
 		id:DEF(event.id,"0"),
-		startTime:DEF(event.startTime,"01.01.2015 00:00"),
-		endTime:DEF(event.endTime,"01.01.2015 00:00"),
-		track:event.trackData ? JSON.stringify(event.trackData) : "[]",
+		startTime:event.startTime ? moment(event.startTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
+		endTime:event.endTime ? moment(event.endTime).format("DD.MM.YYYY HH:mm") : "01.01.2015 00:00",
+		track:"", //event.trackData ? JSON.stringify(event.trackData) : "[]",
 		runStartKM:DEF(event.runStartKM,"0"),
 		bikeStartKM:DEF(event.bikeStartKM,"0")
 	  });
@@ -237,8 +237,8 @@ function updateEvent(req,res) {
 			res.send(JSON.stringify({error:"End not valid!"}, null, 4));
 			return;
 		}
-		event.startTime=moment(event.startTime, "HH:mm").format("DD.MM.YYYY HH:mm");
-		event.endTime=moment(event.endTime, "HH:mm").format("DD.MM.YYYY HH:mm");
+		event.startTime=moment(event.startTime, "DD.MM.YYYY HH:mm").toDate();
+		event.endTime=moment(event.endTime, "DD.MM.YYYY HH:mm").toDate();
 		event.bikeStartKM=parseFloat(event.bikeStartKM);
 		if (isNaN(event.bikeStartKM)) {
 			res.send(JSON.stringify({error:"Bike start not valid!"}, null, 4));
