@@ -211,8 +211,8 @@ function saveEvents()
 			if (os.startTime)
 				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
 		}
+		console.log(JSON.stringify(e, null, 4));
 	}
-	console.log(JSON.stringify(evts, null, 4));
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
 function saveParticipants() {
