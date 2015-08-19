@@ -64,11 +64,11 @@ for (var j in json.events)
 		event.starts=[];
 	if (!event.participants)
 		event.participants=[];	
-	for (var i in json.starts) 
+	for (var i in event.starts) 
 	{
-		var str = json.starts[i];
+		var str = event.starts[i];
 		str.startTime = json.simulation.enabled ?  new Date() : moment( moment(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
-		//console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
+		console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
 	var pp=[];
 	
