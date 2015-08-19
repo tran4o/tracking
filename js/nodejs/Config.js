@@ -189,29 +189,46 @@ exports.assignIMEI=assignIMEI;
 
 function saveEvents() 
 {
-	var evts = deepcopy(exports.events);
-	for (var i in evts) 
+	for (var i in exports.events) 
 	{
-		var e = evts[i];
-		var oe = exports.events[i];
+		var oe = evts[i];
+		var e = {};
+		
+		e.id=oe.id;
+		if (oe.bikeStartKM != undefined) 
+			e.bikeStartKM=oe.bikeStartKM;
+		if (oe.runStartKM != undefined) 
+			e.runStartKM=oe.runStartKM;
+		if (oe.participants != undefined) 
+			e.participants=oe.participants;
+		if (oe.trackData)
+			e.trackData=e.trackData;
 		if (oe.startTime)
 			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.startTime;
-		
 		if (oe.endTime)
 			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.endTime;
 
-		if (e.starts)
-		for (var k in e.starts) {
-			var s = e.starts[k];
+		e.starts=[];
+		if (oe.starts)
+		for (var k in oe.starts) 
+		{
 			var os = oe.starts[k];
-			if (os.startTime)
-				s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
+			var s = {};
+			s.id=os.id;
+			s.startTime=moment(os.startTime).format("DD.MM.YYYY HH:mm");
+			if (os.fromStartNo != undefined) 
+				s.fromStartNo=os.fromStartNo;
+			if (os.toStartNo != undefined)
+				s.toStartNo=os.toStartNo;
+			e.starts.push(s);
+			console.log("KEY = "+k);
+			console.log(JSON.stringify(s, null, 4));
 		}
-		console.log(JSON.stringify(e, null, 4));
+		//console.log(JSON.stringify(e, null, 4));
 	}
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
