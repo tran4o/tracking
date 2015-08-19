@@ -189,6 +189,7 @@ exports.assignIMEI=assignIMEI;
 
 function saveEvents() 
 {
+	var ee=[];
 	for (var i in exports.events) 
 	{
 		var oe = exports.events[i];
@@ -224,11 +225,12 @@ function saveEvents()
 			if (os.toStartNo != undefined)
 				s.toStartNo=os.toStartNo;
 			e.starts.push(s);
-			console.log("KEY = "+k);
-			console.log(JSON.stringify(s, null, 4));
+			//console.log("KEY = "+k);
+			//console.log(JSON.stringify(s, null, 4));
 		}
-		//console.log(JSON.stringify(e, null, 4));
+		ee.push(e);
 	}
+	console.log(JSON.stringify(e, null, 4));
 	//fs.writeFileSync(epath, JSON.stringify(evts, null, 4));
 }
 function saveParticipants() {
