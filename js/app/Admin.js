@@ -49,16 +49,17 @@ function initGUI()
 		{
 			if (trackData[0][0] != trackData[trackData.length-1][0] || trackData[0][1] != trackData[trackData.length-1][1]) {
 				trackData.push(trackData[0]);
-				GUI.getTrackLayer().getSource().getFeatures()[0].getGeometry().setCoordinates(trackData);
+				feat.getGeometry().setCoordinates(trackData);
 			}
 		}
 		for (var i=0;i<trackData.length;i++)
 			trackData[i]=ol.proj.transform(trackData[i], 'EPSG:3857','EPSG:4326');			
 		$("#route_text_area").val(JSON.stringify(trackData));
-		
+
+		GUI.trackLayer.getSource().clear();
 		TRACK.setRoute(trackData);
 		TRACK.updateFeature();
-
+		
 		var str = (TRACK.getTrackLength()/1000.0)+" km";
 		$("#route_info").val(str);
 		return JSON.stringify(trackData);
