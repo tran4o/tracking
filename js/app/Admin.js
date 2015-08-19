@@ -252,33 +252,7 @@ $(document).ready( function ()
 		columns: [
 			{ data: "startTime",className : "dt-body-right" },
 			{ data: "endTime",className : "dt-body-right" },
-			{ 
-				// track
-				data: null,
-				render: function ( data, type, row ) 
-				{
-					if (!data["track"])
-						return "";
-					var tpos = null;
-					try {
-						tpos=JSON.parse(data["track"]);
-					} catch(e) {
-					}
-					var res;
-					if (!tpos || !tpos.length)
-						res="0 km";
-					else {
-						var tr = new Track();
-						tr.setRoute(tpos);
-						res = formatNumber2(tr.getTrackLength()/1000.0)+" km";
-					}
-					if (data["run-count"] && parseInt(data["run-count"]) > 1)
-						res="<b>"+data["run-count"]+"x</b> "+res;
-					if (data["begin-time"] && data["end-time"])
-						res=data["begin-time"]+"-"+data["end-time"]+" ("+res+")";
-					return res;
-				} 
-			},
+			{ data: "endTime",className : "dt-body-right" },
 			{ data: "bikeStartKM",className : "dt-body-right" },
 			{ data: "runStartKM",className : "dt-body-right" }
 		],
