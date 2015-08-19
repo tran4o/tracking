@@ -5,7 +5,7 @@ Class("StreamData",
     has:
     {
         isStopped : {
-            is:   "rw"
+            is:   "rw",
             init : false	
         }
     },

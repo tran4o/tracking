@@ -45,9 +45,6 @@ function inRaceChecker() {
 	return true;
 }
 //--------------------------------------------------------------------------
-exports.trackedParticipants=trackedParticipants;
-exports.partLookupByIMEI=partLookupByIMEI;
-//--------------------------------------------------------------------------
 // COPY... 
 CONFIG.math.displayDelay = Config.interpolation.displayDelay;
 //--------------------------------------------------------------------------
@@ -73,7 +70,9 @@ setInterval(function()
 		return;	
 	if (oldEvent != event) {
 		if (oldEvent) {
-			oldEvent.stream.isStopped=true;			
+			oldEvent.stream.isStopped=true;
+			delete oldEvent.trackedParticipants;
+			delete oldEvent.partLookupByIMEI;
 		}
 		oldEvent=event;
 		event.trackedParticipants=[];
@@ -92,7 +91,7 @@ setInterval(function()
 			{
 				var devId = Config.assignments[id];
 				var part = event.TRACK.newParticipant(id,devId,p.firstname+" "+p.lastname);
-				part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,trackedParticipants.length));
+				part.setColor(Utils.rainbow(Object.keys(Config.assignments).length,event.trackedParticipants.length));
 				part.setAgeGroup(p.ageGroup);
 				part.setAge(2015-parseInt(p.birthYear));	/* TODO!!! */
 				part.setCountry(p.nationality);
@@ -106,8 +105,8 @@ setInterval(function()
 					part.setIcon("img/noimage.png");
 					part.setImage("img/noimage.png");			
 				}
-				trackedParticipants.push(part);
-				partLookupByIMEI[devId]=part;
+				event.trackedParticipants.push(part);
+				event.partLookupByIMEI[devId]=part;
 				//-----------------------------
 				part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
 				if (Config.simulation.singleParticipant)
@@ -129,12 +128,12 @@ setInterval(function()
 			part.setImage(cam.icon);
 			part.setStartPos(0);
 			part.setAge(0);
-			trackedParticipants.push(part);
-			partLookupByIMEI[devId]=part;
+			event.trackedParticipants.push(part);
+			event.partLookupByIMEI[devId]=part;
 			part.setStartTime(1); /* placeholder not 0 */
 			part.__cam=1;
 		}
-		console.log(trackedParticipants.length+" tracked participants found");
+		console.log(event.trackedParticipants.length+" tracked participants found");
 		//---------------------------------------------------------------------
 		event.stream = new StreamData();
 		event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
@@ -146,9 +145,9 @@ setInterval(function()
 	var arr=[];
 	var val=[];
 	var elapsed=[];
-	for (var i in trackedParticipants) 
+	for (var i in event.trackedParticipants) 
 	{ 
-		var part = trackedParticipants[i];
+		var part = event.trackedParticipants[i];
 		var elp = part.avg(ctime,"elapsed")
 		if (elp == null)
 			continue;
@@ -172,7 +171,7 @@ setInterval(function()
 	var k=0;
 	for (var i in arr) 
 	{
-		var part = trackedParticipants[arr[i]];
+		var part = event.trackedParticipants[arr[i]];
 		var ageGroup = part.getAgeGroup();
 		var gender = part.getGender();
 		if (!tmp[ageGroup])
@@ -188,7 +187,7 @@ setInterval(function()
 	}
 	for (var i in arr) 
 	{
-		var part = trackedParticipants[arr[i]];		
+		var part = event.trackedParticipants[arr[i]];		
 		var ts = new ParticipantState();
 		ts.setSpeed(part.avg(ctime,"speed"));
 		ts.setElapsed(elapsed[i]);

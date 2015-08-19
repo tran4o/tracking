@@ -20,13 +20,16 @@ app.use(bodyParser.urlencoded({
   extended: true
 })); 
 app.get('/raceStart/:id', function (req, res) {
+	var event = Config.getCurrentOrNextEvent();
+	if (event == null)
+		return;
 	res.header("Content-Type", "application/json; charset=utf-8");
 	if (Config.simulation.debugStarts) {
 		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":"0","ENDPERIOD":"0"}));
 		return;
 	}
 	var id = req.params.id;
-	var part = Tracking.partLookupByIMEI[id];
+	var part = event.partLookupByIMEI[id];
 	if (!part) {
 		res.send(JSON.stringify({RET:"ERR",RETMSG:"PARTICIPANT BY IMEI NOT FOUND"}));
 	} else {
@@ -51,9 +54,9 @@ app.get('/status', function (req, res)
 		moretogo=0;
 	}	
 	var partStatus = {};
-	for (var i in Tracking.trackedParticipants)
+	for (var i in event.trackedParticipants)
 	{
-		var part = Tracking.trackedParticipants[i];
+		var part = event.trackedParticipants[i];
 		var pos = part.getGPS();
 		var ltmp = part.getLastPingTimestamp();
 		partStatus[part.id]=
@@ -412,9 +415,9 @@ app.get('/event', function (req, res) {
 	res.header("Access-Control-Allow-Origin", "http://localhost");
 	var parr=[];
 	var cams=[];
-	for (var i in Tracking.trackedParticipants) 
+	for (var i in event.trackedParticipants) 
 	{
-		var part = Tracking.trackedParticipants[i];
+		var part = event.trackedParticipants[i];
 		var rres={
 			id : part.id,
 			code : part.code,

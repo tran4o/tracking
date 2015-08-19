@@ -78,9 +78,9 @@ onParticipantsChanged();
 exports.getCurrentEvent = function() 
 {
 	var ctime = (new Date()).getTime();
-	for (var i in Config.events) 
+	for (var i in exports.events) 
 	{
-		var event = Config.events[i];
+		var event = exports.events[i];
 		var isTime = (ctime >= event.startTime.getTime() && ctime <= event.endTime.getTime());
 		if (isTime)
 			return event;
@@ -95,11 +95,11 @@ exports.getCurrentOrNextEvent = function()
 	var ctime = (new Date()).getTime();
 	var min = null;
 	var event = null;
-	for (var i in Config.events) 
+	for (var i in exports.events) 
 	{
-		var e = Config.events[i];
+		var e = exports.events[i];
 		var diff = (e.startTime.getTime()-ctime);
-		if (diff >= 0 && (min == null || min > diff) {
+		if (diff >= 0 && (min == null || min > diff)) {
 			event=e;
 			min=diff;
 		}
