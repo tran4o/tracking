@@ -38,8 +38,9 @@ function initGUI()
 		if (!GUI.getTrackLayer().getSource().getFeatures().length) {
 			if (e && e.feature) {
 				feat=e.feature;    
+			} else {
+				return null;
 			}
-			return null;
 		} else {
 			feat = GUI.getTrackLayer().getSource().getFeatures()[0];
 		}
