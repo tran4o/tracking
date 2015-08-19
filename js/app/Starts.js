@@ -24,41 +24,43 @@ var eid = params.id;
 //---------------------------------------
 if (!eid)
 	return;
-var EDITOR2 = new $.fn.dataTable.Editor( {
-	ajax: '../starts/'+eid,
-	table: "#table-starts",
-	idSrc: "id",
-	fields: [{
-				label: "Id",
-				name: "id",
-				type : "readonly"
-			}, {
-				label: "From No",
-				name: "fromStartNo"
-			}, {
-				label: "To No",
-				name: "toStartNo"
-			}, {
-				label: "Start Time",
-				name: "startTime"
-			}]
-} );
+$(document).ready( function () 
+{
+	var EDITOR2 = new $.fn.dataTable.Editor( {
+		ajax: '../starts/'+eid,
+		table: "#table-starts",
+		idSrc: "id",
+		fields: [{
+					label: "Id",
+					name: "id",
+					type : "readonly"
+				}, {
+					label: "From No",
+					name: "fromStartNo"
+				}, {
+					label: "To No",
+					name: "toStartNo"
+				}, {
+					label: "Start Time",
+					name: "startTime"
+				}]
+	} );
 
-var tableStarts = $('#table-starts').DataTable( {
-	dom: "Tfrtip",
-	ajax: "../starts/"+eid,
-	columns: [
-		{ data: "fromStartNo",className : "dt-body-right" },
-		{ data: "toStartNo",className : "dt-body-right" },
-		{ data: "startTime",className : "dt-body-right" }
-	],
-	tableTools: {
-		sRowSelect: "os",
-		aButtons: [
-			{ sExtends: "editor_create", editor: EDITOR2 },
-			{ sExtends: "editor_edit",   editor: EDITOR2 },
-			{ sExtends: "editor_remove", editor: EDITOR2 }
-       ]
-	}
-} );
-
+	var tableStarts = $('#table-starts').DataTable( {
+		dom: "Tfrtip",
+		ajax: "../starts/"+eid,
+		columns: [
+			{ data: "fromStartNo",className : "dt-body-right" },
+			{ data: "toStartNo",className : "dt-body-right" },
+			{ data: "startTime",className : "dt-body-right" }
+		],
+		tableTools: {
+			sRowSelect: "os",
+			aButtons: [
+				{ sExtends: "editor_create", editor: EDITOR2 },
+				{ sExtends: "editor_edit",   editor: EDITOR2 },
+				{ sExtends: "editor_remove", editor: EDITOR2 }
+	       ]
+		}
+	} );
+});
