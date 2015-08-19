@@ -78,9 +78,7 @@ function initGUI()
 		GUI.map.addInteraction(select);
 		GUI.map.addInteraction(modify);
 		store();
-		if (!TRACK.feature)
-			TRACK.feature=GUI.getTrackLayer().getSource().getFeatures()[0];
-		TRACK.feature.track=TRACK;
+		TRACK.updateFeature();
 	});
 	//-------------------------------------------------
 	GUI.map.removeInteraction(select);
@@ -94,6 +92,7 @@ function initGUI()
 		GUI.map.removeInteraction(modify);
 		GUI.map.addInteraction(draw);
 		store();
+		delete TRACK.feature;
 	});
 	$("#button_navigate").click(function(){
 		TRACK.generateFromLocations(TRACK.getRoute(),function() {
