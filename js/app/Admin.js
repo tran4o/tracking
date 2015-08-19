@@ -324,6 +324,32 @@ $(document).ready( function ()
                             	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bikeStartKM").val(),$("#DTE_Field_runStartKM").val(),function(data) {
                             		   $("#DTE_Field_track").val(data);
                             	   });
+                                } },
+                                { label: 'Starts', fn: function() {
+                                	var eid = $("#DTE_Field_id").val();
+                                	if (!eid || !eid.length()) {
+                                		alert("Only on saved event possible!");
+                                		return;
+                                	}
+                                	$(".fw-container").css("display","none");
+                                	$("#starts").css("display","block");
+                                	var tableStarts = $('#table-starts').DataTable( {
+                                		dom: "Tfrtip",
+                                		ajax: "../starts/"+eid,
+                                		columns: [
+                                			{ data: "fromStartNo",className : "dt-body-right" },
+                                			{ data: "toStartNo",className : "dt-body-right" },
+                                			{ data: "startTime",className : "dt-body-right" }
+                                		],
+                                		tableTools: {
+                                			sRowSelect: "os",
+                                			aButtons: [
+                                				{ sExtends: "editor_create", editor: EDITOR2 },
+                                				{ sExtends: "editor_edit",   editor: EDITOR2 },
+                                				{ sExtends: "editor_remove", editor: EDITOR2 }
+                                           ]
+                                		}
+                                	} );
                                 } }
                              ] )
 		                    .edit( tableEvents.row( '.selected' ).node() );
