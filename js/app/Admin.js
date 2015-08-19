@@ -78,6 +78,7 @@ function initGUI()
 		store();
 		if (!TRACK.feature)
 			TRACK.feature=GUI.getTrackLayer().getSource().getFeatures()[0];
+		TRACK.feature.track=TRACK;
 	});
 	//-------------------------------------------------
 	GUI.map.removeInteraction(select);
