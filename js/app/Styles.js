@@ -59,11 +59,11 @@ var STYLES=
 			geombike=coords.slice(i < 1 ? i : i-1,j);
 			if (j < track.distances.length)
 				geomrun=coords.slice(j < 1 ? j : j-1,track.distances.length);
-			if (!geomswim.length)
+			if (!geomswim || !geomswim.length)
 				geomswim=null;
-			if (!geombike.length)
+			if (!geombike || !geombike.length)
 				geombike=null;
-			if (!geomrun.length)
+			if (!geomrun || !geomrun.length)
                 geomrun=null;
 		}
 
