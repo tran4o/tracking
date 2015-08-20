@@ -404,9 +404,8 @@ table.dataTable td {
 
 
 .table-favorite-add {
-	width : 32px;
-	height : 32px;
-	/* border : 2px solid black; */
+	width : 20px;
+	height : 20px;
 	cursor : pointer;
 }
 
@@ -783,6 +782,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before, tabl
 
 	background-image: url(../img/plus_solid.svg);
 	background-size: 16px;
+	top: 10px;
+	top: calc(50% - 8px);
 }
 
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child::before {
