@@ -115,7 +115,6 @@ setInterval(function()
 					event.partLookupByIMEI[devId]=part;
 					//-----------------------------
 					part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
-					console.log("PARTICIPANT START TIME : "+new Date(part.startTime));
 					if (Config.simulation.singleParticipant)
 						break;
 				}

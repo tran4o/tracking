@@ -63,7 +63,7 @@
 			<td>LAST PING</td>
 			<td>REAL DELAY (sec.)</td>
 			<td>NO SIGNAL (sec.)</td>
-			<td>Start after (sec.)</td>
+			<td>Start after (min.)</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -107,7 +107,7 @@ function doGet()
 			rr.push("<td>"+dd.lastReq+"</td>");			
 			rr.push("<td>"+formatNumber2(dd.realDelay/1000.0)+"</td>");
 			rr.push("<td>"+(dd.lostDelay ? formatNumber2(dd.lostDelay/1000.0) : "-") +"</td>");
-			rr.push("<td>"+(dd.start != undefined ? formatNumber2(dd.start) : "-") +"</td>");
+			rr.push("<td>"+(dd.start != undefined ? formatNumber2(dd.start/60.0) : "-") +"</td>");
 			rr.push("</tr>");
 		}
 		$("tbody").html(rr.join(""));
