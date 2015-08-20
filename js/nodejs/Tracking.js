@@ -65,7 +65,7 @@ var oldEvent = null;
 var oldUpdateCount = Config.updateCount;
 setInterval(function() 
 {
-	var event = Config.getCurrentEvent();
+	var event = Config.getCurrentOrNextEvent();
 	if (!event)
 		return;	
 	if (oldEvent != event || oldUpdateCount != Config.updateCount) 
@@ -144,6 +144,12 @@ setInterval(function()
 			event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
 		}
 	}
+	
+	// NOT ACTIVE EVENT?
+	var cevent = Config.getCurrentEvent();
+	if (cevent == null || event != cevent)
+		return;
+	
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};
 	var genderRank={};

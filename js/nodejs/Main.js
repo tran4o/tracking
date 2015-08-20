@@ -11,6 +11,14 @@ var fs = require('fs');
 var path = require('path');
 
 //--------------------------------------------------------------------
+function getRaceStartPeriod(part) {
+	var now = (new Date()).getTime();
+	var startperiod = Math.floor((part.startTime-now)/(1000.0*60));		// seconds
+	if (startperiod < 0)
+		startperiod=0;
+	return startperiod;
+}
+//--------------------------------------------------------------------
 var app = express();
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
@@ -34,10 +42,7 @@ app.get('/raceStart/:id', function (req, res) {
 	if (!part) {
 		res.send(JSON.stringify({RET:"ERR",RETMSG:"PARTICIPANT BY IMEI NOT FOUND"}));
 	} else {
-		var now = (new Date()).getTime();
-		var startperiod = parseInt((part.startTime-now)/(1000.0*60));		// seconds
-		if (startperiod < 0)
-			startperiod=0;
+		var startperiod=getRaceStartPeriod(part);
 		var endperiod = 9999999;									    // seconds
 		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":""+startperiod,"ENDPERIOD":""+endperiod}));
 	}
@@ -60,6 +65,8 @@ app.get('/status', function (req, res)
 		var part = event.trackedParticipants[i];
 		var pos = part.getGPS();
 		var ltmp = part.getLastPingTimestamp();
+		var startperiod=getRaceStartPeriod(part);
+		
 		partStatus[part.id]=
 		{
 			name : part.getCode(),
@@ -69,7 +76,8 @@ app.get('/status', function (req, res)
 			realDelay : part.lastRealDelay,
 			lostDelay : part.signalLostDelay,
 			lastReq : ltmp ? Utils.formatTimeSec(new Date(ltmp)) : "-",
-			elapsed : part.getElapsed()*100.0
+			elapsed : part.getElapsed()*100.0,
+			start : startperiod
 		};
 	}
 	res.send(JSON.stringify({

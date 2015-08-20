@@ -117,7 +117,6 @@ exports.getStartTimeFromStartPos = function(startPos)
 	var event = exports.getCurrentEvent();
 	if (!event)
 		return 0;
-	
 	for (var i in event.starts) 
 	{
 		if (startPos >= event.starts[i].fromStartNo && startPos <= event.starts[i].toStartNo) {
