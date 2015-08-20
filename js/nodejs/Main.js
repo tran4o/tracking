@@ -13,7 +13,7 @@ var path = require('path');
 //--------------------------------------------------------------------
 function getRaceStartPeriod(part) {
 	var now = (new Date()).getTime();
-	var startperiod = Math.floor((part.startTime-now)/(1000.0*60));		// seconds
+	var startperiod = Math.floor((part.startTime-now)/1000.0);		// seconds
 	if (startperiod < 0)
 		startperiod=0;
 	return startperiod;
@@ -44,7 +44,7 @@ app.get('/raceStart/:id', function (req, res) {
 	} else {
 		var startperiod=getRaceStartPeriod(part);
 		var endperiod = 9999999;									    // seconds
-		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":""+startperiod,"ENDPERIOD":""+endperiod}));
+		res.send(JSON.stringify({"RET":"OK","RETMSG":"","TYPE":"RACESTART","VER":"1.0","IMEI":id,"STARTPERIOD":""+Math.floor(startperiod/1000),"ENDPERIOD":""+endperiod}));
 	}
 });
 
