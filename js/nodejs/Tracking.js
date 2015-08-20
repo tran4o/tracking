@@ -70,7 +70,7 @@ setInterval(function()
 		return;	
 	if (oldEvent != event || oldUpdateCount != Config.updateCount) 
 	{
-		console.log("Reset tracking event to "+event.id+" | OLD="+(oldEvent ? oldEvent.id : ""));
+		console.log("Reset tracking event to "+event.code+" | OLD="+(oldEvent ? oldEvent.code : ""));
 		if (oldEvent) {
 			oldEvent.stream.isStopped=true;
 			delete oldEvent.trackedParticipants;
@@ -87,7 +87,7 @@ setInterval(function()
 			event.TRACK.setRunStartKM(event.runStartKM);
 			event.TRACK.setRoute(event.trackData);
 			event.TRACK.init();
-			console.log("Starting tracking engine for track with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
+			console.log("Starting tracking engine for track "+event.code+" with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
 			//----------------------------------------------------------------------------------------------------------------------------------
 			for (var i in Config.participants) 
 			{
