@@ -76,11 +76,11 @@ var CONFIG =
 
 		// Note the sequence is always Swim-Bike-Run - so 2 change-points
 		// TODO Rumen - add scale here, not in Styles.js
-		imageStart : "img/start.png",
-		imageFinish : "img/finish.png",
-		imageCam : "img/camera.svg",
-		imageCheckpointSwimBike : "img/wz1.svg",
-		imageCheckpointBikeRun : "img/wz2.svg",
+		imageStart : "/img/start.png",
+		imageFinish : "/img/finish.png",
+		imageCam : "/img/camera.svg",
+		imageCheckpointSwimBike : "/img/wz1.svg",
+		imageCheckpointBikeRun : "/img/wz2.svg",
 		isShowImageCheckpoint : true,
 
         // the distance between the direction icons - in pixels,
