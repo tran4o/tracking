@@ -205,7 +205,7 @@ function startDataTablesJSON(start) {
 		id:DEF(start.id,"0"),
 		fromStartNo:DEF(start.fromStartNo,"0"),
 		toStartNo:DEF(start.toStartNo,"0"),
-		startTime:start.startTime ? start.startTime.format("HH:mm") : "00:00"
+		startTime:start.startTime ? moment(start.startTime).format("HH:mm") : "00:00"
 	  });
 }
 
