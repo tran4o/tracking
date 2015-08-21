@@ -15,8 +15,7 @@ Class("StreamData",
         start : function(track,checker,pingInterval,callBackFnc)
         {
             var url = "http://liveortung.de/triathlon/rest/stream"; 
-        	var delay = -120*60*1000;		// 120 for gmt+2	(new Date()).getTimezoneOffset() ??
-        	console.log("DELAYYY : "+delay);
+        	var delay = 120*60*1000;		// 120 for gmt+2	(new Date()).getTimezoneOffset() ??
         	for (var i in track.participants) 
         	{
         		var part = track.participants[i];
@@ -33,6 +32,7 @@ Class("StreamData",
         		}
                 var json=[];
                 var ctime = (new Date()).getTime();
+            	console.log("CHECK CRR : "+new Date(ctime-dalay));
                 var mmap = {};
                 for (var i in track.participants) 
                 {
