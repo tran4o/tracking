@@ -17,11 +17,41 @@ var STYLES=
 	{
 		var styles=[];
         styles.push(new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 17,
+                fill: new ol.style.Fill({
+                    color: "rgba(" + colorAlphaArray(part.color, 0.35).join(",") + ")"
+                }),
+                stroke: new ol.style.Stroke({
+                    color: "rgba(255,255,255,1)",
+                    width: 3
+                })
+            }),
+            text: new ol.style.Text({
+                font: 'bold 13px Lato-Regular',
+                fill: new ol.style.Fill({
+                    color: '#000000'
+                }),
+                text: "!!!",
+                offsetX: 0,
+                offsetY: 20
+            })
+        }));
+        return styles;
+	},
+
+	"test1": function(feature,resolution) 
+	{
+		var styles=[];
+        styles.push(new ol.style.Style({
              stroke: new ol.style.Stroke({
-                 color: "#0000FF",
+                 color: "rgba(0,0,0,0.8)",
                  width: 3
-             })
-         	}));
+             }),
+	         fill: new ol.style.Fill({
+	            color: "rgba(40,255,40,0.4)"
+	         }),
+        }));
         return styles;
 	},
 	"track" : function(feature,resolution) 

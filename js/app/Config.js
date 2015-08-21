@@ -22,19 +22,19 @@ var CONFIG =
 		popupEnsureVisibleHeight: 120
 	},
 	simulation : {
-		pingInterval : 10, // interval in seconds to ping with gps data
-		gpsInaccuracy : 0,  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
+		pingInterval : 10,  // interval in seconds to ping with gps data
+		gpsInaccuracy : 8, //8,  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
+		speedCoef : 100
 	},
 	settings : {
 		noMiddleWare : 0, 	// SKIP middle ware node js app
 		noInterpolation : 0	// 1 -> no interpolation only points
 	},
 	math : {
-		gpsInaccuracy : 20,	//TODO 13 min
+		gpsInaccuracy : 30,	//TODO 13 min
 		speedAndAccelerationAverageDegree : 2,	// calculation based on N states (average) (MIN 2)
-		displayDelay : 80,						// display delay in SECONDS
-		interpolateGPSAverage : 0, // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
-		roadDistanceBestPointCalculationCoef : 0.2 // TODO EXPLAIN
+		displayDelay : 60,						// display delay in SECONDS
+		interpolateGPSAverage : 0 // number of recent values to calculate average gps for position (smoothing the curve.min 0 = NO,1 = 2 values (current and last))
 	},
 	constants : 
 	{
@@ -69,7 +69,7 @@ var CONFIG =
 	},
 	
 	appearance : {
-		debug : 0,
+		debug : 1,
 		trackColorSwim : '#5676ff',
 		trackColorBike : '#E20074',
 		trackColorRun :  '#079f36',

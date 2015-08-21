@@ -161,6 +161,10 @@ Class("Gui",
 					  source: new ol.source.Vector(),
 					  style : STYLES["test"]
 				});
+				this.testLayer1 = new ol.layer.Vector({
+					  source: new ol.source.Vector(),
+					  style : STYLES["test1"]
+				});
 			}
 			//--------------------------------------------------------------
 			var ints = [];
@@ -196,6 +200,7 @@ Class("Gui",
 			if (this.isDebug) { 
 				this.map.addLayer(this.debugLayerGPS);
 				this.map.addLayer(this.testLayer);
+				this.map.addLayer(this.testLayer1);
 			}
 			TRACK.init();
 			this.addTrackFeature();

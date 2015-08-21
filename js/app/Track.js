@@ -320,7 +320,7 @@ Class("Track",
 				}
 				this.feature.track=this;
 				this.feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');						
-				console.log("FEATURE TRACK : "+this.feature.track);
+				//console.log("FEATURE TRACK : "+this.feature.track);
 			} else {
 				delete this.feature;
 			}
@@ -413,6 +413,20 @@ Class("Track",
 			{
 				this.debugParticipant.onDebugClick(event);
 			}
+		},
+		
+		test1 : function() {
+			/*console.log("#BEGINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+			for (var i=0;i<30;i++) 
+			{
+				var elapsed = i/60.0;  //((tm - stime)/1000.0)/trackInSeconds + Config.simulation.startElapsed;
+				if (elapsed > 1)
+					elapsed=1;
+				//var pos = track.getPositionAndRotationFromElapsed(elapsed);
+				var pos = this.__getPositionAndRotationFromElapsed(elapsed);
+				console.log([Math.round(pos[0]*1000000.0)/1000000.0,Math.round(pos[1]*1000000.0)/1000000.0]);
+			}
+			console.log("#END");*/
 		}
 
     }

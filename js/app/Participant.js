@@ -18,7 +18,7 @@ Class("ParticipantState",
 	    timestamp : 
 		{
 	        is:   "rw",
-	        init: [0,0]	//lon lat world mercator
+	        init: 0	//lon lat world mercator
 	    },
 	    gps : {
 	    	is:   "rw",
@@ -245,9 +245,9 @@ Class("Participant",
 			} 
 		},
 
-		max : function(ctime,proName) 
+		min : function(ctime,proName) 
 		{
-			var res=0;
+			var res=null;
 			for (var i=this.states.length-2;i>=0;i--) 
 			{
 				var j = i+1;
@@ -356,8 +356,29 @@ Class("Participant",
 
 		pingCalculated : function(obj) {
 			var state = new ParticipantState(obj);
-			//console.warn(state);
 			this.addState(state);
+			var pos = state.gps;
+			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
+			var rr = CONFIG.math.gpsInaccuracy*coef;
+			if (typeof GUI != "undefined" && GUI.isDebug) 
+			{
+				var ring = [
+				            [pos[0]-rr, pos[1]-rr], [pos[0]+rr, pos[1]-rr],[pos[0]+rr, pos[1]+rr],[pos[0]-rr, pos[1]+rr],[pos[0]-rr, pos[1]-rr]
+				          ];
+				var polygon = new ol.geom.Polygon([ring]);
+				polygon.transform('EPSG:4326', 'EPSG:3857');
+				var feature = new ol.Feature(polygon);
+				GUI.testLayer1.getSource().addFeature(feature);
+
+				var mpos = ol.proj.transform(pos, 'EPSG:4326', 'EPSG:3857');
+				var feature = new ol.Feature(new ol.geom.Point(mpos));
+				GUI.testLayer.getSource().addFeature(feature);
+				console.log(Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
+
+				/*while (GUI.testLayer1.getSource().getFeatures().length > 10)
+				GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);*/
+			} 
+
 		},
 
 		getOverallRank : function() {
@@ -425,7 +446,7 @@ Class("Participant",
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
-				
+
 				if (typeof GUI != "undefined" && GUI.isDebug) 
 					dbgLine.push([[tg[i][0], tg[i][1]], [tg[i+1][0], tg[i+1][1]]]);
 				
@@ -453,20 +474,27 @@ Class("Participant",
 			//------/---------------------------------------
 			//console.log("OOOOOOP! "+dbgLine.length);
 			//console.log(dbgLine);
-			if (typeof GUI != "undefined" && GUI.isDebug) 
+			/*if (typeof GUI != "undefined" && GUI.isDebug) 
+				
 			{
-				if (this.__dbgBox) {
-					GUI.testLayer.getSource().removeFeature(this.__dbgBox);
-					delete this.__dbgBox;
-				}
+				var ring = [
+				            [pos[0]-rr, pos[1]-rr], [pos[0]+rr, pos[1]-rr],[pos[0]+rr, pos[1]+rr],[pos[0]-rr, pos[1]+rr],[pos[0]-rr, pos[1]-rr]
+				          ];
+				var polygon = new ol.geom.Polygon([ring]);
+				polygon.transform('EPSG:4326', 'EPSG:3857');
+				var feature = new ol.Feature(polygon);
+				GUI.testLayer1.getSource().clear();
+				GUI.testLayer1.getSource().addFeature(feature);
+				
 				if (dbgLine.length) {
 					var feature = new ol.Feature();
 					var geom = new ol.geom.MultiLineString(dbgLine);
 					geom.transform('EPSG:4326', 'EPSG:3857');
 					feature.setGeometry(geom);
+					GUI.testLayer.getSource().clear();
 					GUI.testLayer.getSource().addFeature(feature);
 				}
-			} 
+			}*/ 
 			//---------------------------------------------
 			
 			/*if (minf == null)
@@ -524,16 +552,6 @@ Class("Participant",
 			}
 			//-----------------------------------------------------------
 			this.addState(state);
-			if (typeof GUI != "undefined" && GUI.isDebug && !this.getIsDiscarded()) 
-			{
-				var feature = new ol.Feature();
-				var geom = new ol.geom.Point(state.gps);
-				geom.transform('EPSG:4326', 'EPSG:3857');
-				feature.color=this.color;
-				feature.setGeometry(geom);
-				feature.timeCreated=ctime;
-				GUI.debugLayerGPS.getSource().addFeature(feature);
-			}
 		},
 		
 		addState : function(state) {

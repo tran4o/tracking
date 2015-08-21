@@ -1,5 +1,6 @@
 require('./../app/Track');
 require('./StreamData');
+var moment = require('moment');
 var requestJSON = require('request-json');
 var BinarySearchTree = require('binary-search-tree').BinarySearchTree;
 var Utils = require('./../app/Utils');
@@ -14,13 +15,22 @@ function doHTTP(url,json,onReqDone)
 {
     if (json.length) 
     {
-		var client = requestJSON.createClient("http://liverank-portal.de");
+		var client = requestJSON.createClient("http://liverortung.de");
+		var tt = [];
+		for (var i in json) {
+			tt[i]={imei:json[i].imei,from:json[i].from,to:json[i].to};
+			tt[i].toSTR=moment(new Date(tt[i].to)).format("DD.MM.YYYY HH:mm:ss.SS");
+			tt[i].fromSTR=moment(new Date(tt[i].from)).format("DD.MM.YYYY HH:mm:ss.SS");
+		}
+		//console.log("POSTING "+url+" | "+JSON.stringify(tt));
 		function postDone(err, res, body) 
 		{
 			if (err)
 				console.log("Error geting server live data "+err);
-			else
+			else { 
+				//console.log("REQDONE "+url+" | "+JSON.stringify(body));
 				onReqDone(body);
+			}
 		}
 		client.post(url, json, postDone);
     }                		
@@ -118,9 +128,9 @@ setInterval(function()
 					if (Config.simulation.singleParticipant)
 						break;
 				}
-				if (Config.simulation.enabled) 
-					Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
 			}
+			if (Config.simulation.enabled) 
+				Simulator.startSimulation(event.TRACK,Config.simulation.speedCoef);	
 			if (!Config.simulation.singleParticipant)
 			for (var i in Config.cams) 
 			{
@@ -173,7 +183,7 @@ setInterval(function()
 			val.push(moredist/spd);
 		}
 	}
-	console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
+	//console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
 	//console.log(val);
 	arr.sort(function(a, b){
 		return val[a]-val[b];
@@ -206,26 +216,27 @@ setInterval(function()
 		ts.setFreq(parseInt(part.avg(ctime,"freq")));
 		ts.setAcceleration(part.avg(ctime,"acceleration"));
 		ts.setAlt(parseInt(part.avg(ctime,"alt")));
-		ts.setGps(part.avg2(ctime,"gps"));
+		ts.setGps(part.min(ctime,"gps"));
 		ts.setIsSOS(part.states[part.states.length-1].getIsSOS());
 		ts.setTimestamp(ctime);		
 		ts.setOverallRank(overAllRank[part.deviceId]);
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);		
 		//console.log(ts);
-		addState(part.deviceId,ts);
+		addState(event,part.deviceId,ts);
 	}
 },5000);
 //--------------------------------------------------------------------------
 // from inclusive , to exclusive
 exports.queryData = function(imei,from,to) 
 {
-	if (!inRaceChecker())
+	var event = Config.getCurrentEvent();
+	if (!event)
 		return [];
 	var res=[];
-	if (stateStorage[imei]) 
+	if (event.stateStorage && event.stateStorage[imei]) 
 	{
-		var qry = stateStorage[imei].betweenBounds({ $gte: from, $lt: to });
+		var qry = event.stateStorage[imei].betweenBounds({ $gte: from, $lt: to });
 		for (var j in qry) 
 		{
 			var state = qry[j];

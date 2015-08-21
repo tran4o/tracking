@@ -16,7 +16,7 @@ var DemoSimulation = function() {
         countSimulations++;
 
         var p0 = TRACK.route[0];
-        var randcoef = CONFIG.simulation.gpsInaccuracy * 0.0001 / Utils.WGS84SPHERE.haversineDistance(p0, [p0[0]+0.0001, p0[1]+0.0001]);
+        var randcoef = 0;//CONFIG.simulation.gpsInaccuracy * 0.0001 / Utils.WGS84SPHERE.haversineDistance(p0, [p0[0]+0.0001, p0[1]+0.0001]);
         var stime = (new Date()).getTime();
         var coef = TRACK.getTrackLength() / TRACK.getTrackLengthInWGS84();
         setInterval(function(e) {

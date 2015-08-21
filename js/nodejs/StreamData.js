@@ -37,14 +37,17 @@ Class("StreamData",
                 {
                 	var pp = track.participants[i];
                 	json.push({to : ctime-delay,from : pp.__startTime-delay,IMEI : pp.deviceId});
+                	
                 	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
                 	mmap[pp.deviceId]=pp;
                 }
                 function processData(data) 
                 {
+                	//console.log("Process data size = "+data.length);
                 	for (var i in data) 
                 	{
                 		var e = data[i];
+                		console.log("PROCESS : "+JSON.stringify(e));
                         var ctime = parseInt(e.EPOCH);
                         if (!ctime)
                              continue;
@@ -75,7 +78,7 @@ Class("StreamData",
                         //----------------------------------
                         var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
                         part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
-                        console.log(part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
+                        console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
                 	}
                 }
                 //console.log("STREAM DATA JSON");

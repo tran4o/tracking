@@ -268,7 +268,7 @@ function changeFavorite(id) {
 //--------------------------------------------------------------------------
 // use this if you want to bypass all the NodeJS dynamic event get
 // it will simulate a static data return by "demo_simulation_data.json"
-window.isDEMO_SIMULATION = true;
+//window.isDEMO_SIMULATION = true;
 
 window.TRACK = new Track();
 window.GUI = new Gui({track: TRACK});
@@ -364,6 +364,8 @@ $(document).ready(function () {
                 // NORMAL CASE
                 var stream = new BackendStream();
                 stream.start(TRACK);
+                
+                
             }
         }
 

@@ -91,7 +91,8 @@ function formatTimeSec(d) {
 
 function doGet() 
 {
-	$.getJSON( "../status", function( data ) 
+	var url = (window.location.host.indexOf("localhost") == 0 || window.location.host.indexOf("127.0.0.1") == 0) ? "http://localhost:3000/status" : "../status"			
+	$.getJSON( url, function( data ) 
 	{
 		$(".header").html("Start "+data.startStr+" ("+formatNumber2(data.startAfter/(1000*60.0)) +" min. to go) <div style='float:right;font-weight:bold;color:red;'>"+ formatTimeSec(new Date())+"</div>");
 		var rr = [];
