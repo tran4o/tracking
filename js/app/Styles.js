@@ -20,21 +20,12 @@ var STYLES=
             image: new ol.style.Circle({
                 radius: 17,
                 fill: new ol.style.Fill({
-                    color: "rgba(" + colorAlphaArray(part.color, 0.35).join(",") + ")"
+                    color: "rgba(" + colorAlphaArray(part.color, 0.15).join(",") + ")"
                 }),
                 stroke: new ol.style.Stroke({
-                    color: "rgba(255,255,255,1)",
+                    color: "rgba(255,255,255,0.5)",
                     width: 3
                 })
-            }),
-            text: new ol.style.Text({
-                font: 'bold 13px Lato-Regular',
-                fill: new ol.style.Fill({
-                    color: '#000000'
-                }),
-                text: "!!!",
-                offsetX: 0,
-                offsetY: 20
             })
         }));
         return styles;
@@ -45,11 +36,11 @@ var STYLES=
 		var styles=[];
         styles.push(new ol.style.Style({
              stroke: new ol.style.Stroke({
-                 color: "rgba(0,0,0,0.8)",
+                 color: "rgba(0,0,0,0.4)",
                  width: 3
              }),
 	         fill: new ol.style.Fill({
-	            color: "rgba(40,255,40,0.4)"
+	            color: "rgba(40,255,40,0.2)"
 	         }),
         }));
         return styles;
