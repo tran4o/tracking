@@ -70,7 +70,7 @@ var CONFIG =
 	},
 	
 	appearance : {
-		debug : 1,
+		debug : 0,
 		trackColorSwim : '#5676ff',
 		trackColorBike : '#E20074',
 		trackColorRun :  '#079f36',
