@@ -8,8 +8,7 @@ var STYLES=
 		
 	"_track": function(feature,resolution) 
 	{
-        return 
-        [
+        return [
         ];
 	},
 
