@@ -32,7 +32,7 @@ Class("StreamData",
         		}
                 var json=[];
                 var ctime = (new Date()).getTime();
-            	console.log("CHECK CRR : "+new Date(ctime-dalay));
+            	console.log("CHECK CRR : "+new Date(ctime-delay));
                 var mmap = {};
                 for (var i in track.participants) 
                 {
