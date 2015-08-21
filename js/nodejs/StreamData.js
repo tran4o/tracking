@@ -43,7 +43,7 @@ Class("StreamData",
                 }
                 function processData(data) 
                 {
-                	//console.log("Process data size = "+data.length);
+                	console.log("Process data size = "+data.length);
                 	for (var i in data) 
                 	{
                 		var e = data[i];
@@ -81,8 +81,7 @@ Class("StreamData",
                         console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
                 	}
                 }
-                //console.log("STREAM DATA JSON");
-                //console.log(json);
+                console.log(json);
                 callBackFnc(url,json,processData);
                 setTimeout(doTick,pingInterval*1000);
         	}
