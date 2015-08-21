@@ -32,13 +32,12 @@ Class("StreamData",
         		}
                 var json=[];
                 var ctime = (new Date()).getTime();
-            	console.log("CHECK CRR : "+new Date(ctime-delay));
                 var mmap = {};
                 for (var i in track.participants) 
                 {
                 	var pp = track.participants[i];
                 	json.push({to : ctime-delay,from : pp.__startTime-delay,IMEI : pp.deviceId});
-                	
+                	console.log(pp.deviceId+" | "+new Date(pp.__startTime-delay)+" > "+new Date(ctime-delay));
                 	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
                 	mmap[pp.deviceId]=pp;
                 }
