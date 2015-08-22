@@ -91,8 +91,8 @@ var CONFIG =
 
     hotspot : {
         cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
-		camSwimBike : {image : "img/wz1.svg", scale : 0.040},
-		camBikeRun : {image : "img/wz2.svg", scale : 0.040},
+		camSwimBike : {image : "img/wz1.svg", scale : 0.8},
+		camBikeRun : {image : "img/wz2.svg", scale : 0.8},
         water : {image : "img/water.svg"},
         uturn : {image : "img/uturn.svg"},
 
