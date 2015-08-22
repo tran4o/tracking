@@ -181,6 +181,7 @@ function assignIMEI(mikaId,imei)
 		delete assignments[mikaId];
 	else
 		assignments[mikaId]=imei;
+	exports.updateCount++
 	fs.writeFileSync(apath, JSON.stringify(assignments, null, 4)); 
 }
 function lookupIMEI(id) {
