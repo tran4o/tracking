@@ -22,7 +22,7 @@ function doHTTP(url,json,onReqDone)
 			tt[i].toSTR=moment.utc(new Date(tt[i].to)).format("DD.MM.YYYY HH:mm:ss.SS");
 			tt[i].fromSTR=moment.utc(new Date(tt[i].from)).format("DD.MM.YYYY HH:mm:ss.SS");
 		}
-		console.log("POSTING "+url+" | "+JSON.stringify(tt));
+		//console.log("POSTING "+url+" | "+JSON.stringify(tt));
 		function postDone(err, res, body) 
 		{
 			if (err)
