@@ -382,7 +382,7 @@ Class("Participant",
 				var mpos = ol.proj.transform(pos, 'EPSG:4326', 'EPSG:3857');
 				var feature = new ol.Feature(new ol.geom.Point(mpos));
 				GUI.testLayer.getSource().addFeature(feature);
-				console.log(Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
+				console.log(this.getCode()+" | "+Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
 
 				while (GUI.testLayer1.getSource().getFeatures().length > 10)
 					GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);
