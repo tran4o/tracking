@@ -4,6 +4,8 @@ require('./Point');
 var CONFIG = require('./Config');
 var Utils = require('./Utils');
 
+var coefy = 0.75;
+
 Class("ParticipantState",
 {
 	has : {		
@@ -370,7 +372,7 @@ Class("Participant",
 			if (typeof GUI != "undefined" && GUI.isDebug) 
 			{
 				var ring = [
-				            [pos[0]-rr, pos[1]-rr], [pos[0]+rr, pos[1]-rr],[pos[0]+rr, pos[1]+rr],[pos[0]-rr, pos[1]+rr],[pos[0]-rr, pos[1]-rr]
+				            [pos[0]-rr, pos[1]-rr*coefy], [pos[0]+rr, pos[1]-rr*coefy],[pos[0]+rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]-rr*coefy]
 				          ];
 				var polygon = new ol.geom.Polygon([ring]);
 				polygon.transform('EPSG:4326', 'EPSG:3857');
@@ -380,10 +382,12 @@ Class("Participant",
 				var mpos = ol.proj.transform(pos, 'EPSG:4326', 'EPSG:3857');
 				var feature = new ol.Feature(new ol.geom.Point(mpos));
 				GUI.testLayer.getSource().addFeature(feature);
-				console.log(Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
+				console.log(this.getCode()+" | "+Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
 
-				/*while (GUI.testLayer1.getSource().getFeatures().length > 10)
-				GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);*/
+				while (GUI.testLayer1.getSource().getFeatures().length > 10)
+					GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);
+				while (GUI.testLayer.getSource().getFeatures().length > 10)
+					GUI.testLayer.getSource().removeFeature(GUI.testLayer.getSource().getFeatures()[0]);
 			} 
 
 		},
@@ -442,7 +446,7 @@ Class("Participant",
 			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
 			var minf = null;
 			var rr = CONFIG.math.gpsInaccuracy*coef;
-			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
+			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr*coefy, pos[0]+rr, pos[1]+rr*coefy]);
 			if (!result)
 				result=[];
 			
@@ -450,14 +454,30 @@ Class("Participant",
 			//for (var i=0;i<this.track.route.length-1;i++) {
 
 			//----------------------------------------------
-			var dbgLine = [];
+			//var rrect = IntersectionParams.newRect(pos[0]-rr, pos[0]-rr*coefy, rr, rr.coefy);
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
-
-				if (typeof GUI != "undefined" && GUI.isDebug) 
-					dbgLine.push([[tg[i][0], tg[i][1]], [tg[i+1][0], tg[i+1][1]]]);
 				
+				/*var res = Intersection.intersectShapes(  
+			              	IntersectionParams.newLine(new Point2D(tg[i][0],tg[i][1]),new Point2D(tg[i+1][0],tg[i+1][1]))  
+			              , rrect  
+			      		);
+				if (res) 
+				{
+					var d3 = WGS84SPHERE.haversineDistance(tg[i],tg[i+1]);
+					for (var q=0;q<res.length;q++) 
+					{
+						//Utils.disp
+						var d1 = WGS84SPHERE.haversineDistance([res[q].x,res[q].y],tg[i]);
+						var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
+						if (el1 < lelp)
+							el1=lelp;
+						if (minf == null || el1 < minf)
+							minf=el1;
+						console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
+					}
+				}*/
 				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
@@ -467,7 +487,7 @@ Class("Participant",
 					var d3 = Utils.distp(tg[i],tg[i+1]);
 					var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
 					var el2 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d2/d3;
-					//console.log("Intersection candidate at "+i+" | "+el1+" | "+el2);
+					//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0+" | "+Math.round(el2*100.0*100.0)/100.0+" | LELP="+Math.round(lelp*100.0*100.0)/100.0);
 					if (el1 < lelp)
 						el1=lelp;
 					if (el2 < lelp)
@@ -479,38 +499,14 @@ Class("Participant",
 						minf=el2;
 				}
 			}
-			//------/---------------------------------------
-			//console.log("OOOOOOP! "+dbgLine.length);
-			//console.log(dbgLine);
-			/*if (typeof GUI != "undefined" && GUI.isDebug) 
-				
-			{
-				var ring = [
-				            [pos[0]-rr, pos[1]-rr], [pos[0]+rr, pos[1]-rr],[pos[0]+rr, pos[1]+rr],[pos[0]-rr, pos[1]+rr],[pos[0]-rr, pos[1]-rr]
-				          ];
-				var polygon = new ol.geom.Polygon([ring]);
-				polygon.transform('EPSG:4326', 'EPSG:3857');
-				var feature = new ol.Feature(polygon);
-				GUI.testLayer1.getSource().clear();
-				GUI.testLayer1.getSource().addFeature(feature);
-				
-				if (dbgLine.length) {
-					var feature = new ol.Feature();
-					var geom = new ol.geom.MultiLineString(dbgLine);
-					geom.transform('EPSG:4326', 'EPSG:3857');
-					feature.setGeometry(geom);
-					GUI.testLayer.getSource().clear();
-					GUI.testLayer.getSource().addFeature(feature);
-				}
-			}*/ 
 			//---------------------------------------------			
 			/*if (minf == null)
 				console.error("MINF NULL");
 			else
-				console.log(">> MINF "+minf);*/
+				console.log(">> MINF "+Math.round(minf*100.0*100.0)/100.0);*/
 			
 			if (minf == null) {
-				state.setElapsed(nel);
+				state.setElapsed(lelp);
 				this.addState(state);
 				return;
 			}
