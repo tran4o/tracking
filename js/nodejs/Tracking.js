@@ -19,10 +19,10 @@ function doHTTP(url,json,onReqDone)
 		var tt = [];
 		for (var i in json) {
 			tt[i]={imei:json[i].imei,from:json[i].from,to:json[i].to};
-			tt[i].toSTR=moment(new Date(tt[i].to)).format("DD.MM.YYYY HH:mm:ss.SS");
-			tt[i].fromSTR=moment(new Date(tt[i].from)).format("DD.MM.YYYY HH:mm:ss.SS");
+			tt[i].toSTR=moment.utc(new Date(tt[i].to)).format("DD.MM.YYYY HH:mm:ss.SS");
+			tt[i].fromSTR=moment.utc(new Date(tt[i].from)).format("DD.MM.YYYY HH:mm:ss.SS");
 		}
-		//console.log("POSTING "+url+" | "+JSON.stringify(tt));
+		console.log("POSTING "+url+" | "+JSON.stringify(tt));
 		function postDone(err, res, body) 
 		{
 			if (err)

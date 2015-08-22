@@ -566,13 +566,12 @@ app.get('/event', function (req, res) {
 		else
 			parr.push(rres);
 	}
-	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var rres = 
 	{
 		times: 
 		{
-			startTime : event.startTime.getTime()-delay,
-			endTime : event.endTime.getTime()-delay
+			startTime : event.startTime.getTime(),
+			endTime : event.endTime.getTime()
 		},
 		bikeStartKM : event.bikeStartKM,
 		runStartKM : event.runStartKM,
@@ -588,12 +587,11 @@ app.post('/stream', function (req, _res)
 	_res.header("Content-Type", "application/json; charset=utf-8");
 	//console.log("STREAM:");
 	//console.log(req.body);
-	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var res=[];
 	for (var i in req.body) 
 	{
 		var e = req.body[i];
-		var t = Tracking.queryData(e.imei,e.start+delay,e.end+delay);
+		var t = Tracking.queryData(e.imei,e.start,e.end);
 		if (t) 
 			for (j in t) 
 				res.push(t[j]);

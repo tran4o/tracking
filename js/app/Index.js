@@ -296,11 +296,10 @@ $(document).ready(function () {
     }
 
     $.getJSON(eventDataUrl).done(function (data) {
-        var delay = -(new Date()).getTimezoneOffset() * 60 * 1000;	// 120 for gmt+2
         TRACK.setBikeStartKM(data.bikeStartKM);
         TRACK.setRunStartKM(data.runStartKM);
         TRACK.setRoute(data.route);
-        CONFIG.times = {begin: data.times.startTime + delay, end: data.times.endTime + delay};
+        CONFIG.times = {begin: data.times.startTime , end: data.times.endTime };
         GUI.init({skipExtent: true});
 
         function processEntry(pdata, isCam) {

@@ -53,7 +53,6 @@ Class("BackendStream",
         		return;
         	}
         	//-------------------------------------------------------------------------        	
-    		var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
     		var url = this.url;
         	function doTick() 
         	{
@@ -69,7 +68,7 @@ Class("BackendStream",
                 	if (!pp.__startTime || pp.__startTime < reft) {
                 		pp.__startTime=reft;
                 	}
-                	json.push({start:pp.__startTime-delay,end : ctime-delay,imei:pp.deviceId});
+                	json.push({start:pp.__startTime,end : ctime,imei:pp.deviceId});
                 }
                 if (!json.length)
                 	return;
@@ -77,7 +76,6 @@ Class("BackendStream",
                 {
                 	for (var i in data) 
                 	{
-                		data[i].timestamp+=delay;
                 		//console.warn(data[i]);
                 		var pp = mmap[data[i].imei];
                 		if (pp) {

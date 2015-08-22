@@ -21,24 +21,24 @@ function generateJSON(imei,lons,lats,times)
 	         "LON":""+Math.round(lons[0]*1000000),
 	         "ALT":"0",
 	         "HRT":"0",
-	         "DATE": moment(times[0]).format("YYYY-MM-DD"),
-	         "TIME": moment(times[0]).format("HHmmss.SS")
+	         "DATE": moment.utc(times[0]).format("YYYY-MM-DD"),
+	         "TIME": moment.utc(times[0]).format("HHmmss.SS")
 	      },
 	      {  
 		     "LAT":""+Math.round(lats[1]*1000000),
 		     "LON":""+Math.round(lons[1]*1000000),
 		     "ALT":"0",
 		     "HRT":"0",
-		     "DATE": moment(times[1]).format("YYYY-MM-DD"),
-		     "TIME": moment(times[1]).format("HHmmss.SS")
+		     "DATE": moment.utc(times[1]).format("YYYY-MM-DD"),
+		     "TIME": moment.utc(times[1]).format("HHmmss.SS")
 	      },
 	      {  
 			 "LAT":""+Math.round(lats[2]*1000000),
 			 "LON":""+Math.round(lons[2]*1000000),
 			 "ALT":"0",
 			 "HRT":"0",
-			 "DATE": moment(times[2]).format("YYYY-MM-DD"),
-			 "TIME": moment(times[2]).format("HHmmss.SS")
+			 "DATE": moment.utc(times[2]).format("YYYY-MM-DD"),
+			 "TIME": moment.utc(times[2]).format("HHmmss.SS")
 	      }
 	   ]
 	};
@@ -49,7 +49,6 @@ exports.startSimulation = function(track,coef)
 {
 	var trackInSeconds = 5*60*coef;	//10 min
 	console.log("Staring simulation with coef "+coef);
-	var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
 	var randcoef = CONFIG.simulation.gpsInaccuracy * track.getTrackLengthInWGS84() / track.getTrackLength();
 	// clear all gps tracking data first..
@@ -98,14 +97,14 @@ exports.startSimulation = function(track,coef)
 				var dist2 =  (Math.random()*2.0-1.0)  * randcoef;
 				//pos[0]+=dist1;
 				//pos[1]+=dist2;
-				times.push(tm-delay); // GMT timestamp
+				times.push(tm); // GMT timestamp
 				lons.push(pos[0]);
 				lats.push(pos[1]);
 			}
 			var json = generateJSON(part.deviceId,lons,lats,times);
 			var client = requestJSON.createClient("http://liveortung.de");
 			function onReqDone() {
-				//return console.log("POSTED for "+this.deviceId+" | TIME = "+moment(times[0]).format("HHmmss.SS")+" | "+JSON.stringify(json));								
+				//return console.log("POSTED for "+this.deviceId+" | TIME = "+moment.utc(times[0]).format("HHmmss.SS")+" | "+JSON.stringify(json));								
 			}
 			client.post('http://liveortung.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
 		}

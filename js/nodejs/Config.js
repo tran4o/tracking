@@ -55,8 +55,8 @@ json.events=ejson;
 for (var j in json.events) 
 {
 	var event = json.events[j];
-	event.startTime = json.simulation.enabled ? new Date() : new Date(moment(event.startTime, "DD.MM.YYYY HH:mm"));
-	event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment(event.endTime, "DD.MM.YYYY HH:mm"));
+	event.startTime = json.simulation.enabled ? new Date() : new Date(moment.utc(event.startTime, "DD.MM.YYYY HH:mm"));
+	event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment.utc(event.endTime, "DD.MM.YYYY HH:mm"));
 	console.log("\nEvent configration ["+Utils.formatDateTime(event.startTime)+"  >  "+Utils.formatDateTime(event.endTime)+"]");
 	console.log("Now is "+Utils.formatDateTime(new Date(now)));
 	console.log((event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
@@ -67,7 +67,7 @@ for (var j in json.events)
 	for (var i in event.starts) 
 	{
 		var str = event.starts[i];
-		str.startTime = json.simulation.enabled ?  new Date() : moment( moment(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
+		str.startTime = json.simulation.enabled ?  new Date() : moment.utc( moment.utc(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
 		console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
 	var pp=[];
@@ -205,11 +205,11 @@ function saveEvents()
 		if (oe.trackData)
 			e.trackData=oe.trackData;
 		if (oe.startTime)
-			e.startTime=moment(oe.startTime).format("DD.MM.YYYY HH:mm");
+			e.startTime=moment.utc(oe.startTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.startTime;
 		if (oe.endTime)
-			e.endTime=moment(oe.endTime).format("DD.MM.YYYY HH:mm");
+			e.endTime=moment.utc(oe.endTime).format("DD.MM.YYYY HH:mm");
 		else
 			delete e.endTime;
 		e.starts=[];
@@ -219,7 +219,7 @@ function saveEvents()
 			var os = oe.starts[k];
 			var s = {};
 			s.id=os.id;
-			s.startTime=moment(os.startTime).format("HH:mm");
+			s.startTime=moment.utc(os.startTime).format("HH:mm");
 			if (os.fromStartNo != undefined) 
 				s.fromStartNo=os.fromStartNo;
 			if (os.toStartNo != undefined)
