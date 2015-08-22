@@ -506,7 +506,7 @@ Class("Participant",
 				console.log(">> MINF "+Math.round(minf*100.0*100.0)/100.0);*/
 			
 			if (minf == null) {
-				state.setElapsed(nel);
+				state.setElapsed(lelp);
 				this.addState(state);
 				return;
 			}
