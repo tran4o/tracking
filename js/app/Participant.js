@@ -438,7 +438,8 @@ Class("Participant",
 			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr, pos[0]+rr, pos[1]+rr]);
 			if (!result)
 				result=[];
-			//console.log("FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
+			
+			console.log("!!! FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
 			//for (var i=0;i<this.track.route.length-1;i++) {
 
 			//----------------------------------------------
@@ -495,24 +496,15 @@ Class("Participant",
 					GUI.testLayer.getSource().addFeature(feature);
 				}
 			}*/ 
-			//---------------------------------------------
-			
-			/*if (minf == null)
-				console.error("MINF NULL ("+result.length+") COEF="+coef);
+			//---------------------------------------------			
+			if (minf == null)
+				console.error("MINF NULL");
 			else
-				console.log(">> MINF "+minf+" ("+minf*this.track.getTrackLength()+" m) COEF="+coef);*/
+				console.log(">> MINF "+minf);
 			
-			// ?? OK SKIP DISCARD!!!
 			if (minf == null) 
 				return;
-			
-			// minf = overall minimum of elapsed intersections
-			if (minf != null) 
-				bestm=minf;
-			
-			//console.log("BESTM FOR PING : "+bestm);
-			//-----------------------------------------------------------
-			//bestm = _ELAPSED; //(TEST HACK ONLY)
+			bestm=minf;
 			if (bestm != null) 
 			{
 				var nel = bestm; //this.track.getElapsedFromPoint(best);
