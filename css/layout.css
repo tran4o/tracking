@@ -212,15 +212,10 @@ BODY
  	font-family : HarabaraMaisBold;
  	font-size : 18px;
 
-	background-image: url('../img/roth.jpg');
+	background-image: url('../img/CWK-horizontal-RGB.png');
     background-repeat: no-repeat;
-    background-position: left center;
-
-	/* for those browsers that support multiple backgrounds */
-	background-image: url("../img/roth.jpg"), url("../img/RacetheLegend.png");
-	background-position: left center, right center;
-	background-repeat: no-repeat;
-	background-size: auto auto, 200px auto;
+    background-position: center center;
+	background-size: 350px auto;
 }
 
 #toolbar_map {
@@ -676,7 +671,7 @@ table.dataTable td {
 
 	#header {
 		height: 70px;
-		background-size: 150px auto, 150px auto;
+		background-size: 300px auto;
 	}
 
 	#button_liveStream,
@@ -750,7 +745,7 @@ table.dataTable td {
 
 	#header {
 		height: 60px;
-		background-size: 130px auto, 130px auto;
+		background-size: 250px auto;
 	}
 
 	#button_participants {
