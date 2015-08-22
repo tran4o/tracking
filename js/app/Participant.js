@@ -450,7 +450,7 @@ Class("Participant",
 			if (!result)
 				result=[];
 			
-			console.log("!!! FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
+			//console.log("!!! FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
 			//for (var i=0;i<this.track.route.length-1;i++) {
 
 			//----------------------------------------------
