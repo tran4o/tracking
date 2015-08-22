@@ -50,6 +50,10 @@ Class("Gui",
 			is : "rw",
 			init : 10
 		},
+		isSkipExtent : {
+			is : "rw",
+			init : false
+		},
 		bingMapKey : {
 			is : "rw",
 			init : 'Aijt3AsWOME3hPEE_HqRlUKdcBKqe8dGRZH_v-L3H_FF64svXMbkr1T6u_WASoet'
@@ -131,10 +135,13 @@ Class("Gui",
 			}
 
 			var defPos = [0,0];
-			if (this.initialPos) 
-				defPos=this.initialPos;
+			if (this.initialPos) {
+				defPos = this.initialPos;
+			} else if (TRACK.getRoute() && TRACK.getRoute().length > 1) {
+				defPos = TRACK.getRoute()[0];
+			}
 			//---------------------------------------------
-			var extent = params && params.skipExtent ? null : TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
+			var extent = this.isSkipExtent ? null : TRACK.getRoute() && TRACK.getRoute().length > 1 ? ol.proj.transformExtent( (new ol.geom.LineString(TRACK.getRoute())).getExtent() , 'EPSG:4326', 'EPSG:3857') : null;
 			this.trackLayer = new ol.layer.Vector({
 			  source: new ol.source.Vector(),
 			  style : STYLES["track"]
@@ -186,8 +193,8 @@ Class("Gui",
 			  controls: this.isWidget ? [] : ol.control.defaults(),
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
-				zoom: this.getInitialZoom(),
-				minZoom: this.isWidget ? this.initialZoom : 10,
+				zoom: this.initialZoom,
+				minZoom: this.isWidget ? this.initialZoom : 8,
 				maxZoom: this.isWidget ? this.initialZoom : 17,
 				extent : extent ? extent : undefined
 			  })

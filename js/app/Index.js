@@ -271,7 +271,7 @@ function changeFavorite(id) {
 //window.isDEMO_SIMULATION = true;
 
 window.TRACK = new Track();
-window.GUI = new Gui({track: TRACK});
+window.GUI = new Gui({track: TRACK, isSkipExtent : true, initialZoom : 14});
 window.PARTICIPANTS = [];
 
 //--------------------------------------------------------------------------
@@ -300,7 +300,7 @@ $(document).ready(function () {
         TRACK.setRunStartKM(data.runStartKM);
         TRACK.setRoute(data.route);
         CONFIG.times = {begin: data.times.startTime , end: data.times.endTime };
-        GUI.init({skipExtent: true});
+        GUI.init();
 
         function processEntry(pdata, isCam) {
             var part;

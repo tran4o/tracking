@@ -201,6 +201,14 @@ BODY
 	top: 60px;
 }
 
+#header, #toolbar_map, #liveStream {
+	margin-left: -250px;
+	width: 500px;
+	left: 50%;
+	z-index: 999998;
+	position:absolute;
+}
+
 #header {
 	top:0;
 	height : 80px;
@@ -212,15 +220,10 @@ BODY
  	font-family : HarabaraMaisBold;
  	font-size : 18px;
 
-	background-image: url('../img/roth.jpg');
+	background-image: url('../img/CWK-horizontal-RGB.png');
     background-repeat: no-repeat;
-    background-position: left center;
-
-	/* for those browsers that support multiple backgrounds */
-	background-image: url("../img/roth.jpg"), url("../img/RacetheLegend.png");
-	background-position: left center, right center;
-	background-repeat: no-repeat;
-	background-size: auto auto, 200px auto;
+    background-position: center center;
+	background-size: 350px auto;
 }
 
 #toolbar_map {
@@ -587,6 +590,7 @@ table.dataTable td {
 #liveStream {
 	padding-top: 60px;
     height: 510px;   /* 275(the third-party player) + 2 row of thumbs + some bottom padding */
+	z-index: 999997;
 }
 
 .liveStreamPlayer {
@@ -660,14 +664,6 @@ table.dataTable td {
 	color : red;
 }
 
-#header, #toolbar_map, #liveStream {
-	margin-left: -250px;
-	width: 500px;
-	left: 50%;
-	z-index: 999998;
-	position:absolute;
-}
-
 @media screen and (max-width: 500px) {
 	#header, #toolbar_map, #liveStream {
 		margin-left: -165px;
@@ -676,7 +672,7 @@ table.dataTable td {
 
 	#header {
 		height: 70px;
-		background-size: 150px auto, 150px auto;
+		background-size: 300px auto;
 	}
 
 	#button_liveStream,
@@ -750,7 +746,7 @@ table.dataTable td {
 
 	#header {
 		height: 60px;
-		background-size: 130px auto, 130px auto;
+		background-size: 250px auto;
 	}
 
 	#button_participants {
