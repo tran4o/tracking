@@ -226,7 +226,7 @@ setInterval(function()
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);		
 		addState(event,part.deviceId,ts);
-		console.log("ADD STATE : "+ctime+" | "+new Date(ctime).toUTCString());
+		console.log("ADD STATE : "+ctime+" | "+new Date(ctime));
 	}
 },5000);
 //--------------------------------------------------------------------------
