@@ -221,8 +221,8 @@ setInterval(function()
 		ts.setOverallRank(overAllRank[part.deviceId]);
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);		
-		//console.log(ts);
 		addState(event,part.deviceId,ts);
+		console.log("ADD STATE : "+ctime+" | "+new Date(ctime).toUTCString());
 	}
 },5000);
 //--------------------------------------------------------------------------
