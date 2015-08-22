@@ -156,8 +156,10 @@ setInterval(function()
 	
 	// NOT ACTIVE EVENT?
 	var cevent = Config.getCurrentEvent();
-	if (cevent == null || event != cevent)
+	if (cevent == null || event != cevent) {
+		console.log("EVENT MISMATCH!");
 		return;
+	}
 	
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};
@@ -170,8 +172,10 @@ setInterval(function()
 	{ 
 		var part = event.trackedParticipants[i];
 		var elp = part.avg(ctime,"elapsed")
-		if (elp == null)
+		if (elp == null) {
+			console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
+		}
 		arr.push(i);
 		elapsed.push(elp);
 		var spd = part.avg(ctime,"speed");
