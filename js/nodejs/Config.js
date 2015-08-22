@@ -306,7 +306,7 @@ function deleteEvent(id) {
 		nevent.push(event);
 	}
 	if (ok) {
-		exports.event=nevent;
+		exports.events=nevent;
 		exports.updateCount++;
 		saveEvents();
 	}
