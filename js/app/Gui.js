@@ -174,6 +174,25 @@ Class("Gui",
 				});
 			}
 			//--------------------------------------------------------------
+			var layers = [
+				           new ol.layer.Tile({
+				               source: new ol.source.OSM()
+				           }),
+						this.trackLayer,
+						this.hotspotsLayer,
+						this.camsLayer,
+						this.participantsLayer
+				  ];
+			//--------------------------------------------------------------
+			if (this.isDebug) {
+				var ll = layers;
+				layers=[this.debugLayerGPS,this.testLayer,this.testLayer1];
+				for (var h in ll) {
+					layers.push(ll[h]);
+				}
+			}
+			//--------------------------------------------------------------
+			
 			var ints = [];
 			this.popup1 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
 			this.popup2 = new ol.Overlay.Popup({ani:false,panMapIfOutOfView : false});
@@ -181,15 +200,7 @@ Class("Gui",
 			this.map = new ol.Map({
 			  renderer : "canvas",
 			  target: 'map',
-			  layers: [
-			           new ol.layer.Tile({
-			               source: new ol.source.OSM()
-			           }),
-					this.trackLayer,
-					this.hotspotsLayer,
-					this.camsLayer,
-					this.participantsLayer
-			  ],
+			  layers: layers,
 			  controls: this.isWidget ? [] : ol.control.defaults(),
 			  view: new ol.View({
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
@@ -204,11 +215,6 @@ Class("Gui",
 				this.map.addInteraction(ints[i]);
 			this.map.addOverlay(this.popup1);
 			this.map.addOverlay(this.popup2);
-			if (this.isDebug) { 
-				this.map.addLayer(this.debugLayerGPS);
-				this.map.addLayer(this.testLayer);
-				this.map.addLayer(this.testLayer1);
-			}
 			TRACK.init();
 			this.addTrackFeature();
 			//----------------------------------------------------
