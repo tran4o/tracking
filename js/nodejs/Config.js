@@ -72,7 +72,7 @@ for (var j in json.events)
 	{
 		var str = event.starts[i];
 		str.startTime = json.simulation.enabled ?  new Date() : moment.utc( moment.utc(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
-		console.log("#START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
+		console.log("START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
 	var pp=[];
 	
@@ -181,8 +181,8 @@ function assignIMEI(mikaId,imei)
 		delete assignments[mikaId];
 	else
 		assignments[mikaId]=imei;
-	exports.updateCount++
 	fs.writeFileSync(apath, JSON.stringify(assignments, null, 4)); 
+	exports.updateCount++
 }
 function lookupIMEI(id) {
 	if (assignments[id] && assignments[id].length)

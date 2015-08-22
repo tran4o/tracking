@@ -36,7 +36,7 @@ Class("StreamData",
                 {
                 	var pp = track.participants[i];
                 	json.push({to : ctime,from : pp.__startTime,IMEI : pp.deviceId});
-                	console.log(pp.deviceId+" | "+new Date(pp.__startTime)+" > "+new Date(ctime));
+                	//console.log(pp.deviceId+" | "+new Date(pp.__startTime)+" > "+new Date(ctime));
                 	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
                 	mmap[pp.deviceId]=pp;
                 }
@@ -76,7 +76,7 @@ Class("StreamData",
                         //----------------------------------
                         var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
                         part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
-                        console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
+                        console.log(" >>> "+part.code+" | "+(Math.round(part.getElapsed()*100.0*100.0)/100.0)+"%"+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
                 	}
                 }
                 //console.log(json);
