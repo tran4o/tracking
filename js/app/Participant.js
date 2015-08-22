@@ -303,6 +303,13 @@ Class("Participant",
 				if (sb.timestamp < ctime)
 					break;
 			}
+			if (res == null) {
+				var arr=[];
+				for (var i=this.states.length-1;i>=0;i--) {
+					arr.push((new Date(sa.timestamp)).toString());
+				} 
+				console.log("AVG NULL BECAUSE SEARCHING "+new Date(ctime)+" | "+arr);
+			}
 			return res;
 		},
 
