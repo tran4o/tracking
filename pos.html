@@ -163,7 +163,6 @@ var firstOnData=true;
 function onData(data,from,to) 
 {
 	gps.getSource().clear();
-	sos.getSource().clear();
 	if (!data.length)
 		return;
 	var minx=null,miny=null,maxx=null,maxy=null;	
