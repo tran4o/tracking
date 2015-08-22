@@ -331,6 +331,18 @@ Class("Track",
 		getRealParticipantsCount : function() {
 			return this.participants.length - this.camsCount;
 		},
+
+		getParticipantById : function(id) {
+			// TODO Rumen - it would be good to hold a map of the type id -> Participant
+			if (this.participants) {
+				for (var i = 0, len = this.participants.length; i < len; i++) {
+					 if (this.participants[i].id === id) {
+						 return this.participants[i];
+					 }
+				}
+			}
+			return null;
+		},
 		
 		newParticipant : function(id,deviceId,name)
 		{

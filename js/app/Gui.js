@@ -467,17 +467,9 @@ Class("Gui",
 				this.doDebugAnimation();
 		},
 		
-		setSelectedParticipant1 : function(part,center) 
-		{
-			if (!(part instanceof Participant)) {
-				var pp=part;
-				part=null;
-				for (var i=0;i<TRACK.participants.length;i++)
-					if (TRACK.participants[i].deviceId == pp) {
-						part=TRACK.participants[i];
-						break;
-					}
-			}
+		setSelectedParticipant1 : function(part,center) {
+			// TODO Rumen - merge setSelectedParticipant1 and setSelectedParticipant2 in only one method
+			// TODO Rumen - and use only it - probably merge them together also with setSelectedParticipant
 			this.selectedParticipant1=part;
 			if (!part) {
 				this.popup1.hide();
@@ -492,17 +484,7 @@ Class("Gui",
 			} 
 		},
 
-		setSelectedParticipant2 : function(part,center) 
-		{
-			if (!(part instanceof Participant)) {
-				var pp=part;
-				part=null;
-				for (var i=0;i<TRACK.participants.length;i++)
-					if (TRACK.participants[i].deviceId == pp) {
-						part=TRACK.participants[i];
-						break;
-					}
-			}
+		setSelectedParticipant2 : function(part,center) {
 			this.selectedParticipant2=part;
 			if (!part) {
 				this.popup2.hide();
@@ -515,6 +497,16 @@ Class("Gui",
 					GUI.map.getView().setCenter([x,y]);
 				}
 			} 
+		},
+
+		setSelectedParticipant : function(part) {
+			if (!this.popup1.is_shown)  {
+				this.setSelectedParticipant1(part, true);
+			} else if (!this.popup2.is_shown) {
+				this.setSelectedParticipant2(part, true);
+			} else {
+				this.setSelectedParticipant1(part, true);
+			}
 		},
 
 		doDebugAnimation : function() 

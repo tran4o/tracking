@@ -144,6 +144,11 @@ function initTableParticipants() {
                 aButtons: []
             }
         });
+
+        $("#table-participants").on("click", ".table-favorite-add", function() {
+            var id = $(this).data('id');
+            changeFavorite(id);
+        });
     } else {
         $("#table-participants").resize();
     }
@@ -158,6 +163,7 @@ function initTableFavorites() {
         for (var i in arr) {
             var part = arr[i];
             res.push({
+                id: part.id,
                 name: part.code,
                 bib: part.startPos,
                 gender: part.gender,
@@ -200,10 +206,13 @@ function initTableFavorites() {
                 aButtons: []
             }
         });
-        $('#table-favorites').on('click', 'tr', function (e) {
-            if (tableFavorites.row(this).data()) {
-                GUI.setSelectedParticipant1(tableFavorites.row(this).data().code, true);
-                GUI.setSelectedParticipant2(null);
+
+        $("#table-favorites").on("click", "tbody tr", function() {
+            var data = tableFavorites.row( this ).data();
+            var id = data.id;
+            var part = TRACK.getParticipantById(id);
+            if (part) {
+                GUI.setSelectedParticipant(part);
             }
         });
     } else {
@@ -241,6 +250,7 @@ function refreshTables() {
         tableFavorites.clear();
         arr.forEach(function (part) {
             tableFavorites.row.add({
+                id: part.id,
                 name: part.code,
                 bib: part.startPos,
                 gender: part.gender,
@@ -441,11 +451,6 @@ $(document).ready(function () {
         } else {
             open();
         }
-    });
-
-    $("#table-participants").on("click", ".table-favorite-add", function() {
-        var id = $(this).data('id');
-        changeFavorite(id);
     });
 });
 
