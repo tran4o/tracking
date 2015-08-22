@@ -157,7 +157,6 @@ setInterval(function()
 	// NOT ACTIVE EVENT?
 	var cevent = Config.getCurrentEvent();
 	if (cevent == null || event != cevent) {
-		console.log("EVENT MISMATCH!");
 		return;
 	}
 	
@@ -173,7 +172,7 @@ setInterval(function()
 		var part = event.trackedParticipants[i];
 		var elp = part.avg(ctime,"elapsed")
 		if (elp == null) {
-			console.log("SKIPP BECAUSE OF ELP NULL "+i);
+			//console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
 		}
 		arr.push(i);
@@ -226,7 +225,6 @@ setInterval(function()
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);		
 		addState(event,part.deviceId,ts);
-		console.log("ADD STATE : "+ctime+" | "+new Date(ctime));
 	}
 },5000);
 //--------------------------------------------------------------------------
