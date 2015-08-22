@@ -454,10 +454,6 @@ Class("Participant",
 			//for (var i=0;i<this.track.route.length-1;i++) {
 
 			//----------------------------------------------
-			var dbgLine = [];
-			console.log(IntersectionParams);
-			console.log(Intersection);
-			
 			var rrect = IntersectionParams.newRect(pos[0]-rr, pos[0]-rr*coefy, rr, rr.coefy);
 			for (var _i=0;_i<result.length;_i++)
 			{
