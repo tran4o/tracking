@@ -126,9 +126,9 @@ var STYLES=
 
 			// add checkpoint if this is not already added as a hotspot
 			if (!track.isAddedHotSpotSwimBike) {
-				if (CONFIG.appearance.isShowImageCheckpoint)
+				if (CONFIG.appearance.isShowCheckpointImage)
 					STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
-				else if (GUI.isShowBike)
+				else if (CONFIG.appearance.isShowCheckpoint && GUI.isShowBike)
 					STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
 			}
         }
@@ -148,9 +148,9 @@ var STYLES=
 
 			// add checkpoint if this is not already added as a hotspot
 			if (!track.isAddedHotSpotBikeRun) {
-				if (CONFIG.appearance.isShowImageCheckpoint)
+				if (CONFIG.appearance.isShowCheckpointImage)
 					STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
-				else if (GUI.isShowBike)
+				else if (CONFIG.appearance.isShowCheckpoint && GUI.isShowBike)
 					STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
 			}
         }

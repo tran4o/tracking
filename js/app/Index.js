@@ -281,7 +281,7 @@ function changeFavorite(id) {
 //window.isDEMO_SIMULATION = true;
 
 window.TRACK = new Track();
-window.GUI = new Gui({track: TRACK, isSkipExtent : true, initialZoom : 14});
+window.GUI = new Gui({track: TRACK, isSkipExtent : true, initialZoom : 15});
 window.PARTICIPANTS = [];
 
 //--------------------------------------------------------------------------

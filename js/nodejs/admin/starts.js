@@ -1768,7 +1768,7 @@ var CONFIG =
 		imageCam : "img/camera.svg",
 		imageCheckpointSwimBike : "img/wz1.svg",
 		imageCheckpointBikeRun : "img/wz2.svg",
-		isShowImageCheckpoint : true,
+		isShowCheckpointImage : true,
 
         // the distance between the direction icons - in pixels,
         // if set non-positive value (0 or less) then don't show them at all

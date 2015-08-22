@@ -2238,7 +2238,7 @@ var CONFIG =
 		imageCam : "img/camera.svg",
 		imageCheckpointSwimBike : "img/wz1.svg",
 		imageCheckpointBikeRun : "img/wz2.svg",
-		isShowImageCheckpoint : true,
+		isShowCheckpointImage : true,
 
         // the distance between the direction icons - in pixels,
         // if set non-positive value (0 or less) then don't show them at all
@@ -3886,7 +3886,7 @@ var STYLES=
 
 			// add checkpoint if this is not already added as a hotspot
 			if (!track.isAddedHotSpotSwimBike) {
-				if (CONFIG.appearance.isShowImageCheckpoint)
+				if (CONFIG.appearance.isShowCheckpointImage)
 					STYLES._genCheckpointImage(geombike, CONFIG.appearance.imageCheckpointSwimBike, styles);
 				else if (GUI.isShowBike)
 					STYLES._genCheckpoint(geombike, CONFIG.appearance.trackColorBike, styles);
@@ -3908,7 +3908,7 @@ var STYLES=
 
 			// add checkpoint if this is not already added as a hotspot
 			if (!track.isAddedHotSpotBikeRun) {
-				if (CONFIG.appearance.isShowImageCheckpoint)
+				if (CONFIG.appearance.isShowCheckpointImage)
 					STYLES._genCheckpointImage(geomrun, CONFIG.appearance.imageCheckpointBikeRun, styles);
 				else if (GUI.isShowBike)
 					STYLES._genCheckpoint(geomrun, CONFIG.appearance.trackColorRun, styles);
