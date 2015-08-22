@@ -182,7 +182,7 @@ setInterval(function()
 			val.push(moredist/spd);
 		}
 	}
-	//console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
+	console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
 	//console.log(val);
 	arr.sort(function(a, b){
 		return val[a]-val[b];
