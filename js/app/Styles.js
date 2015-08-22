@@ -30,6 +30,40 @@ var STYLES=
         return styles;
 	},
 
+	"test2": function(feature,resolution) 
+	{
+		var styles=[];
+        styles.push(new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: "rgba(255,255,0,1)",
+                width: 3
+            }),
+	        image: new ol.style.Circle({
+	            radius: 7,
+	            stroke: new ol.style.Stroke({
+	            	//feature.color
+	                color: "rgba(255,255,0,1)",
+	                width: 3
+	            }),
+	            fill: new ol.style.Stroke({
+	            	//feature.color
+	                color: "rgba(255,255,0,0.7)",
+	                width: 3
+	            })
+	        }),
+	        text: new ol.style.Text({
+	            font: 'bold 15px Lato-Regular',
+	            fill: new ol.style.Fill({
+	                color: 'rgba(255,255,0,1)'
+	            }),
+	            text: feature.getGeometry() instanceof ol.geom.Point ? (Math.round(feature.debugInfo.value*100*100.0)/100.0)+"%" : "",
+	            offsetX:  0,
+	            offsetY : 16
+	        })
+        }));
+        return styles;
+	},
+
 	"test1": function(feature,resolution) 
 	{
 		var styles=[];

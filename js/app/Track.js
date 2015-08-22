@@ -96,40 +96,6 @@ Class("Track",
 			return [minx,miny,maxx,maxy];
 		},
 		
-		// CALL ONLY ONCE ON INIT
-		getElapsedFromPoint : function(point,start) 
-		{
-			var res=0.0;
-			var brk=false;
-			var cc = this.route;
-			if (!start)
-				start=0;
-			for (var i=start;i<cc.length-1;i++) 
-			{
-				var a = cc[i];
-				var c = cc[i+1];
-				var b = point;
-				var ac = Math.sqrt((a[0]-c[0])*(a[0]-c[0])+(a[1]-c[1])*(a[1]-c[1]));
-				var ba = Math.sqrt((b[0]-a[0])*(b[0]-a[0])+(b[1]-a[1])*(b[1]-a[1]));
-				var bc = Math.sqrt((b[0]-c[0])*(b[0]-c[0])+(b[1]-c[1])*(b[1]-c[1]));
-				
-				var minx = a[0] < b[0] ? a[0] : b[0];
-				var miny = a[1] < b[1] ? a[1] : b[1];
-				var maxx = a[0] > b[0] ? a[0] : b[0];
-				var maxy = a[1] > b[1] ? a[1] : b[1];
-				// ba > ac OR bc > ac
-				if (b[0] < minx || b[0] > maxx || b[1] < miny || b[1] > maxy || ba > ac || bc > ac) 
-				{
-					res+=WGS84SPHERE.haversineDistance(a,c);
-					continue;
-				}
-				res+=WGS84SPHERE.haversineDistance(a,b);
-				break;
-			}
-			var len = this.getTrackLength();
-			return res/len;
-		},
-		
 		// elapsed from 0..1
 		getPositionAndRotationFromElapsed : function(elapsed) {
 			var rr=null;

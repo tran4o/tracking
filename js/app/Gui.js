@@ -87,6 +87,14 @@ Class("Gui",
 			is : "rw",
 			init : null
 		},	
+		testLayer1 : {
+			is : "rw",
+			init : null
+		},	
+		testLayer2 : {
+			is : "rw",
+			init : null
+		},	
 		
 		selectedParticipant1 : {
 			is : "rw",
@@ -172,6 +180,10 @@ Class("Gui",
 					  source: new ol.source.Vector(),
 					  style : STYLES["test1"]
 				});
+				this.testLayer2 = new ol.layer.Vector({
+					  source: new ol.source.Vector(),
+				  	style : STYLES["test2"]
+				});
 			}
 			//--------------------------------------------------------------
 			var ints = [];
@@ -195,7 +207,7 @@ Class("Gui",
 				center: ol.proj.transform(defPos, 'EPSG:4326', 'EPSG:3857'),
 				zoom: this.initialZoom,
 				minZoom: this.isWidget ? this.initialZoom : 8,
-				maxZoom: this.isWidget ? this.initialZoom : 17,
+				maxZoom: this.isWidget ? this.initialZoom : (CONFIG.appearance.debug ? 20 : 17),
 				extent : extent ? extent : undefined
 			  })
 			});
@@ -208,6 +220,7 @@ Class("Gui",
 				this.map.addLayer(this.debugLayerGPS);
 				this.map.addLayer(this.testLayer);
 				this.map.addLayer(this.testLayer1);
+				this.map.addLayer(this.testLayer2);
 			}
 			TRACK.init();
 			this.addTrackFeature();

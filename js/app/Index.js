@@ -30,6 +30,10 @@ if (params["debug"] && params["debug"] != "0") {
     console.warn("GOING TO DEBUG MODE...");
     CONFIG.timeouts.animationFrame = 4; // 4 sec
 }
+if (params["show"] && params["show"] != "0") {
+    console.warn("GOING TO SHOW MODE...");
+    CONFIG.appearance.debug = 1;
+}    
 //-----------------------------------------------
 if (params["simple"] && params["simple"] != "0") {
     console.warn("GOING TO SIMPLE MODE...");
@@ -273,7 +277,9 @@ function changeFavorite(id) {
 window.TRACK = new Track();
 window.GUI = new Gui({track: TRACK, isSkipExtent : true, initialZoom : 14});
 window.PARTICIPANTS = [];
-
+if (params["show"] && params["show"] != "0") {
+    GUI.isDebug=true;
+}    
 //--------------------------------------------------------------------------
 $(document).ready(function () {
     if (Utils.mobileAndTabletCheck())

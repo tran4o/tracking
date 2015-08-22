@@ -36,9 +36,9 @@ Class("StreamData",
                 {
                 	var pp = track.participants[i];
                 	json.push({to : ctime,from : pp.__startTime,IMEI : pp.deviceId});
-                	console.log(pp.code+" | "+Utils.formatDateTimeSec(new Date(pp.__startTime))+" > "+Utils.formatDateTimeSec(new Date(ctime))+" | "+pp.deviceId);
                 	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
                 	mmap[pp.deviceId]=pp;
+                	//console.log(pp.code+" | "+Utils.formatDateTimeSec(new Date(pp.__startTime))+" > "+Utils.formatDateTimeSec(new Date(ctime))+" | "+pp.deviceId);
                 }
                 function processData(data) 
                 {

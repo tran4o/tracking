@@ -233,7 +233,9 @@ function generateIntermediate()
 		ts.setTimestamp(ctime);		
 		ts.setOverallRank(overAllRank[part.deviceId]);
 		ts.setGenderRank(genderRank[part.deviceId]);
-		ts.setGroupRank(groupRank[part.deviceId]);		
+		ts.setGroupRank(groupRank[part.deviceId]);
+		ts.debugInfo = part.min(ctime,"debugInfo");
+		//console.log("STATE DEBUG INFO : "+JSON.stringify(ts.debugInfo));
 		addState(event,part.deviceId,ts);
 	}
 }
@@ -263,7 +265,8 @@ exports.queryData = function(imei,from,to)
 				alt : state.alt,
 				overallRank : state.overallRank,
 				genderRank : state.genderRank,
-				groupRank : state.groupRank
+				groupRank : state.groupRank,
+				debugInfo : state.debugInfo
 			});
 		}
 	}

@@ -3,12 +3,17 @@ require('./Point');
 
 var CONFIG = require('./Config');
 var Utils = require('./Utils');
+var Intersection = require("kld-intersections").Intersection;
+var Point2D = require("kld-intersections").Point2D;
 
-var coefy = 0.75;
-
+var coefy = CONFIG.math.projectionScaleY;
 Class("ParticipantState",
 {
 	has : {		
+    	debugInfo : {
+    		is : "rw",
+    		init : null
+    	},
 		speed : {
 			is : "rw",
 			init : 0
@@ -73,7 +78,7 @@ Class("Participant",
 	isa : MovingPoint,
 
     has: 
-	{
+	{	
     	lastPingTimestamp : {
     		is : "rw",
     		init : null
@@ -167,7 +172,7 @@ Class("Participant",
 		init : function(pos, track) {
 			this.setTrack(track);
 			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:track.getElapsedFromPoint(pos)});
+			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:0});
 			this.setElapsed(state.elapsed);
 			this.setStates([state]);
 			this.setIsSOS(false);
@@ -176,7 +181,7 @@ Class("Participant",
 			if (this.feature) {
 				this.initFeature();
 			}
-			this.ping(pos,0,false,1 /* placeholder ctime not 0 */,0,0,0,0,0);
+			this.pingCalculated(state);
 		}
 	},
     //--------------------------------------
@@ -258,6 +263,7 @@ Class("Participant",
 				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
 				{ 
 					res = sa[proName];
+					//console.log("MIN FOR "+proName+" | "+res+" | "+JSON.stringify(this.states[i]));
 					break;
 				}
 				if (sb.timestamp < ctime)
@@ -373,7 +379,7 @@ Class("Participant",
 			{
 				var ring = [
 				            [pos[0]-rr, pos[1]-rr*coefy], [pos[0]+rr, pos[1]-rr*coefy],[pos[0]+rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]-rr*coefy]
-				          ];
+	 			          ];
 				var polygon = new ol.geom.Polygon([ring]);
 				polygon.transform('EPSG:4326', 'EPSG:3857');
 				var feature = new ol.Feature(polygon);
@@ -382,8 +388,32 @@ Class("Participant",
 				var mpos = ol.proj.transform(pos, 'EPSG:4326', 'EPSG:3857');
 				var feature = new ol.Feature(new ol.geom.Point(mpos));
 				GUI.testLayer.getSource().addFeature(feature);
-				console.log(this.getCode()+" | "+Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp));
+				console.log(this.getCode()+" | "+Math.round(state.elapsed*100.0*100.0)/100.0+"% PONG ["+pos[0]+","+pos[1]+"] "+new Date(state.timestamp)+" | "+state.debugInfo);
 
+				//-------------------------------------------------------------
+				if (state.debugInfo && state.debugInfo.point && state.debugInfo.best) 
+				{
+					var mpos = ol.proj.transform(state.debugInfo.point, 'EPSG:4326', 'EPSG:3857');
+					var feature = new ol.Feature(new ol.geom.Point(mpos));
+					if (this.__oldFeature1)
+						GUI.testLayer2.getSource().removeFeature(this.__oldFeature1);
+					GUI.testLayer2.getSource().addFeature(feature);
+					feature.debugInfo=state.debugInfo;
+					this.__oldFeature1=feature;
+
+					var p1 = this.track.route[state.debugInfo.best];
+					var p2 = this.track.route[state.debugInfo.best+1];
+					var line = new ol.geom.LineString([ p1,p2 ]);
+					line.transform('EPSG:4326', 'EPSG:3857');
+					
+					if (this.__oldFeature2)
+						GUI.testLayer2.getSource().removeFeature(this.__oldFeature2);
+					var feature = new ol.Feature(line);
+					feature.debugInfo=state.debugInfo;
+					GUI.testLayer2.getSource().addFeature(feature);
+					this.__oldFeature2=feature;
+				}
+				
 				while (GUI.testLayer1.getSource().getFeatures().length > 10)
 					GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);
 				while (GUI.testLayer.getSource().getFeatures().length > 10)
@@ -449,36 +479,44 @@ Class("Participant",
 			var result = this.track.rTree.search([pos[0]-rr, pos[1]-rr*coefy, pos[0]+rr, pos[1]+rr*coefy]);
 			if (!result)
 				result=[];
-			
 			//console.log("!!! FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
-			//for (var i=0;i<this.track.route.length-1;i++) {
-
 			//----------------------------------------------
-			//var rrect = IntersectionParams.newRect(pos[0]-rr, pos[0]-rr*coefy, rr, rr.coefy);
+			var debugInfo={};
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
-				
-				/*var res = Intersection.intersectShapes(  
-			              	IntersectionParams.newLine(new Point2D(tg[i][0],tg[i][1]),new Point2D(tg[i+1][0],tg[i+1][1]))  
-			              , rrect  
-			      		);
-				if (res) 
+				//a1,a2,r1,r2
+				var res = Intersection.intersectLineRectangle(
+							new Point2D(tg[i][0],tg[i][1]),
+							new Point2D(tg[i+1][0],tg[i+1][1]),
+							new Point2D(pos[0]-rr,pos[1]-rr*coefy),
+							new Point2D(pos[0]+rr,pos[1]+rr*coefy)
+						);
+				//console.log(res);
+				if (res && res.points && res.points.length) 
 				{
-					var d3 = WGS84SPHERE.haversineDistance(tg[i],tg[i+1]);
+					//Utils.disp
+					var d3 = Utils.WGS84SPHERE.haversineDistance(tg[i],tg[i+1]);
+					res=res.points;
 					for (var q=0;q<res.length;q++) 
 					{
 						//Utils.disp
-						var d1 = WGS84SPHERE.haversineDistance([res[q].x,res[q].y],tg[i]);
+						var d1 = Utils.WGS84SPHERE.haversineDistance([res[q].x,res[q].y],tg[i]);
 						var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
 						if (el1 < lelp)
-							el1=lelp;
-						if (minf == null || el1 < minf)
+							continue; 				// SKIP < LELP
+						if (minf == null || el1 < minf) {
+							if (debugInfo) {
+								debugInfo.best=i;
+								debugInfo.point=[res[q].x,res[q].y];
+								debugInfo.value=el1;
+							}
 							minf=el1;
-						console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
+						}
+						//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
 					}
-				}*/
-				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
+				}
+				/*var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
 					// has intersection (2 points)
@@ -497,14 +535,16 @@ Class("Participant",
 						minf=el1;
 					if (el2 < minf)
 						minf=el2;
-				}
+				}*/
 			}
 			//---------------------------------------------			
 			/*if (minf == null)
 				console.error("MINF NULL");
 			else
 				console.log(">> MINF "+Math.round(minf*100.0*100.0)/100.0);*/
-			
+			if (debugInfo)
+				state.debugInfo=debugInfo;
+			//console.log("STATTTTTTEEEEE : "+JSON.stringify(state));
 			if (minf == null) {
 				state.setElapsed(lelp);
 				this.addState(state);
@@ -514,7 +554,7 @@ Class("Participant",
 			bestm=minf;
 			if (bestm != null) 
 			{
-				var nel = bestm; //this.track.getElapsedFromPoint(best);
+				var nel = bestm; 
 				if (lstate) 
 				{
 					/*if (nel < lstate.getElapsed()) 

@@ -17,7 +17,7 @@ Class("BackendStream",
         {    
         	track.test1();
         	// TEST
-        	if (0 == 1) 
+        	/*if (0 == 1) 
         	{
         		var ctime = (new Date()).getTime();
         		var cc=0;
@@ -31,7 +31,6 @@ Class("BackendStream",
                     	if (elp > 1)
                     		elp=1;
                     	var pp = track.participants[i];
-                    	//var pos = track.__getPositionAndRotationFromElapsed(elp);
                     	var pos = track.getPositionAndRotationFromElapsed(elp);
                     	pp.pingCalculated(
                     	  {
@@ -51,7 +50,7 @@ Class("BackendStream",
                     }
         		},3000);
         		return;
-        	}
+        	}*/
         	//-------------------------------------------------------------------------        	
     		var url = this.url;
         	function doTick() 

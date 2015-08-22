@@ -8,6 +8,7 @@ var moment = require('moment');
 var http = require('http');
 var requestJSON = require('request-json');
 var request = require('request');
+var coefy = CONFIG.math.projectionScaleY;
 //--------------------------------------------------------------------
 function generateJSON(imei,lons,lats,times)
 {
@@ -68,10 +69,7 @@ exports.startSimulation = function(track,coef)
 			setInterval(tick,30*1000); /* 30 seconds every simulation */
 		}
 	}
-
 	track.test1();
-	
-	var cc=1;
 	function tick() 
 	{
 		var ctime = (new Date()).getTime();
@@ -81,22 +79,19 @@ exports.startSimulation = function(track,coef)
 			var lons = [];
 			var lats = [];
 			var times = [];
-			var occ=cc;
 			for (var k=0;k<3;k++) 
 			{
 				var tm = ctime - (2-k)*10*1000;
 				if (tm < stime)
 					tm=stime;
-				var elapsed = occ/60.0;
 				var elapsed = ((tm - stime)/1000.0)/trackInSeconds + Config.simulation.startElapsed;
 				if (elapsed > 1)
 					elapsed=1;
-				occ++;
 				var pos = track.getPositionAndRotationFromElapsed(elapsed);
-				var dist1 = (Math.random()*2.0-1.0) * randcoef;
-				var dist2 =  (Math.random()*2.0-1.0)  * randcoef;
-				//pos[0]+=dist1;
-				//pos[1]+=dist2;
+				var dist1 = (Math.random()*2.0-1.0)*randcoef;
+				var dist2 =  (Math.random()*2.0-1.0)*randcoef*coefy;
+				pos[0]+=dist1;
+				pos[1]+=dist2;
 				times.push(tm); // GMT timestamp
 				lons.push(pos[0]);
 				lats.push(pos[1]);
@@ -108,6 +103,5 @@ exports.startSimulation = function(track,coef)
 			}
 			client.post('http://liveortung.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
 		}
-		cc+=3;
 	}	
 }
