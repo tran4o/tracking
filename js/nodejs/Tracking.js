@@ -30,6 +30,8 @@ function doHTTP(url,json,onReqDone)
 			else { 
 				//console.log("REQDONE "+url+" | "+JSON.stringify(body));
 				onReqDone(body);
+				// collect 
+				generateIntermediate();
 			}
 		}
 		client.post(url, json, postDone);
@@ -153,13 +155,19 @@ setInterval(function()
 			event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
 		}
 	}
-	
+},5000);
+//-------------------------------------------------------------------------
+function generateIntermediate() 
+{
+	var event = Config.getCurrentOrNextEvent();
+	if (!event)
+		return;
+
 	// NOT ACTIVE EVENT?
 	var cevent = Config.getCurrentEvent();
 	if (cevent == null || event != cevent) {
 		return;
 	}
-	
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};
 	var genderRank={};
@@ -185,7 +193,9 @@ setInterval(function()
 			val.push(moredist/spd);
 		}
 	}
-	console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
+	
+	
+	console.log(arr.length+" | GENERATE INTERMEDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
 	//console.log(val);
 	arr.sort(function(a, b){
 		return val[a]-val[b];
@@ -226,8 +236,8 @@ setInterval(function()
 		ts.setGroupRank(groupRank[part.deviceId]);		
 		addState(event,part.deviceId,ts);
 	}
-},5000);
-//--------------------------------------------------------------------------
+}
+//-------------------------------------------------------------------------
 // from inclusive , to exclusive
 exports.queryData = function(imei,from,to) 
 {
