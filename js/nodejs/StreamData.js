@@ -15,7 +15,6 @@ Class("StreamData",
         start : function(track,checker,pingInterval,callBackFnc)
         {
             var url = "http://liveortung.de/triathlon/rest/stream"; 
-        	var delay = 180*60*1000;		// 120 for gmt+2	(new Date()).getTimezoneOffset() ??
         	for (var i in track.participants) 
         	{
         		var part = track.participants[i];
@@ -36,8 +35,8 @@ Class("StreamData",
                 for (var i in track.participants) 
                 {
                 	var pp = track.participants[i];
-                	json.push({to : ctime-delay,from : pp.__startTime-delay,IMEI : pp.deviceId});
-                	console.log(pp.deviceId+" | "+new Date(pp.__startTime-delay)+" > "+new Date(ctime-delay));
+                	json.push({to : ctime,from : pp.__startTime,IMEI : pp.deviceId});
+                	console.log(pp.deviceId+" | "+new Date(pp.__startTime)+" > "+new Date(ctime));
                 	//json.push({to : 900719925474099,from : 0,IMEI : pp.deviceId});
                 	mmap[pp.deviceId]=pp;
                 }
@@ -51,7 +50,6 @@ Class("StreamData",
                         var ctime = parseInt(e.EPOCH);
                         if (!ctime)
                              continue;
-                        ctime+=delay;
                 		var part = mmap[e.IMEI];
                 		if (!part) {
                 			console.log("WRONG IMEI in StreamData.js : "+e.IMEI);
@@ -78,7 +76,7 @@ Class("StreamData",
                         //----------------------------------
                         var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
                         part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
-                        console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))+" | DELAY = "+((new Date()).getTime()-ctime)/1000.0+" sec delay") ;
+                        console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
                 	}
                 }
                 console.log(json);

@@ -22,7 +22,6 @@ var CONFIG =
 		popupEnsureVisibleHeight: 120
 	},
 	simulation : {
-		enabled : 0, // 1 > enabled
 		pingInterval : 10,  // interval in seconds to ping with gps data
 		gpsInaccuracy : 8, //8,  // error simulation in METER (look math.gpsInaccuracy, min 1/2)
 		speedCoef : 100
