@@ -306,9 +306,9 @@ Class("Participant",
 			if (res == null) {
 				var arr=[];
 				for (var i=this.states.length-1;i>=0;i--) if (i == 0 || i == this.states.length-1) {
-					arr.push(formatDateTimeSec(new Date(this.states[i].timestamp)));
+					arr.push(Utils.formatDateTimeSec(new Date(this.states[i].timestamp)));
 				} 
-				console.log("AVG NULL BECAUSE SEARCHING "+new Date(ctime)+" | "+arr);
+				console.log("AVG NULL BECAUSE SEARCHING "+Utils.formatDateTimeSec(new Date(ctime))+" | "+arr);
 			}
 			return res;
 		},
