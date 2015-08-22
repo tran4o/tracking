@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+	<title>System configuration</title>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
@@ -27,10 +29,16 @@
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/rgbcolor.js"></script> 
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/StackBlur.js"></script>
 	<script type="text/javascript" src="//gabelerner.github.io/canvg/canvg.js"></script> 
-	<script src="../../js/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
+	<!--
+	    There's some incompatibility between WebComponents and the DataTables-responsive/editor plugins on
+	    other browsers than Chrome, so comment it now.
+	-->
+	<!--<script src="../../js/bower_components/webcomponentsjs/webcomponents.min.js"></script>-->
+	<!--<link rel="import" href="../../js/bower_components/flag-icon/flag-icon.html"/>-->
+
 	<script src="admin.js" type="text/javascript"></script>
-	<link rel="import" href="../../js/bower_components/flag-icon/flag-icon.html"/>
-    <title>System configuration</title>
+
  </head>
 <body class="editor wide">
 	<a name="top"></a>
