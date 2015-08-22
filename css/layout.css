@@ -201,6 +201,14 @@ BODY
 	top: 60px;
 }
 
+#header, #toolbar_map, #liveStream {
+	margin-left: -250px;
+	width: 500px;
+	left: 50%;
+	z-index: 999998;
+	position:absolute;
+}
+
 #header {
 	top:0;
 	height : 80px;
@@ -582,6 +590,7 @@ table.dataTable td {
 #liveStream {
 	padding-top: 60px;
     height: 510px;   /* 275(the third-party player) + 2 row of thumbs + some bottom padding */
+	z-index: 999997;
 }
 
 .liveStreamPlayer {
@@ -653,14 +662,6 @@ table.dataTable td {
 .button-assignments:hover,.button-status:hover,.button-gpx:hover {
 	border : 2px solid red;
 	color : red;
-}
-
-#header, #toolbar_map, #liveStream {
-	margin-left: -250px;
-	width: 500px;
-	left: 50%;
-	z-index: 999998;
-	position:absolute;
 }
 
 @media screen and (max-width: 500px) {
