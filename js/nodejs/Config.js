@@ -57,6 +57,10 @@ for (var j in json.events)
 	var event = json.events[j];
 	event.startTime = json.simulation.enabled ? new Date() : new Date(moment.utc(event.startTime, "DD.MM.YYYY HH:mm"));
 	event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment.utc(event.endTime, "DD.MM.YYYY HH:mm"));
+
+	
+	console.log("START : "+event.startTime);
+	
 	console.log("\nEvent configration ["+Utils.formatDateTime(event.startTime)+"  >  "+Utils.formatDateTime(event.endTime)+"]");
 	console.log("Now is "+Utils.formatDateTime(new Date(now)));
 	console.log((event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
