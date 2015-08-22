@@ -163,6 +163,7 @@ var firstOnData=true;
 function onData(data,from,to) 
 {
 	gps.getSource().clear();
+	sos.getSource().clear();
 	if (!data.length)
 		return;
 	var minx=null,miny=null,maxx=null,maxy=null;	
@@ -173,8 +174,6 @@ function onData(data,from,to)
 		if (onlyFavorites && !favs[e.IMEI]) {			
 			return;
 		}
-		/*if (from && to && !(e.EPOCH >= from && e.EPOCH <= to))
-			continue;*/
 		delete e._id;
 		delete e.TS;		
 		e.LON=parseInt(e.LON);
@@ -220,16 +219,42 @@ function doGet()
 	var from = ((new Date()).getTime()-1000*60*60*1 /* 1 hour */);
 	var to = ((new Date()).getTime());
 	var url = "/triathlon/rest/seen/all?from="+from+"&to="+to;
-	$.getJSON(url, function(result)
+	$.getJSON(url, function(result1)
 	{
-		inGET=false;
-		if (!(result instanceof Array) && result.data)
-			result=result.data;			
-		if (result instanceof Array)		
-			onData(result,from,to);
+		if (!(result1 instanceof Array) && result1.data)
+			result1=result1.data;			
+		if (result1 instanceof Array) 
+		{
+			var url = "/triathlon/rest/ecall/";
+			$.getJSON(url, function(result2)
+			{
+				inGET=false;
+				if (!(result2 instanceof Array) && result2.data)
+					result2=result2.data;
+				if (result2 instanceof Array) 
+				{
+					console.log("RESULT1 : "+result1.length+" | RESULT2 : "+result1.length);
+					var result=[];
+					for (var i in result1) {
+						var e = result1[i];
+						e.type="RACEDATA";
+						result.push(e);
+					}
+					for (var i in result2) {
+						var e = result2[i];
+						e.type="ECALL";
+						result.push(e);
+					}
+					onData(result,from,to);
+				} else{
+					inGET=false;
+					alert("ERROR2 "+url+" : "+JSON.stringify(result2));
+				}				
+			});
+		}
 		else{
-			inGET=true;
-			alert("ERROR : "+JSON.stringify(result));
+			inGET=false;
+			alert("ERROR1 "+url+" : "+JSON.stringify(result1));
 		}
     });
 }
