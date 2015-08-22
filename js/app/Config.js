@@ -82,7 +82,8 @@ var CONFIG =
 		imageCam : "img/camera.svg",
 		imageCheckpointSwimBike : "img/wz1.svg",
 		imageCheckpointBikeRun : "img/wz2.svg",
-		isShowImageCheckpoint : true,
+		isShowCheckpointImage : false, /* show an image on the checkpoints (e.g on the changing WZ points */
+		isShowCheckpoint : false,  /* show an square on the same color on the checkpoints, only if isShowCheckpointImage is not true*/
 
         // the distance between the direction icons - in pixels,
         // if set non-positive value (0 or less) then don't show them at all
@@ -92,8 +93,8 @@ var CONFIG =
 
     hotspot : {
         cam : {image :"img/camera.svg"},  // use the same image for static cameras as for the moving ones
-		camSwimBike : {image : "img/wz1.svg", scale : 0.040},
-		camBikeRun : {image : "img/wz2.svg", scale : 0.040},
+		camSwimBike : {image : "img/wz1.svg"},
+		camBikeRun : {image : "img/wz2.svg"},
         water : {image : "img/water.svg"},
         uturn : {image : "img/uturn.svg"},
 

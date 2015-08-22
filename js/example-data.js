@@ -73,7 +73,7 @@ var HOTSPOTS_EVENT_CHALLENGE_WALCHSEE = [
 
     // for these special hotspots the point are dynamically generated from the current track
     {type : CONFIG.hotspot.camSwimBike, liveStream : 0, clickable: false},
-    {type : CONFIG.hotspot.camBikeRun, liveStream : 1, clickable: false}
+    //{type : CONFIG.hotspot.camBikeRun, liveStream : 1, clickable: false}
 ];
 
 // only HOTSPOTS is used - so it should point to the last event

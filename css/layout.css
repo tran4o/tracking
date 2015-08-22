@@ -201,6 +201,10 @@ BODY
 	top: 60px;
 }
 
+#table-favorites tbody tr {
+	cursor: pointer;
+}
+
 #header, #toolbar_map, #liveStream {
 	margin-left: -250px;
 	width: 500px;
