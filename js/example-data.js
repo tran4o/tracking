@@ -72,7 +72,7 @@ var HOTSPOTS_EVENT_CHALLENGE_WALCHSEE = [
     {point : [12.383346,47.659453], type : CONFIG.hotspot.water},
 
     // for these special hotspots the point are dynamically generated from the current track
-    //{type : CONFIG.hotspot.camSwimBike, liveStream : 0, clickable: false},
+    {type : CONFIG.hotspot.camSwimBike, liveStream : 0, clickable: false},
     {type : CONFIG.hotspot.camBikeRun, liveStream : 1, clickable: false}
 ];
 
