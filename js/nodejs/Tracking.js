@@ -45,7 +45,6 @@ function getAge(birthDate) {
     return age;
 }
 //--------------------------------------------------------------------------
-var delay = -(new Date()).getTimezoneOffset()*60*1000;	// 120 for gmt+2
 var startTime = (new Date()).getTime() - 10*60*1000;	// 10 minutes before
 //--------------------------------------------------------------------------
 function inRaceChecker() {
@@ -244,7 +243,7 @@ exports.queryData = function(imei,from,to)
 				imei : imei,
 				speed : state.speed,
 				elapsed : state.elapsed,
-				timestamp : state.timestamp-delay,		// UTC
+				timestamp : state.timestamp,		// UTC
 				gps : state.gps,
 				freq : state.freq,
 				isSOS : state.isSOS,
