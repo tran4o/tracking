@@ -22,7 +22,7 @@ function doHTTP(url,json,onReqDone)
 			tt[i].toSTR=moment.utc(new Date(tt[i].to)).format("DD.MM.YYYY HH:mm:ss.SS");
 			tt[i].fromSTR=moment.utc(new Date(tt[i].from)).format("DD.MM.YYYY HH:mm:ss.SS");
 		}
-		console.log("POSTING "+url+" | "+JSON.stringify(tt));
+		//console.log("POSTING "+url+" | "+JSON.stringify(tt));
 		function postDone(err, res, body) 
 		{
 			if (err)
@@ -30,6 +30,8 @@ function doHTTP(url,json,onReqDone)
 			else { 
 				//console.log("REQDONE "+url+" | "+JSON.stringify(body));
 				onReqDone(body);
+				// collect 
+				generateIntermediate();
 			}
 		}
 		client.post(url, json, postDone);
@@ -153,12 +155,19 @@ setInterval(function()
 			event.stream.start(event.TRACK,inRaceChecker,Config.network.pingInterval,doHTTP);
 		}
 	}
-	
+},5000);
+//-------------------------------------------------------------------------
+function generateIntermediate() 
+{
+	var event = Config.getCurrentOrNextEvent();
+	if (!event)
+		return;
+
 	// NOT ACTIVE EVENT?
 	var cevent = Config.getCurrentEvent();
-	if (cevent == null || event != cevent)
+	if (cevent == null || event != cevent) {
 		return;
-	
+	}
 	var ctime = (new Date()).getTime() - Config.interpolation.displayDelay*1000;
 	var overAllRank={};
 	var genderRank={};
@@ -170,8 +179,10 @@ setInterval(function()
 	{ 
 		var part = event.trackedParticipants[i];
 		var elp = part.avg(ctime,"elapsed")
-		if (elp == null)
+		if (elp == null) {
+			//console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
+		}
 		arr.push(i);
 		elapsed.push(elp);
 		var spd = part.avg(ctime,"speed");
@@ -182,7 +193,9 @@ setInterval(function()
 			val.push(moredist/spd);
 		}
 	}
-	//console.log(arr.length+" | GENERATE INTERMIDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
+	
+	
+	console.log(arr.length+" | GENERATE INTERMEDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
 	//console.log(val);
 	arr.sort(function(a, b){
 		return val[a]-val[b];
@@ -221,11 +234,10 @@ setInterval(function()
 		ts.setOverallRank(overAllRank[part.deviceId]);
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);		
-		//console.log(ts);
 		addState(event,part.deviceId,ts);
 	}
-},5000);
-//--------------------------------------------------------------------------
+}
+//-------------------------------------------------------------------------
 // from inclusive , to exclusive
 exports.queryData = function(imei,from,to) 
 {

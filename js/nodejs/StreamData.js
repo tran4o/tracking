@@ -46,7 +46,7 @@ Class("StreamData",
                 	for (var i in data) 
                 	{
                 		var e = data[i];
-                		console.log("PROCESS : "+JSON.stringify(e));
+                		//console.log("PROCESS : "+JSON.stringify(e));
                         var ctime = parseInt(e.EPOCH);
                         if (!ctime)
                              continue;
@@ -79,7 +79,7 @@ Class("StreamData",
                         console.log(" >>> "+part.code+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
                 	}
                 }
-                console.log(json);
+                //console.log(json);
                 callBackFnc(url,json,processData);
                 setTimeout(doTick,pingInterval*1000);
         	}
