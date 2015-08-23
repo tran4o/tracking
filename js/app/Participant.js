@@ -544,7 +544,7 @@ Class("Participant",
 			if (minf == null && mminf == null) 
 			{
 				console.error("MMINF NULL > DISCARD "+this.code+" | "+this.deviceId);
-				this.setDiscarded(true);
+				this.setIsDiscarded(true);
 				state.setElapsed(lelp);
 				this.addState(state);
 				return;
