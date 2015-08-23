@@ -184,8 +184,8 @@ function generateIntermediate()
 	for (var i in event.trackedParticipants) 
 	{ 
 		var part = event.trackedParticipants[i];
-		//var elp = part.avg(ctime,"elapsed")
-		var elp = part.min(ctime,"elapsed")
+		var elp = part.avg(ctime,"elapsed")
+		//var elp = part.min(ctime,"elapsed")
 		if (elp == null) {
 			//console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
@@ -245,6 +245,11 @@ function generateIntermediate()
 		//console.log("STATE DEBUG INFO : "+JSON.stringify(ts.debugInfo));
 		addState(event,part.deviceId,ts);
 	}
+	var dinfo=[];
+	for (var i in arr) {
+		dinfo.push(Math.round(elapsed[i]*100*100)/100.0);
+	}
+	console.log(">>>>>>>>> "+JSON.stringify(dinfo));
 }
 //-------------------------------------------------------------------------
 // from inclusive , to exclusive
