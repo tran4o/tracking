@@ -86,135 +86,78 @@
 </head>
 <body style='overflow:hidden'>
 <div class='container'>
-	<div class="row">
-		<div class="col-sm-6 col-md-4 c1 h100 hide" id='left_pane'>
-			<div class="content" id="tabcont">
-				<div role="tabpanel" class="container" id="part">
-					<div class="caption-general">Available athletes</div>
-					<div class="close"></div>
-				</div>
-				<div role="tabpanel" class="container hide" id="favs">
-					<div class="caption-general">Favorites</div>
-					<div class="close"></div>
-					<table id="table-favorites" class="display responsive nowrap" cellspacing="0">
-						<thead>
-							<tr>
-								<th>NAME</th>
-								<th class="center">BIB</th>
-								<th class="center">GEN</th>
-								<th class="center">CTRY</th>
-								<th class="center">AGE</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th>NAME</th>
-								<th class="center">BIB</th>
-								<th class="center">GEN</th>
-								<th class="center">CTRY</th>
-								<th class="center">AGE</th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<div role="tabpanel" class="container hide" id="dtls">
-					<div class='dtl_row'>
-						<div class='hei30 col-xs-12 c1'>
-							<div class='dtl_row'>
-								<div class='col-xs-4 c2 hei30'>FLAG</div>
-								<div class='col-xs-8 c3 hei30'>Name</div>
-							</div>
-						</div>
-						<div class='col-xs-12 c4'>
-							<div class='dtl_row '>
-								<div class='col-xs-3 c5 hei30'>
-									<div class='dtl_row hei15'> Age </div>
-									<div class='dtl_row hei15'> 25 </div>
-								</div>
-								<div class='col-xs-3 c4 hei30'>Dist</div>
-								<div class='col-xs-3 c5 hei30'>Pace</div>
-								<div class='col-xs-3 c4 hei30'>Est. Fin</div>
-							</div>
-						</div>
-						<div class='col-xs-12 c1'>
-							<div class='dtl_row'>
-								<div class='col-xs-6 c2'>
-									<div class='dtl_row hei40 c2'>PHOTO</div>
-									<div class='dtl_row hei40 c5'>ADVERT</div>
-								</div>
-								<div class='col-xs-6 hei80 c3'>
-									<div class='dtl_row hei25 c1'>OVERALL RANK</div>
-									<div class='dtl_row hei25 c1'>GENDER RANK</div>
-									<div class='dtl_row hei25 c1'>GROUP RANK</div>
-								</div>
-							</div>
-						</div>
-						<div class='col-xs-12 c1'>
-							<div class='content'>
-								<div class='dtl_row hei20'>
-									<div class='col-xs-3'>SEGMENT</div>
-									<div class='col-xs-3'>TIME</div>
-									<div class='col-xs-3'>AVG</div>
-									<div class='col-xs-3'>PROGR</div>
-								</div>
-								<div class='dtl_row hei20 c2'>
-									<div class='col-xs-3'>SWIM</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>100%</div>
-								</div>
-								<div class='dtl_row hei20 c2'>
-									<div class='col-xs-3'>SWIM</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>100%</div>
-								</div>
-								<div class='dtl_row hei20 c2'>
-									<div class='col-xs-3'>SWIM</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>0.00</div>
-									<div class='col-xs-3'>100%</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div role="tabpanel" class="container hide" id="rank">
-					<div class="caption-general">Ranking</div>
-					<div class="close"></div>
-					<table id="table-ranking" class="display responsive nowrap" cellspacing="0">
-						<thead>
-							<tr>
-								<th>FAV</th>
-								<th>NAME</th>
-								<th class="center">OVR</th>
-								<th class="center">GRP</th>
-								<th class="center">GND</th>
-								<th class="center">BIB</th>
-								<th class="center">GEN</th>
-								<th class="center">CTRY</th>
-								<th class="center">AGE</th>
-								<th class="center">OCCUPAT</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th>FAV</th>
-								<th>NAME</th>
-								<th class="center">OVR</th>
-								<th class="center">GRP</th>
-								<th class="center">GND</th>
-								<th class="center">BIB</th>
-								<th class="center">GEN</th>
-								<th class="center">CTRY</th>
-								<th class="center">AGE</th>
-								<th class="center">OCCUPAT</th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div> <!-- end left pane content -->
-		</div>
+    <div class="row">
+        <div class="col-sm-6 col-md-4 c1 h100 hide" id='left_pane'>
+            <div class="content" id="tabcont">
+                <div role="tabpanel" class="container" id="participants">
+                    <div class="caption-general">Available athletes</div>
+                    <div class="close"></div>
+                    <table id="table-participants" class="display responsive nowrap" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>FAV</th>
+                            <th>NAME</th>
+                            <th class="center">OVR</th>
+                            <th class="center">GRP</th>
+                            <th class="center">GND</th>
+                            <th class="center">BIB</th>
+                            <th class="center">GEN</th>
+                            <th class="center">CTRY</th>
+                            <th class="center">AGE</th>
+                            <th class="center">OCCUPAT</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>FAV</th>
+                            <th>NAME</th>
+                            <th class="center">OVR</th>
+                            <th class="center">GRP</th>
+                            <th class="center">GND</th>
+                            <th class="center">BIB</th>
+                            <th class="center">GEN</th>
+                            <th class="center">CTRY</th>
+                            <th class="center">AGE</th>
+                            <th class="center">OCCUPAT</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div role="tabpanel" class="container hide" id="favorites">
+                    <div class="caption-general">Favorites</div>
+                    <div class="close"></div>
+                    <table id="table-favorites" class="display responsive nowrap" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th class="center">BIB</th>
+                            <th class="center">GEN</th>
+                            <th class="center">CTRY</th>
+                            <th class="center">AGE</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>NAME</th>
+                            <th class="center">BIB</th>
+                            <th class="center">GEN</th>
+                            <th class="center">CTRY</th>
+                            <th class="center">AGE</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div role="tabpanel" class="container hide" id="rank">
+                    <div class="caption-general">Ranking</div>
+                    <div class="close"></div>
+                    <div id="mikaTiming">
+                        <iframe src="http://roth-iframe.r.mikatiming.de/2015/?pid=leaderboard_iframe" width="100%" height="100%"></iframe>
+                    </div>
+                </div>
+            </div> <!-- end left pane content -->
+        </div>
         <div class="col-sm-12 c2 h100 " id='map'>
             <div class="content"></div>
             <div id="header"></div>
@@ -291,7 +234,7 @@
                 Please be aware that there are inherent security risks in transmitting data, such as e-mails, via the Internet, because it is impossible to safeguard completely against unauthorized access by third parties. We cannot assume any liability for damages arising as a result of such security vulnerabilities. The use by third parties of all published contact details, such as published names, times, postal addresses, telephone or fax numbers and email addresses etc., for the purpose of marketing or other business activities is expressly excluded.
             </div>
         </div>
-	</div>
+    </div>
 </div>
 </body>
 </html>
