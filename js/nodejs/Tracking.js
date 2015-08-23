@@ -104,6 +104,12 @@ setInterval(function()
 			{
 				var p = Config.participants[i];
 				var id = p.idParticipant;
+				
+				// TEST TEST 
+				if (id != "3E4660A9569202960C6109BA") {
+					continue;
+				}
+				
 				if (Config.assignments[id] && Config.assignments[id].length) 
 				{
 					var devId = Config.assignments[id];
