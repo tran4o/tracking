@@ -131,9 +131,9 @@ setInterval(function()
 						break;
 					
 					// TEST ONLY
-					tt++;
+					/*tt++;
 					if (tt == 3)
-						break;
+						break;*/
 				}
 			}
 			if (Config.simulation.enabled) 
