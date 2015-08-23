@@ -21,7 +21,25 @@ module.exports = function (grunt) {
             browserify_start: {
                 command: 'browserify js\\app\\Starts.js --debug >js\\nodejs\\admin\\starts.js'
             }
+        },
 
+        wget: {
+            raceParticipants: {
+                files: {
+                    //'data/participants.json': "http://portal.mikatiming.de/ah/rest/appapi/meetinginfo/race/9999990FEBE3BA0000000321/participations?apiKey=sast-152fed7f&pageMaxCount=9999"
+                    'data/participants.json': 'http://portal.mikatiming.de/ah/rest/appapi/meetinginfo/race/9999990FEBE3BA0000000322/participations?apiKey=sast-152fed7f&pageMaxCount=9999'
+                }
+            },
+            raceStart: {
+                files: {
+                    'data/.notused': "http://localhost:3000/raceStart/353816058291727"
+                }
+            },
+            raceClear: {
+                files: {
+                    'data/.notused': "http://connectedlifestyle.dtrd.de/triathlon/rest/clearRace"
+                }
+            }
         }
     });
 
