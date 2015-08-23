@@ -370,11 +370,17 @@ Class("Participant",
 		},
 
 		pingCalculated : function(obj) {
+			if (obj.discarded) {
+				delete obj.discarded;
+				this.setIsDiscarded(true);			
+			}
 			var state = new ParticipantState(obj);
 			this.addState(state);
 			var pos = state.gps;
 			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
 			var rr = CONFIG.math.gpsInaccuracy*coef;
+			
+			
 			if (typeof GUI != "undefined" && GUI.isDebug) 
 			{
 				var ring = [

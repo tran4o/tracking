@@ -243,6 +243,7 @@ function generateIntermediate()
 		ts.setGenderRank(genderRank[part.deviceId]);
 		ts.setGroupRank(groupRank[part.deviceId]);
 		ts.debugInfo = part.min(ctime,"debugInfo");
+		ts.discarded = part.isDiscarded;
 		//console.log("STATE DEBUG INFO : "+JSON.stringify(ts.debugInfo));
 		addState(event,part.deviceId,ts);
 	}
