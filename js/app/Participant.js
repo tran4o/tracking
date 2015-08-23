@@ -481,6 +481,7 @@ Class("Participant",
 			//console.log("!!! FOUND "+result.length+" | "+this.track.route.length+" | "+rr);
 			//----------------------------------------------
 			var debugInfo={};
+			var mminf=null;
 			for (var _i=0;_i<result.length;_i++)
 			{
 				var i = result[_i][4].index;
@@ -502,8 +503,11 @@ Class("Participant",
 						//Utils.disp
 						var d1 = Utils.WGS84SPHERE.haversineDistance([res[q].x,res[q].y],tg[i]);
 						var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
-						if (el1 < lelp)
+						if (el1 < lelp) {
+							if (mminf == null || mminf > el1)
+								mminf=el1;
 							continue; 				// SKIP < LELP
+						}
 						if (minf == null || el1 < minf) {
 							if (debugInfo) {
 								debugInfo.best=i;
@@ -537,6 +541,15 @@ Class("Participant",
 				}*/
 			}
 			//---------------------------------------------			
+			if (minf == null && mminf == null) 
+			{
+				console.error("MMINF NULL > DISCARD "+this.code+" | "+this.deviceId);
+				this.setDiscarded(true);
+				state.setElapsed(lelp);
+				this.addState(state);
+				return;
+			}
+
 			/*if (minf == null)
 				console.error("MINF NULL");
 			else
