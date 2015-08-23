@@ -106,7 +106,7 @@ setInterval(function()
 				var id = p.idParticipant;
 				
 				// TEST TEST 
-				if (id != "3E4660A9569202960C6109BA") {
+				if (id != "3E4660A9569202960C6109BA" && id != "78ADBAB587914F2FD2192E1A") {
 					continue;
 				}
 				
