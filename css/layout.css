@@ -597,6 +597,11 @@ table.dataTable td {
 	z-index: 999997;
 }
 
+#liveStream iframe {
+	width: 490px;
+	height: 275px;
+}
+
 .liveStreamPlayer {
 }
 
@@ -740,6 +745,19 @@ table.dataTable td {
 	#link_legalNotice {
 		margin-left: 85px;
 	}
+
+	#liveStream {
+		height: 410px;
+	}
+
+	.liveStreamThumb {
+		width: 104px;
+	}
+
+	#liveStream iframe {
+		width: 320px;
+		height: 180px;
+	}
 }
 
 @media screen and (max-width: 320px) {
@@ -767,6 +785,19 @@ table.dataTable td {
 		margin-left: 26px;
 		padding-left: 4px;
 		width: 118px;
+	}
+
+	#liveStream {
+		height: 410px;
+	}
+
+	.liveStreamThumb {
+		width: 87px;
+	}
+
+	#liveStream iframe {
+		width: 270px;
+		height: 180px;
 	}
 }
 
