@@ -61,7 +61,7 @@ Class("BackendStream",
                 for (var i in track.participants) 
                 {
                 	var pp = track.participants[i];
-                	tt.__done=false;
+                	pp.__done=false;
                 	if (pp.isFavorite)
                 		mmap[pp.deviceId]=pp;
                 	var reft = ctime - 10*60*1000;
