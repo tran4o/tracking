@@ -247,7 +247,7 @@ function generateIntermediate()
 	var dinfo=[];
 	for (var i in arr) {
 		var part = event.trackedParticipants[i];		
-		dinfo.push(Math.round(elapsed[i]*100*100)/100.0);
+		dinfo.push(Math.round(part.__elapsed*100*100)/100.0);
 	}
 	console.log(">>>>>>>>> "+JSON.stringify(dinfo));
 }
