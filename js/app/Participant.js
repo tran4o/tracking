@@ -493,7 +493,7 @@ Class("Participant",
 							new Point2D(pos[0]+rr,pos[1]+rr*coefy)
 						);
 				//console.log(res);
-				/*if (res && res.points && res.points.length) 
+				if (res && res.points && res.points.length) 
 				{
 					//Utils.disp
 					var d3 = Utils.WGS84SPHERE.haversineDistance(tg[i],tg[i+1]);
@@ -515,8 +515,8 @@ Class("Participant",
 						}
 						//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
 					}
-				}*/
-				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
+				}
+				/*var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
 					// has intersection (2 points)
@@ -526,15 +526,16 @@ Class("Participant",
 					var el1 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d1/d3;
 					var el2 = this.track.distancesElapsed[i]+(this.track.distancesElapsed[i+1]-this.track.distancesElapsed[i])*d2/d3;
 					//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0+" | "+Math.round(el2*100.0*100.0)/100.0+" | LELP="+Math.round(lelp*100.0*100.0)/100.0);
-					if (el1 > lelp) {
-						if (minf == null || el1 < minf)
-							minf=el1;
-					}
-					if (el2 > lelp) {
-						if (minf == null || el2 < minf)
-							minf=el2;
-					}
-				}
+					if (el1 < lelp)
+						el1=lelp;
+					if (el2 < lelp)
+						el2=lelp;
+					//-------------------------------------------------------------------------------------------------
+					if (minf == null || el1 < minf)
+						minf=el1;
+					if (el2 < minf)
+						minf=el2;
+				}*/
 			}
 			//---------------------------------------------			
 			/*if (minf == null)

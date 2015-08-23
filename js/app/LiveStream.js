@@ -113,7 +113,10 @@ Class("LiveStream", {
             // show the new stream
             var url = $thumb.data("url");
             var $player = this._$comp.find(".liveStreamPlayer");
-            $player.html('<iframe src=' + url + '?width=490&height=275&autoPlay=true&mute=false" width="490" height="275" frameborder="0" scrolling="no" '+
+
+            // width=490&height=275&
+            // width="490" height="275"
+            $player.html('<iframe src=' + url + '?autoPlay=true&mute=false" frameborder="0" scrolling="no" '+
             'allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>');
 
             // show if not already shown
