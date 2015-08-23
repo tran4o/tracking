@@ -486,7 +486,7 @@ Class("Participant",
 			{
 				var i = result[_i][4].index;
 				//a1,a2,r1,r2
-				var res = Intersection.intersectLineRectangle(
+				/*var res = Intersection.intersectLineRectangle(
 							new Point2D(tg[i][0],tg[i][1]),
 							new Point2D(tg[i+1][0],tg[i+1][1]),
 							new Point2D(pos[0]-rr,pos[1]-rr*coefy),
@@ -515,8 +515,8 @@ Class("Participant",
 						}
 						//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
 					}
-				}
-				/*var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
+				}*/
+				var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
 				if (res) 
 				{
 					// has intersection (2 points)
@@ -535,7 +535,7 @@ Class("Participant",
 						minf=el1;
 					if (el2 < minf)
 						minf=el2;
-				}*/
+				}
 			}
 			//---------------------------------------------			
 			/*if (minf == null)
