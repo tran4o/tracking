@@ -199,11 +199,13 @@ function generateIntermediate()
 			val.push(moredist/spd);
 		}
 	}
-	
-	
 	console.log(arr.length+" | GENERATE INTERMEDIATE : "+Utils.formatDateTimeSec(new Date(ctime)));
 	//console.log(val);
 	arr.sort(function(a, b){
+		var a1 = event.trackedParticipants[a].isDiscarded ? 1 : 0;
+		var b1 = event.trackedParticipants[b].isDiscarded ? 1 : 0;
+		if (a1 != b1)
+			return a1-b1;
 		return val[a]-val[b];
 	});
 	var tmp={};
