@@ -19,10 +19,10 @@ var STYLES=
             image: new ol.style.Circle({
                 radius: 17,
                 fill: new ol.style.Fill({
-                    color: "rgba(" + colorAlphaArray(part.color, 0.15).join(",") + ")"
+                    color: "rgba(255,255,255,0.5)"
                 }),
                 stroke: new ol.style.Stroke({
-                    color: "rgba(255,255,255,0.5)",
+                    color: "rgba(255,255,255,1)",
                     width: 3
                 })
             })
