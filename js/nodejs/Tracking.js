@@ -270,6 +270,9 @@ exports.queryData = function(imei,from,to)
 			});
 		}
 	}
+	res.sort(function(a, b){
+		return a.timestamp - b.timestamp;
+	});
 	return res;
 }
 //--------------------------------------------------------------------------
