@@ -184,7 +184,8 @@ function generateIntermediate()
 	for (var i in event.trackedParticipants) 
 	{ 
 		var part = event.trackedParticipants[i];
-		var elp = part.avg(ctime,"elapsed")
+		//var elp = part.avg(ctime,"elapsed")
+		var elp = part.min(ctime,"elapsed")
 		if (elp == null) {
 			//console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
