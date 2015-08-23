@@ -61,6 +61,7 @@ Class("BackendStream",
                 for (var i in track.participants) 
                 {
                 	var pp = track.participants[i];
+                	tt.__done=false;
                 	if (pp.isFavorite)
                 		mmap[pp.deviceId]=pp;
                 	var reft = ctime - 10*60*1000;
@@ -71,6 +72,8 @@ Class("BackendStream",
                 }
                 if (!json.length)
                 	return;
+                
+                var arr=[];
                 function processData(data) 
                 {
                 	for (var i in data) 
@@ -81,9 +84,21 @@ Class("BackendStream",
                 			if (data[i].timestamp+1 > pp.__startTime)
                 				pp.__startTime=data[i].timestamp+1;
                 			pp.pingCalculated(data[i]);
+                			pp.__done=true;
                 		}
                 	}
                 }
+                //--------------------------------------------------------------------------	
+                var arr=[];
+                for (var i in track.participants) {
+                	var pp = track.participants[i];
+                	var k = Math.round(pp.getElapsed()*100*100)/100.0;
+                	if (pp.__done)
+                		k="*"+k;
+                	arr.push(k);
+                }
+                console.log("GOT "+arr);
+                //--------------------------------------------------------------------------	
                 //console.log(json);
                 $.ajax({
                     type: "POST",
