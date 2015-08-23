@@ -75,8 +75,10 @@ Class("StreamData",
                                 continue;*/
                         //----------------------------------
                         var c = [e.LON / 1000000.0,e.LAT / 1000000.0];
-                        part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
-                        console.log(" >>> "+part.code+" | "+(Math.round(part.getElapsed()*100.0*100.0)/100.0)+"%"+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
+                        if (part && part.ping) {
+                            part.ping(c,e.HRT,false/*SOS*/,ctime,e.ALT,0/*overall rank*/,0/*groupRank*/,0/*genderRank*/);
+                            console.log(" >>> "+part.code+" | "+(Math.round(part.getElapsed()*100.0*100.0)/100.0)+"%"+" | PING AT POS "+c[0]+" | "+c[1]+" | "+Utils.formatDateTimeSec(new Date(ctime))) ;
+                        }
                 	}
                 }
                 //console.log(json);
