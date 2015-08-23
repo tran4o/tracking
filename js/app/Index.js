@@ -318,6 +318,7 @@ $(document).ready(function () {
         CONFIG.times = {begin: data.times.startTime , end: data.times.endTime };
         GUI.init();
 
+        var hasRealFavorites = false;
         function processEntry(pdata, isCam) {
             var part;
             if (isCam)
@@ -334,8 +335,14 @@ $(document).ready(function () {
             part.setImage(pdata.image);
             if (isCam || localStorage.getItem("favorite-" + part.id) == 1)
                 part.setIsFavorite(true);
-            if (!isCam)
+            if (!isCam) {
                 PARTICIPANTS.push(part);
+
+                // we just want to know if there's any favorite at all
+                if (!hasRealFavorites && part.getIsFavorite()) {
+                    hasRealFavorites = true;
+                }
+            }
 
             // if this is a demo simulation then start it for each single favourite-participant or cam
             if (window.isDEMO_SIMULATION === true) {
@@ -379,8 +386,6 @@ $(document).ready(function () {
                 // NORMAL CASE
                 var stream = new BackendStream();
                 stream.start(TRACK);
-                
-                
             }
         }
 
@@ -398,6 +403,17 @@ $(document).ready(function () {
             }
         }
         TRACK.newHotSpots(dynamicTrackHotspots);
+
+        // if there are no favorites then open the All Participants tab first
+        if (!hasRealFavorites) {
+            showTab("participants");
+            // show a notification
+            $.bootstrapGrowl("Select your favourites by pressing the stars", {
+                ele: '#participants', // which element to append to
+                offset: {from: 'bottom', amount: 20}, // 'top', or 'bottom'
+                align: 'center' // ('left', 'right', or 'center')
+            });
+        }
     }).fail(function () {
         console.error("Error get event configuration from backend!");
     });
