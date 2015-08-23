@@ -100,16 +100,11 @@ setInterval(function()
 			event.TRACK.init();
 			console.log("Starting tracking engine for track "+event.code+" with length "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0)+" km. ("+Utils.formatNumber2(event.bikeStartKM)+" + "+Utils.formatNumber2(event.runStartKM-event.bikeStartKM)+" + "+Utils.formatNumber2(event.TRACK.getTrackLength()/1000.0-event.runStartKM)+") km");
 			//----------------------------------------------------------------------------------------------------------------------------------
+			var tt=0;
 			for (var i in Config.participants) 
 			{
 				var p = Config.participants[i];
 				var id = p.idParticipant;
-				
-				// TEST TEST 
-				if (id != "3E4660A9569202960C6109BA" && id != "78ADBAB587914F2FD2192E1A") {
-					continue;
-				}
-				
 				if (Config.assignments[id] && Config.assignments[id].length) 
 				{
 					var devId = Config.assignments[id];
@@ -133,6 +128,11 @@ setInterval(function()
 					//-----------------------------
 					part.setStartTime(Config.getStartTimeFromStartPos(part.getStartPos()));
 					if (Config.simulation.singleParticipant)
+						break;
+					
+					// TEST ONLY
+					tt++;
+					if (tt == 3)
 						break;
 				}
 			}
