@@ -180,18 +180,17 @@ function generateIntermediate()
 	var groupRank={};
 	var arr=[];
 	var val=[];
-	var elapsed=[];
 	for (var i in event.trackedParticipants) 
 	{ 
 		var part = event.trackedParticipants[i];
-		var elp = part.avg(ctime,"elapsed")
 		//var elp = part.min(ctime,"elapsed")
+		var elp = part.avg(ctime,"elapsed")
+		part.__elapsed=elp;
 		if (elp == null) {
 			//console.log("SKIPP BECAUSE OF ELP NULL "+i);
 			continue;
 		}
 		arr.push(i);
-		elapsed.push(elp);
 		var spd = part.avg(ctime,"speed");
 		if (spd == 0)
 			val.push(999999999.0);
@@ -231,7 +230,7 @@ function generateIntermediate()
 		var part = event.trackedParticipants[arr[i]];		
 		var ts = new ParticipantState();
 		ts.setSpeed(part.avg(ctime,"speed"));
-		ts.setElapsed(elapsed[i]);
+		ts.setElapsed(part.__elapsed);
 		ts.setFreq(parseInt(part.avg(ctime,"freq")));
 		ts.setAcceleration(part.avg(ctime,"acceleration"));
 		ts.setAlt(parseInt(part.avg(ctime,"alt")));
