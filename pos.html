@@ -271,11 +271,13 @@ function doGet()
 
 $(document).ready(function() {
 	$("#eclear").click(function() {
-		$.get( "triathlon/rest/clear/emergencyCall", function( data ) {
-			  alert("E-Calls are now emtpy : "+JSON.stringify(data));
-		});
+		var r = confirm("Do you REALLY want to clear all emergency calls?");
+		if (r == true) {
+			$.get( "triathlon/rest/clear/emergencyCall", function( data ) {
+				  alert("E-Calls are now emtpy : "+JSON.stringify(data));
+			});
+		} 
 	});
-
 
 	map = new ol.Map({
 	  renderer : "canvas",
