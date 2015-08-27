@@ -34,7 +34,7 @@
 </head>
 <body>
 <div id='map' style='position:absolute;top:0;left:0;right:0;bottom:0;background-color:white;'>
-	<div id='eclear' style='cursor:pointer;position:absolute;font-weight:bold;right:5px;top:5px;z-index:99999999;padding:0.5em;border-radius:5px;'>ECLAL CLEAR</div>
+	<div id='eclear' style='cursor:pointer;position:absolute;font-weight:bold;right:5px;top:5px;z-index:99999999;padding:0.5em;border-radius:5px;'>ECALL CLEAR</div>
 </div>
 <script>
 var aliases={};
@@ -270,6 +270,13 @@ function doGet()
 }
 
 $(document).ready(function() {
+	$("#eclear").click(function() {
+		$.get( "triathlon/rest/clear/emergencyCall", function( data ) {
+			  alert("E-Calls are now emtpy : "+JSON.stringify(data));
+		});
+	});
+
+
 	map = new ol.Map({
 	  renderer : "canvas",
 	  target: 'map',
