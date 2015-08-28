@@ -30,11 +30,23 @@
 			background-color : #FFFFFF;
 			color : red;
 		}
+		#aclear {
+			background-color:#A00000;
+			color:white;
+			border:2px solid white;
+		}
+		#aclear:hover {
+			border : 2px solid black;
+			background-color : #FFFFFF;
+			color : red;
+		}
+
 	</style>	
 </head>
 <body>
 <div id='map' style='position:absolute;top:0;left:0;right:0;bottom:0;background-color:white;'>
 	<div id='eclear' style='cursor:pointer;position:absolute;font-weight:bold;right:5px;top:5px;z-index:99999999;padding:0.5em;border-radius:5px;'>ECALL CLEAR</div>
+	<div id='aclear' style='cursor:pointer;position:absolute;font-weight:bold;right:5px;top:35px;z-index:99999999;padding:0.5em;border-radius:5px;'>ALL CLEAR</div>
 </div>
 <script>
 var aliases={};
@@ -278,6 +290,15 @@ $(document).ready(function() {
 			});
 		} 
 	});
+	$("#aclear").click(function() {
+		var r = confirm("Do you REALLY want to clear ALL GPS DATA AND ALL EMERGENCY CALLS?");
+		if (r == true) {
+			$.get( "triathlon/rest/clear/all", function( data ) {
+				  alert("DB is now empty! : "+JSON.stringify(data));
+			});
+		} 
+	});
+
 
 	map = new ol.Map({
 	  renderer : "canvas",
