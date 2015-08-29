@@ -20,6 +20,15 @@ function getRaceStartPeriod(part) {
 }
 //--------------------------------------------------------------------
 var app = express();
+
+// allow CORS requests - useful  when  locally developing with Apache server and etc. - still disable it for production
+//app.use(function(req, res, next) {
+//	res.header("Access-Control-Allow-Origin", "*");
+//	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST');
+//	next();
+//});
+
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
