@@ -333,8 +333,12 @@ $(document).ready(function () {
             part.setGender(pdata.gender);
             part.setIcon(pdata.icon);
             part.setImage(pdata.image);
-            if (isCam || localStorage.getItem("favorite-" + part.id) == 1)
+            if (!!window.isDEMO_SIMULATION || isCam || localStorage.getItem("favorite-" + part.id) == 1) {
+                // if this is a demo simulation
+                // or if this is a moving camera
+                // or if this is set to be already a favorite by the user
                 part.setIsFavorite(true);
+            }
             if (!isCam) {
                 PARTICIPANTS.push(part);
 
