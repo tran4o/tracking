@@ -522,7 +522,7 @@ Class("Participant",
 							}
 							minf=el1;
 						}
-						//console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
+						console.log("Intersection candidate at "+i+" | "+Math.round(el1*100.0*100.0)/100.0);
 					}
 				}
 				/*var res = Utils.interceptOnCircle(tg[i],tg[i+1],pos,rr);
