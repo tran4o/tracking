@@ -1,0 +1,23 @@
+#header {
+    background-image: url('../img/roth.jpg');
+    background-repeat: no-repeat;
+    background-position: left center;
+
+    /* for those browsers that support multiple backgrounds */
+    background-image: url("../img/roth.jpg"), url("../img/RacetheLegend.png");
+    background-position: left center, right center;
+    background-repeat: no-repeat;
+    background-size: auto auto, 200px auto;
+}
+
+@media screen and (max-width: 500px) {
+    #header {
+        background-size: 150px auto, 150px auto;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    #header {
+        background-size: 130px auto, 130px auto;
+    }
+}

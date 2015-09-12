@@ -281,8 +281,8 @@ function changeFavorite(id) {
 
 //--------------------------------------------------------------------------
 // use this if you want to bypass all the NodeJS dynamic event get
-// it will simulate a static data return by "demo_simulation_data.json"
-//window.isDEMO_SIMULATION = true;
+// then set this to a demo JSON file (e.g. "demo_simulation_data_1.json")
+//window.isDEMO_SIMULATION = demo_simulation_data_1.json;
 
 window.TRACK = new Track();
 window.GUI = new Gui({track: TRACK, isSkipExtent : true, initialZoom : 15});
@@ -298,11 +298,11 @@ $(document).ready(function () {
     // Event data loading - realtime or hard simulated
     //--------------------------------------------------------------------------
     var eventDataUrl;
-    if (window.isDEMO_SIMULATION === true) {
+    if (!!window.isDEMO_SIMULATION) {
         // load the demo simulation generator
         var demoSimulation = require('./DemoSimulation');
         // this is the data with the demo participants/cams
-        eventDataUrl = "data/demo_simulation_data.json";
+        eventDataUrl = "data/" + window.isDEMO_SIMULATION;
 
         CONFIG.math.displayDelay = 10; // fix this animation display delay time
     } else {
@@ -333,8 +333,12 @@ $(document).ready(function () {
             part.setGender(pdata.gender);
             part.setIcon(pdata.icon);
             part.setImage(pdata.image);
-            if (isCam || localStorage.getItem("favorite-" + part.id) == 1)
+            if (!!window.isDEMO_SIMULATION || isCam || localStorage.getItem("favorite-" + part.id) == 1) {
+                // if this is a demo simulation
+                // or if this is a moving camera
+                // or if this is set to be already a favorite by the user
                 part.setIsFavorite(true);
+            }
             if (!isCam) {
                 PARTICIPANTS.push(part);
 
@@ -345,7 +349,7 @@ $(document).ready(function () {
             }
 
             // if this is a demo simulation then start it for each single favourite-participant or cam
-            if (window.isDEMO_SIMULATION === true) {
+            if (!!window.isDEMO_SIMULATION) {
                 if (part.getIsFavorite()) {
                     demoSimulation.simulateParticipant(part);
                 }
@@ -358,7 +362,7 @@ $(document).ready(function () {
             processEntry(data.cams[i], true);
 
         // if this is not a demo simulation start listening for the realtime pings
-        if (window.isDEMO_SIMULATION !== true) {
+        if (!window.isDEMO_SIMULATION) {
             if (CONFIG.settings.noMiddleWare) {
                 function doHTTP(url, json, onReqDone) {
                     if (json.length) {
