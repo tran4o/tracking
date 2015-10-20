@@ -59,7 +59,7 @@ $.ajax({
     	
     	var tt=[];
     	for (var e in data.data) 
-    	{
+    	{	
     		var ev = data.data[e];
     		var track=JSON.parse(ev.track);        		
     		var extent = ol.proj.transformExtent( (new ol.geom.LineString(track)).getExtent() , 'EPSG:4326', 'EPSG:3857');

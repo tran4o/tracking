@@ -306,7 +306,7 @@ $(document).ready(function () {
     // Event data loading - realtime or hard simulated
     //--------------------------------------------------------------------------
     var eventDataUrl;
-    var baseurl = "/";
+    var baseurl = "../";
     eventDataUrl = baseurl + "event";
     if (params["event"]) {
     	eventDataUrl=eventDataUrl+"?event="+encodeURIComponent(params.event);
