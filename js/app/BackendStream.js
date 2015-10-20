@@ -11,7 +11,7 @@ Class("BackendStream",
     {
 		url : {
 			is : "rw",
-			init : "node/stream"
+			init : "../stream"
 		},
 		track : {
 			is : "rw"
