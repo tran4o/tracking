@@ -1,0 +1,23 @@
+CREATE SEQUENCE cid START 1;
+
+DROP TABLE calculated_states;
+CREATE TABLE calculated_states ( id integer PRIMARY KEY,partId VARCHAR(4000),eventId VARCHAR(4000),t BIGINT, imei VARCHAR(4000), elapsed DOUBLE PRECISION, acceleration DOUBLE PRECISION, altitute DOUBLE PRECISION, isSOS BOOLEAN, overallRank INTEGER, genderRank INTEGER, 
+groupRank INTEGER, data JSON );
+
+
+
+
+
+				imei : imei,
+				speed : state.speed,
+				elapsed : state.elapsed,
+				timestamp : state.timestamp,		// UTC
+				gps : state.gps,
+				freq : state.freq,
+				isSOS : state.isSOS,
+				acceleration : state.acceleration,
+				alt : state.alt,
+				overallRank : state.overallRank,
+				genderRank : state.genderRank,
+				groupRank : state.groupRank,
+				debugInfo : state.debugInfo

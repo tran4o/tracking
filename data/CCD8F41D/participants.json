@@ -1,0 +1,202 @@
+[
+    {
+        "idParticipant": "B4E02BB73C67CDC8C7CC569A",
+        "firstname": "Simone",
+        "lastname": "Braendli",
+        "nationality": "SUI",
+        "club": "Team Erdinger Alkoholfrei",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 44
+    },
+    {
+        "idParticipant": "48877CEF681EF5C1A8F1C8B6",
+        "firstname": "Catherine Emma",
+        "lastname": "Jameson",
+        "nationality": "GBR",
+        "club": "Jackpot Racing",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 43
+    },
+    {
+        "idParticipant": "0E162B62A2121CC7459AE390",
+        "firstname": "Thomas",
+        "lastname": "Steger ",
+        "nationality": "AUT",
+        "club": "Pewag Racing Team",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 4
+    },
+    {
+        "idParticipant": "832512DF719D5CC3FD0EA143",
+        "firstname": "Marina",
+        "lastname": "Damlaimcourt",
+        "nationality": "ESP",
+        "club": "INDEPENDIENTE",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 45
+    },
+    {
+        "idParticipant": "530E09A9B738E826F37EBBA7",
+        "firstname": "Dr. Lucy",
+        "lastname": "Gossage",
+        "nationality": "GBR",
+        "club": "Team Erdinger Alkoholfrei",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 42
+    },
+    {
+        "idParticipant": "6AE14BD36B4DC67AD9641552",
+        "firstname": "Daniela",
+        "lastname": "Sämmler",
+        "nationality": "GER",
+        "club": "Team Erdinger Alkoholfrei",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 41
+    },
+    {
+        "idParticipant": "7FF0E7E7F9F9FFA1AF7BF6D2",
+        "firstname": "Filip",
+        "lastname": "Ospaly",
+        "nationality": "CZE",
+        "club": "EKOL Team",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 112
+    },
+    {
+        "idParticipant": "7036E2AE1A285863075DFB70",
+        "firstname": "Markus",
+        "lastname": "Fachbach",
+        "nationality": "GER",
+        "club": "Pro Team Mohrenwirt",
+        "sex": "M",
+        "startGroup": "PRO",
+        "startNo": 3
+    },
+    {
+        "idParticipant": "3E4660A9569202960C6109BA",
+        "firstname": "Andreas",
+        "lastname": "Giglmayr",
+        "nationality": "AUT",
+        "club": "Tri Team Hallein",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 5
+    },
+    {
+        "idParticipant": "72CC474057E3519638A985CD",
+        "firstname": "Nick",
+        "lastname": "Kastelein",
+        "nationality": "AUS",
+        "club": "Australia",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 6
+    },
+    {
+        "idParticipant": "1D7B97C917EF19D2371C656D",
+        "firstname": "Jens",
+        "lastname": "Frommhold",
+        "nationality": "GER",
+        "club": "Triathlon Potsdam",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 7
+    },
+    {
+        "idParticipant": "78ADBAB587914F2FD2192E1A",
+        "firstname": "Yvonne",
+        "lastname": "Van Vlerken",
+        "nationality": "NED",
+        "club": "RV DJ's bikeshop Simplon Hard",
+        "sex": "F",
+        "startGroup": "Pro",
+        "startNo": 40
+    },
+    {
+        "idParticipant": "9D0EBA10D78FB839946AC6C7",
+        "firstname": "Per",
+        "lastname": "Bittner",
+        "nationality": "GER",
+        "club": "",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 23
+    },
+    {
+        "idParticipant": "D2725A3276DF1C0B86F0BBD9",
+        "firstname": "Mikel",
+        "lastname": ".",
+        "nationality": "",
+        "club": "",
+        "sex": "M",
+        "startGroup": "",
+        "startNo": 509
+    },
+    {
+        "idParticipant": "F4F82B02B2FD9AB6BF32E93D",
+        "firstname": "Karsten",
+        "lastname": "Streng",
+        "nationality": "GER",
+        "club": "MT",
+        "sex": "M",
+        "startGroup": "",
+        "startNo": 999
+    },
+    {
+        "idParticipant": "F399E358EC95B28E84653E73",
+        "firstname": "Timo",
+        "lastname": "Bracht",
+        "nationality": "GER",
+        "club": "",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 26
+    },
+    {
+        "idParticipant": "C55697C71136AFF5DC435DEE",
+        "firstname": "Horst",
+        "lastname": "Reichel",
+        "nationality": "GER",
+        "club": "",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 2
+    },
+    {
+        "idParticipant": "7FFBEC5C7CB8AB06679A8DD0",
+        "firstname": "Stefan",
+        "lastname": "Sack",
+        "nationality": "GER",
+        "club": "1. FCN",
+        "sex": "male",
+        "startGroup": "Pro",
+        "startNo": 815
+    },
+    {
+        "idParticipant": "BBBBDAF0D59804E369F94544",
+        "firstname": "Test",
+        "lastname": "Test",
+        "nationality": "BUL",
+        "club": "",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 333
+    },
+    {
+        "idParticipant": "8D4037F64E368FC47140381D",
+        "firstname": "Peter",
+        "lastname": "Mruk",
+        "nationality": "GER",
+        "club": "SP",
+        "sex": "M",
+        "startGroup": "Pro",
+        "startNo": 777
+    }
+]
