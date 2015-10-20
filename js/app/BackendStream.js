@@ -11,7 +11,7 @@ Class("BackendStream",
     {
 		url : {
 			is : "rw",
-			init : (window.location.host.indexOf("localhost") == 0 || window.location.host.indexOf("127.0.0.1") == 0) ? "http://localhost:3000/stream" : "node/stream"
+			init : "node/stream"
 		},
 		track : {
 			is : "rw"

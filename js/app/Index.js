@@ -51,7 +51,7 @@ var params = getSearchParameters();
 //-----------------------------------------------
 $.ajax({
     type: "GET",
-    url: "/events",
+    url: "../events",
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function(data)
