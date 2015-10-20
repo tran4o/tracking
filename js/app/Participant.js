@@ -1,6 +1,6 @@
 require('joose');
 require('./Point');
-
+var RBTree = require('bintrees').RBTree;
 var CONFIG = require('./Config');
 var Utils = require('./Utils');
 var Intersection = require("kld-intersections").Intersection;
@@ -36,6 +36,10 @@ Class("ParticipantState",
 			init : 0
 		},
 		isSOS : {
+			is : "rw",
+			init : false
+		},
+		isDiscarded : {
 			is : "rw",
 			init : false
 		},
@@ -96,7 +100,7 @@ Class("Participant",
     	},
     	states : {
     		is : "rw",
-    		init : null //[]
+    		init : new RBTree(function(a, b) { return a.timestamp - b.timestamp; })
     		
     	},
 		isTimedOut : {
@@ -122,10 +126,6 @@ Class("Participant",
 	    color : {
 	        is:   "rw",
 	        init: "#fff"
-	    },
-	    lastInterpolateTimestamp : {
-	    	is : "rw",
-	    	init : null
 	    },
 	    ageGroup : {
 	    	is : "rw",
@@ -172,12 +172,12 @@ Class("Participant",
 		init : function(pos, track) {
 			this.setTrack(track);
 			var ctime = (new Date()).getTime();
-			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,freq:0,speed:0,elapsed:0});
+			var state = new ParticipantState({timestamp:1/* placeholder ctime not 0 */,gps:pos,isSOS:false,isDiscarded:false,freq:0,speed:0,elapsed:0});
 			this.setElapsed(state.elapsed);
-			this.setStates([state]);
+			this.setStates(new RBTree(function(a, b) { return a.timestamp - b.timestamp; }));
+			this.states.insert(state);
 			this.setIsSOS(false);
 			this.setIsDiscarded(false);
-
 			if (this.feature) {
 				this.initFeature();
 			}
@@ -209,35 +209,16 @@ Class("Participant",
 			if (this.feature) 
 				this.feature.setGeometry(new ol.geom.Point(mpos));
 		},
-		interpolate : function() 
+
+		interpolate : function(ctime) 
 		{
-			
-			if (!this.states.length)
-				return;
-			var ctime=(new Date()).getTime();
-			var isTime = (ctime >= CONFIG.times.begin && ctime <= CONFIG.times.end);
-			if (this.isDiscarded || this.isSOS/* || !this.isOnRoad*/ || !isTime || CONFIG.settings.noInterpolation) 
-			{
-				var lstate=this.states[this.states.length-1];
-				var pos = lstate.gps;
-				if (pos[0] != this.getPosition()[0] || pos[1] != this.getPosition()[1]) 
-				{
-				    this.setPosition(pos);
-				    this.setRotation(null);
-					this.updateFeature();
-				} else {
-					if (this.isDiscarded) {
-						this.updateFeature();
-					}
-				}
-				return;
-			}
-			this.setLastInterpolateTimestamp(ctime);
-			// No enough data?
-			if (this.states.length < 2)
+			this.__ctime=ctime;
+			if (!this.states.size)
+				return;		
+			if (this.states.size < 2)
 				return;
 			var res = this.calculateElapsedAverage(ctime);
-			if (res) 
+			if (res != null) 
 			{
 				var tres=res;
 				if (tres == this.track.laps)
@@ -254,121 +235,94 @@ Class("Participant",
 
 		min : function(ctime,proName) 
 		{
-			var res=null;
-			for (var i=this.states.length-2;i>=0;i--) 
-			{
-				var j = i+1;
-				var sa = this.states[i];
-				var sb = this.states[j];
-				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
-				{ 
-					res = sa[proName];
-					//console.log("MIN FOR "+proName+" | "+res+" | "+JSON.stringify(this.states[i]));
-					break;
-				}
-				if (sb.timestamp < ctime)
-					break;
+			var it = this.states.lowerBound({timestamp:ctime});
+			var sb = it.data();
+			if (!sb)
+				return null;
+			if (sb.timestamp == ctime)
+				return sb[proName];
+			var sa = it.prev();
+			if (sa) {
+				return sa[proName];
 			}
-			return res;
+			return null;
+		},
+		
+		max : function(ctime,proName) 
+		{
+			var it = this.states.lowerBound({timestamp:ctime});
+			var sa = it.data();
+			if (!sa)
+				return null;
+			return sa[proName];
 		},
 
 		avg2 : function(ctime,proName) 
 		{
-			var res=null;
-			for (var i=this.states.length-2;i>=0;i--) 
-			{
-				var j = i+1;
-				var sa = this.states[i];
-				var sb = this.states[j];
-				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
+
+			var it = this.states.lowerBound({timestamp:ctime});
+			var sb = it.data();
+			if (sb) {
+				if (sb.timestamp == ctime)
+					return sb[proName];
+				// sb >= 
+				var sa = it.prev();
+				if (sa) 
 				{ 
-					res = [
+					return [
 					       	sa[proName][0]+(ctime-sa.timestamp) * (sb[proName][0]-sa[proName][0]) / (sb.timestamp-sa.timestamp),
 					       	sa[proName][1]+(ctime-sa.timestamp) * (sb[proName][1]-sa[proName][1]) / (sb.timestamp-sa.timestamp)
 				          ]; 
-					break;
 				}
-				if (sb.timestamp < ctime)
-					break;
 			}
-			return res;
+			return null;
 		},
 
 		avg : function(ctime,proName) 
 		{
-			var res=null;
-			//console.log(this.states);
-			for (var i=this.states.length-2;i>=0;i--) 
-			{
-				var j = i+1;
-				var sa = this.states[i];
-				var sb = this.states[j];
-				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
+			var it = this.states.lowerBound({timestamp:ctime});
+			var sb = it.data();
+			if (sb) {
+				if (sb.timestamp == ctime)
+					return sb[proName];
+				// sb >= 
+				var sa = it.prev();
+				if (sa) 
 				{ 
-					res = sa[proName]+(ctime-sa.timestamp) * (sb[proName]-sa[proName]) / (sb.timestamp-sa.timestamp);
-					break;
+					return sa[proName]+(ctime-sa.timestamp) * (sb[proName]-sa[proName]) / (sb.timestamp-sa.timestamp);
 				}
-				if (sb.timestamp < ctime)
-					break;
 			}
-			/*if (res == null) {
-				var arr=[];
-				for (var i=this.states.length-1;i>=0;i--) if (i == 0 || i == this.states.length-1) {
-					arr.push(Utils.formatDateTimeSec(new Date(this.states[i].timestamp)));
-				} 
-				console.log("AVG NULL BECAUSE SEARCHING "+Utils.formatDateTimeSec(new Date(ctime))+" | "+arr);
-			}*/
-			return res;
+			return null;
 		},
 
 		calculateElapsedAverage : function(ctime) 
 		{
 			var res=null;
-			ctime-=CONFIG.math.displayDelay*1000;
-			//console.log("SEARCHING FOR TIME "+Utils.formatDateTimeSec(new Date(ctime)));
 			var ok = false;
-			for (var i=this.states.length-2;i>=0;i--) 
-			{
-				var j = i+1;
-				var sa = this.calcAVGState(i);
-				var sb = this.calcAVGState(j);
-				if (ctime >= sa.timestamp && ctime <= sb.timestamp) 
-				{ 
-					res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
-					//console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.timestamp))+" > "+Utils.formatDateTimeSec(new Date(sb.timestamp))+"]");
+			var it = this.states.lowerBound({timestamp:ctime});
+			var sb = it.data();
+			if (sb) {
+				if (sb.timestamp == ctime) {
 					ok=true;
-					break;
-				}
-				if (sb.timestamp < ctime) {
-					this.setSignalLostDelay(ctime-sb.timestamp);
-					//console.log("BREAK ON "+formatTimeSec(new Date(ctime))+" | "+(ctime-sb.timestamp)/1000.0);
-					return null;
+					res=sb.elapsed;
+				} else {
+					var sa = it.prev();
+					if (sa) 
+					{ 
+						res = sa.elapsed+(ctime-sa.timestamp) * (sb.elapsed-sa.elapsed) / (sb.timestamp-sa.timestamp);
+						//console.log("FOUND TIME INT ["+Utils.formatDateTimeSec(new Date(sa.timestamp))+" > "+Utils.formatDateTimeSec(new Date(sb.timestamp))+"]");
+						ok=true;
+					}
 				}
 			}
 			if (!ok) {
-				if (this.states.length >= 2)
-					console.log(this.code+" | NOT FOUND TIME "+Utils.formatDateTimeSec(new Date(ctime))+" | t-last="+(ctime-this.states[this.states.length-1].timestamp)/1000.0+" | t-first="+(ctime-this.states[0].timestamp)/1000.0);
+				if (this.states.size >= 2)
+					console.log(this.code+" | NOT FOUND TIME "+Utils.formatDateTimeSec(new Date(ctime)));
 			} else
 				this.setSignalLostDelay(null);
 			return res;
 		},
 		
-		calcAVGState : function(pos) {
-			if (!CONFIG.math.interpolateGPSAverage)
-				return this.states[pos];
-			var ssume=0;
-			var ssumt=0;
-			var cc=0;
-			for (var i=pos;i>=0 && (pos-i)<CONFIG.math.interpolateGPSAverage;i--) {
-				ssume+=this.states[i].elapsed;
-				ssumt+=this.states[i].timestamp;
-				cc++;
-			}
-			ssume/=cc;
-			ssumt/=cc;
-			return {elapsed : ssume,timestamp : ssumt};
-		},
-
 		pingCalculated : function(obj) {
 			if (obj.discarded) {
 				delete obj.discarded;
@@ -379,13 +333,11 @@ Class("Participant",
 			var pos = state.gps;
 			var coef = this.track.getTrackLengthInWGS84()/this.track.getTrackLength();
 			var rr = CONFIG.math.gpsInaccuracy*coef;
-			
-			
 			if (typeof GUI != "undefined" && GUI.isDebug) 
 			{
 				var ring = [
 				            [pos[0]-rr, pos[1]-rr*coefy], [pos[0]+rr, pos[1]-rr*coefy],[pos[0]+rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]+rr*coefy],[pos[0]-rr, pos[1]-rr*coefy]
-	 			          ];
+	 			];
 				var polygon = new ol.geom.Polygon([ring]);
 				polygon.transform('EPSG:4326', 'EPSG:3857');
 				var feature = new ol.Feature(polygon);
@@ -418,7 +370,6 @@ Class("Participant",
 					GUI.testLayer2.getSource().addFeature(feature);
 					this.__oldFeature2=feature;
 				}
-				
 				while (GUI.testLayer1.getSource().getFeatures().length > 100)
 					GUI.testLayer1.getSource().removeFeature(GUI.testLayer1.getSource().getFeatures()[0]);
 				while (GUI.testLayer.getSource().getFeatures().length > 100)
@@ -427,22 +378,22 @@ Class("Participant",
 
 		},
 
-		getOverallRank : function() {
-			if (this.states.length) {
-				return this.states[this.states.length-1].overallRank;
-			}
+		getOverallRank : function(ctime) {
+			var v = this.max(ctime,"overallRank");
+			if (v)
+				return v;
 			return "-";
 		},
-		getGroupRank : function() {
-			if (this.states.length) {
-				return this.states[this.states.length-1].groupRank;
-			}
+		getGroupRank : function(ctime) {
+			var v = this.max(ctime,"groupRank");
+			if (v)
+				return v;
 			return "-";
 		},
-		getGenderRank : function() {
-			if (this.states.length) {
-				return this.states[this.states.length-1].genderRank;
-			}
+		getGenderRank : function(ctime) {
+			var v = this.max(ctime,"genderRank");
+			if (v)
+				return v;
 			return "-";
 		},
 		
@@ -453,22 +404,32 @@ Class("Participant",
 				ctime=llt;
 			this.setLastRealDelay(llt-ctime);
 			this.setLastPingTimestamp(llt);			
+			if (isSOS)
+				this.setIsSOS(true);				
+			else
+				isSOS=this.getIsSOS();
 			var state = new ParticipantState({timestamp:ctime,gps:pos,isSOS:isSOS,freq:freq,alt:alt,overallRank:overallRank,groupRank:groupRank,genderRank:genderRank});
-			//isSOS=true;
-			if (isSOS || CONFIG.settings.noInterpolation)
+			if (isSOS)
 			{
-				if (isSOS)
-					this.setIsSOS(true);				
 				this.addState(state);
 				return;
 			}
 			//----------------------------------------------------------
 			var tracklen = this.track.getTrackLength();
 			var tracklen1 = this.track.getTrackLengthInWGS84();
-			var llstate = this.states.length >= 2 ? this.states[this.states.length-2] : null;
-			var lstate = this.states.length ? this.states[this.states.length-1] : null;
+			var llstate=null;
+			var lstate=null;
+			if (this.states.size >= 1) 
+			{
+				var it = this.states.findIter(this.states.max());
+				lstate=it.data();
+				if (this.states.size >= 2) {
+					llstate=it.prev();
+				}
+			}
 			if (pos[0] == 0 && pos[1] == 0) {
-				if (!lstate) return;
+				if (!lstate) 
+					return;
 				pos=lstate.gps;
 			}
 			//----------------------------------------------------------
@@ -551,24 +512,24 @@ Class("Participant",
 			{
 				console.error("MMINF NULL > DISCARD "+this.code+" | "+this.deviceId);
 				this.setIsDiscarded(true);
+				state.setIsDiscarded(true);
 				state.setElapsed(lelp);
 				this.addState(state);
 				return;
 			}
-
 			/*if (minf == null)
 				console.error("MINF NULL");
 			else
 				console.log(">> MINF "+Math.round(minf*100.0*100.0)/100.0);*/
+			//---------------------------------------------			
 			if (debugInfo)
 				state.debugInfo=debugInfo;
-			//console.log("STATTTTTTEEEEE : "+JSON.stringify(state));
 			if (minf == null) {
 				state.setElapsed(lelp);
+				state.setIsDiscarded(this.getIsDiscarded());
 				this.addState(state);
 				return;
 			}
-
 			bestm=minf;
 			if (bestm != null) 
 			{
@@ -590,8 +551,22 @@ Class("Participant",
 						nel=this.track.laps;
 					}
 					//--------------------------------------------------------------
-					llstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree*2 ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree*2] : null;
-					lstate = this.states.length >= CONFIG.math.speedAndAccelerationAverageDegree ? this.states[this.states.length-CONFIG.math.speedAndAccelerationAverageDegree] : null;
+					llstate=null;
+					lstate=null;
+					if (this.states.size >= CONFIG.math.speedAndAccelerationAverageDegree) {
+						var it = this.states.findIter(this.states.max());
+						lstate=it.data(); 
+						for (var kk=0;kk<CONFIG.math.speedAndAccelerationAverageDegree-1;kk++) {
+							lstate=it.prev(); 
+						}
+					}
+					if (this.states.size >= CONFIG.math.speedAndAccelerationAverageDegree*2) {
+						var it = this.states.findIter(this.states.max());
+						llstate=it.data(); 
+						for (var kk=0;kk<CONFIG.math.speedAndAccelerationAverageDegree*2-1;kk++) {
+							llstate=it.prev(); 
+						}
+					}
 					if (lstate)  {
 						state.setSpeed( tracklen * (nel-lstate.getElapsed()) * 1000 / (ctime-lstate.timestamp));
 						if (llstate) 
@@ -608,17 +583,19 @@ Class("Participant",
 				}
 			}
 			//-----------------------------------------------------------
+			state.setIsDiscarded(this.getIsDiscarded());
 			this.addState(state);
 		},
 		
 		addState : function(state) {
-			this.states.push(state);
-			if (this.states.length > CONFIG.constraints.maxParticipantStateHistory && !this.isSOS)
-				this.states.shift();
+			this.states.insert(state);
+			if (!CONFIG.__skipParticipantHistoryClear)
+			if (this.states.size > CONFIG.constraints.maxParticipantStateHistory)
+				this.states.remove(this.states.min());
 		},
 
 		getLastState: function() {
-			return this.states.length ? this.states[this.states.length-1] : null;
+			return this.states.size ? this.states.max() : null;
 		},
 
 		getFreq : function() {
@@ -641,13 +618,9 @@ Class("Participant",
 			return lstate ? lstate.elapsed : 0;
 		},
 
-		getPopupHTML : function() {
-			var pos = this.getPosition();
-			if (this.isSOS || this.isDiscarded) {
-				pos = this.getGPS();
-			}
+		getPopupHTML : function(ctime) {
+			var pos = this.min("gps");
 			var tlen = this.track.getTrackLength();
-			var ctime = (new Date()).getTime();
 			var elapsed = this.calculateElapsedAverage(ctime);
 			var tpart = this.track.getTrackPart(elapsed);
 			var targetKM;
@@ -686,41 +659,40 @@ Class("Participant",
 			var etxt1=null;
 			var etxt2=null;
 			var lstate = null; 
-			if (this.states.length) 
+
+			var speed = this.avg(ctime,"speed");
+			if (speed && speed > 0) 
 			{
-				lstate = this.states[this.states.length-1];
-				if (lstate.getSpeed() > 0) 
+				var acceleration = this.avg(ctime,"acceleration");
+				var rot = this.track.getPositionAndRotationFromElapsed(elapsed)*180/Math.PI;
+				if (rot < 0)
+					rot+=360;
+				var spms = Math.ceil(speed * 100) / 100;
+				spms/=1000.0;
+				spms*=60*60;
+				etxt1=parseFloat(spms).toFixed(2)+" km/h";
+				if (rot != null) 
 				{
-					var spms = Math.ceil(lstate.getSpeed() * 100) / 100;
-					spms/=1000.0;
-					spms*=60*60;
-					etxt1=parseFloat(spms).toFixed(2)+" km/h";
-					var rot = -this.getRotation()*180/Math.PI; 
-					if (rot < 0)
-						rot+=360;
-					if (rot != null) 
-					{
-						if (rot <= 0) 
-							etxt1+=" E";
-						else if (rot <= 45)
-							etxt1+=" SE";
-						else if (rot <= 90)
-							etxt1+=" S";
-						else if (rot <= 135)
-							etxt1+=" SW";
-						else if (rot <= 180)
-							etxt1+=" W";
-						else if (rot <= 225)
-							etxt1+=" NW";
-						else if (rot <= 270)
-							etxt1+=" N";
-						else 
-							etxt1+=" NE";
-					}
-					estf=Utils.formatTime(new Date( ctime + targetKM*1000 / spms*1000 ));  
+					if (rot <= 0) 
+						etxt1+=" E";
+					else if (rot <= 45)
+						etxt1+=" SE";
+					else if (rot <= 90)
+						etxt1+=" S";
+					else if (rot <= 135)
+						etxt1+=" SW";
+					else if (rot <= 180)
+						etxt1+=" W";
+					else if (rot <= 225)
+						etxt1+=" NW";
+					else if (rot <= 270)
+						etxt1+=" N";
+					else 
+						etxt1+=" NE";
 				}
-				if (lstate.getAcceleration() > 0)
-					etxt2=parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s2";
+				estf=Utils.formatTime(new Date( ctime + targetKM*1000 / spms*1000 ));  
+				if (acceleration > 0)
+					etxt2=parseFloat(Math.ceil(acceleration * 100) / 100).toFixed(2)+" m/s2";
 			}
 			//-------------------------------------------------------------------------------------------------
 			var p1 = 100*this.track.bikeStartKM/(tlen/1000.0);

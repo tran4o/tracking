@@ -130,7 +130,11 @@ Class("Gui",
 		},
         liveStream : {
             init: null
-        }
+        },
+		displayMode : {			
+			is : "rw",
+			init : "nearest"			//nearest,linear,tracking
+		}
     },
     //--------------------------------------
 	methods: 
@@ -300,10 +304,10 @@ Class("Gui",
 				});
 			}
 			//-----------------------------------------------------
-			if (!this._animationInit) {
+			/*if (!this._animationInit) {
 				this._animationInit=true;
 				setInterval(this.onAnimation.bind(this), 1000*CONFIG.timeouts.animationFrame );
-			}
+			}*/
 
 			// if this is ON then it will show the coordinates position under the mouse location
 			if (this.isDebugShowPosition) {
@@ -397,83 +401,94 @@ Class("Gui",
 				onCloseCallback();
 		},
 		
-		onAnimation : function()
+		onAnimation : function(ctime)
 		{
-			var arr=[];
-			for (var ip=0;ip<TRACK.participants.length;ip++)
+			if (ctime) 
 			{
-				var p = TRACK.participants[ip];
-				if (p.isFavorite)
+				var arr=[];
+				for (var ip=0;ip<TRACK.participants.length;ip++)
 				{
-					p.interpolate();
-
-					// this will add in the ranking positing only the participants the has to be tracked
-					// so moving cams are skipped
-					if (!p.__skipTrackingPos)
-						arr.push(ip);
+					var p = TRACK.participants[ip];
+					if (p.isFavorite)
+					{
+						p.interpolate(ctime);
+						// this will add in the ranking positing only the participants the has to be tracked
+						// so moving cams are skipped
+						if (!p.__skipTrackingPos)
+							arr.push(ip);
+					}
+				}
+				//-------------------------------------------------------
+				// we have to sort them otherwise this __pos, __prev, __next are irrelevant
+				arr.sort(function(ip1, id2){
+					return TRACK.participants[id2].getElapsed() - TRACK.participants[ip1].getElapsed();
+				});
+				for (var ip=0;ip<arr.length;ip++)
+				{
+					TRACK.participants[arr[ip]].__pos=ip;
+					if (ip == 0)
+						delete TRACK.participants[arr[ip]].__prev;
+					else
+						TRACK.participants[arr[ip]].__prev=TRACK.participants[arr[ip-1]];
+					if (ip == TRACK.participants.length-1)
+						delete  TRACK.participants[arr[ip]].__next;
+					else
+						TRACK.participants[arr[ip]].__next=TRACK.participants[arr[ip+1]];
 				}
 			}
 			//-------------------------------------------------------
-			// we have to sort them otherwise this __pos, __prev, __next are irrelevant
-			arr.sort(function(ip1, id2){
-				return TRACK.participants[id2].getElapsed() - TRACK.participants[ip1].getElapsed();
-			});
-			for (var ip=0;ip<arr.length;ip++)
-			{
-				TRACK.participants[arr[ip]].__pos=ip;
-				if (ip == 0)
-					delete TRACK.participants[arr[ip]].__prev;
-				else
-					TRACK.participants[arr[ip]].__prev=TRACK.participants[arr[ip-1]];
-				if (ip == TRACK.participants.length-1)
-					delete  TRACK.participants[arr[ip]].__next;
-				else
-					TRACK.participants[arr[ip]].__next=TRACK.participants[arr[ip+1]];
-			}
+			var timeSwitch = Math.round((new Date()).getTime()/(1000*5))%2;
+			var toPan = [];
 			//-------------------------------------------------------
 			if (this.selectedParticipant1) 
 			{
+				var ctime = this.selectedParticipant1.__ctime;
 				var spos = this.selectedParticipant1.getFeature().getGeometry().getCoordinates();
 				if (!this.popup1.is_shown) {
-				    this.popup1.show(spos, this.popup1.lastHTML=this.selectedParticipant1.getPopupHTML());
+				    this.popup1.show(spos, this.popup1.lastHTML=this.selectedParticipant1.getPopupHTML(ctime));
 				    this.popup1.is_shown=1;
 				} else {
 					if (!this.popup1.getPosition() || this.popup1.getPosition()[0] != spos[0] || this.popup1.getPosition()[1] != spos[1])
 					    this.popup1.setPosition(spos);
-					var ctime = (new Date()).getTime();			 
-					if (!this.lastPopupReferesh1 || ctime - this.lastPopupReferesh1 > 2000) 
+					if (!this.lastPopupReferesh1 || (new Date()).getTime() - this.lastPopupReferesh1 > 2000) 
 					{
-						this.lastPopupReferesh1=ctime;
-					    var rr = this.selectedParticipant1.getPopupHTML();
+						this.lastPopupReferesh1=(new Date()).getTime();
+					    var rr = this.selectedParticipant1.getPopupHTML(ctime);
 					    if (rr != this.popup1.lastHTML) {
 					    	this.popup1.lastHTML=rr;
 						    this.popup1.content.innerHTML=rr; 
 					    }					
 					}
-				    this.popup1.panIntoView_(spos);
+					toPan.push([this.popup1,spos]);
 				}
 			}
 			if (this.selectedParticipant2) 
 			{
+				var ctime = this.selectedParticipant2.__ctime;
 				var spos = this.selectedParticipant2.getFeature().getGeometry().getCoordinates();
 				if (!this.popup2.is_shown) {
-				    this.popup2.show(spos, this.popup2.lastHTML=this.selectedParticipant2.getPopupHTML());
+				    this.popup2.show(spos, this.popup2.lastHTML=this.selectedParticipant2.getPopupHTML(ctime));
 				    this.popup2.is_shown=1;
 				} else {
 					if (!this.popup2.getPosition() || this.popup2.getPosition()[0] != spos[0] || this.popup2.getPosition()[1] != spos[1])
 					    this.popup2.setPosition(spos);
-					var ctime = (new Date()).getTime();			 
-					if (!this.lastPopupReferesh2 || ctime - this.lastPopupReferesh2 > 2000) 
+					if (!this.lastPopupReferesh2 || (new Date()).getTime() - this.lastPopupReferesh2 > 2000) 
 					{
-						this.lastPopupReferesh2=ctime;
-					    var rr = this.selectedParticipant2.getPopupHTML();
+						this.lastPopupReferesh2=(new Date()).getTime();
+					    var rr = this.selectedParticipant2.getPopupHTML(ctime);
 					    if (rr != this.popup2.lastHTML) {
 					    	this.popup2.lastHTML=rr;
 						    this.popup2.content.innerHTML=rr; 
 					    }					
 					}
-				    this.popup2.panIntoView_(spos);
+					toPan.push([this.popup2,spos]);
 				}
+			}
+			//-----------------------
+			if (toPan.length == 1) {
+				toPan[0][0].panIntoView_(toPan[0][1]);
+			} else if (toPan.length == 2) {
+				toPan[timeSwitch][0].panIntoView_(toPan[timeSwitch][1]);
 			}
 			//--------------------			
 			if (this.isDebug)  
@@ -483,6 +498,8 @@ Class("Gui",
 		setSelectedParticipant1 : function(part,center) {
 			// TODO Rumen - merge setSelectedParticipant1 and setSelectedParticipant2 in only one method
 			// TODO Rumen - and use only it - probably merge them together also with setSelectedParticipant
+			if (this.selectedParticipant2 && this.selectedParticipant2 == part)
+				return;
 			this.selectedParticipant1=part;
 			if (!part) {
 				this.popup1.hide();
@@ -498,6 +515,8 @@ Class("Gui",
 		},
 
 		setSelectedParticipant2 : function(part,center) {
+			if (this.selectedParticipant1 && this.selectedParticipant1 == part)
+				return;
 			this.selectedParticipant2=part;
 			if (!part) {
 				this.popup2.hide();

@@ -33,7 +33,14 @@
 	"binary-search-tree" : "^0.2.4",
 	"request" : "^2.58.0", 
 	"deepcopy" : "^0.5.0",
-	"kld-intersections" : "git://github.com/thelonious/kld-intersections.git#master" 
+	"kld-intersections" : "git://github.com/thelonious/kld-intersections.git#master",
+	"leaflet" : "^0.7.5",
+	"drmonty-leaflet-awesome-markers" : "^2.0.2",
+	"include" : "^0.1.2",
+	"pg" : "^4.4.2",
+	"vis" : "^4.9.0",
+	"lru-cache" : "^2.7.0",
+	"bintrees" : "^1.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

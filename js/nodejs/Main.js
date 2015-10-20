@@ -29,6 +29,9 @@ var app = express();
 //	next();
 //});
 
+app.use('/test/admin', express.static(__dirname + '/admin'));
+app.use('/test', express.static(__dirname + './../../'));
+
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
@@ -96,31 +99,26 @@ app.get('/status', function (req, res)
 	},null,4));
 });
 
-app.get('/assignment/:id', function (req, res) 
-{
-	res.header("Content-Type", "application/json; charset=utf-8");
-	var id = req.params.id;
-	var imei = Config.mapIMEI(req.params.imei);
-	res.send(JSON.stringify({id:id,imei:imei}));
-});
-
 app.get('/aliases', function (req, res) 
 {
 	res.header("Content-Type", "application/json; charset=utf-8");
 	res.send(JSON.stringify(Config.aliases, null, 4));
 });
 
-app.get('/assignments', function (req, res) 
+
+app.get('/assignments/:eid', function (req, res) 
 {
+	var event = Config.getEventById(req.params.eid);
 	res.header("Content-Type", "application/json; charset=utf-8");
 	var r={};
-	for (var i in Config.assignments) 
-		r[i]=Config.mapIMEI(Config.assignments[i]);
+	for (var i in event.assignments) 
+		r[i]=Config.mapIMEI(event.assignments[i]);
 	res.send(JSON.stringify(r, null, 4));
 });
 
-app.post('/participant/:id/setimei', function (req, res) {
+app.post('/participant/:eid/:id/setimei', function (req, res) {
 	res.header("Content-Type", "application/json; charset=utf-8");
+	var event = Config.getEventById(req.params.eid);
 	var id = req.params.id;
 	var imei = Config.mapIMEI(req.body.value);
 	var img = req.body.img;
@@ -128,16 +126,16 @@ app.post('/participant/:id/setimei', function (req, res) {
 	if (imei && imei.length) 
 	{
 		var torem=[];
-		for (var i in Config.assignments) if (i != id)
+		for (var i in event.assignments) if (i != id)
 		{
-			var val = Config.assignments[i];
+			var val = event.assignments[i];
 			if (val == imei) 
 			{
 				// ERROR allready found
 				var ok=false;
-				for (var j in Config.participants) 
+				for (var j in event.participants) 
 				{	
-					var part = Config.participants[j];
+					var part = event.participants[j];
 					if (part.idParticipant == i) {
 						ok=part;
 						break;
@@ -151,10 +149,10 @@ app.post('/participant/:id/setimei', function (req, res) {
 			}
 		}
 		for (var i in torem) 
-			Config.assignIMEI(torem[i],null);			
-		Config.assignIMEI(id,imei);
+			Config.assignIMEI(event,torem[i],null);			
+		Config.assignIMEI(event,id,imei);
 	} else {
-		Config.assignIMEI(id,null);
+		Config.assignIMEI(event,id,null);
 	}	
 	res.send(JSON.stringify({imei:imei}));
 	//-------------------------------------
@@ -166,13 +164,14 @@ app.post('/participant/:id/setimei', function (req, res) {
 });
 
 
-app.get('/participant/:id', function (req, res) 
+app.get('/participant/:eid/:id', function (req, res) 
 {
 	res.header("Content-Type", "application/json; charset=utf-8");
+	var event = Config.getEventById(req.params.eid);
 	var id = req.params.id;
-	for (var i in Config.participants) 
+	for (var i in event.participants) 
 	{	
-		var part = Config.participants[i];
+		var part = event.participants[i];
 		if (part.idParticipant == id) 
 		{
 			var pp = extend({}, part);
@@ -183,8 +182,8 @@ app.get('/participant/:id', function (req, res)
 			else
 				apath="../../data/img/"+id+".jpg";
 			pp.img=apath;
-			if (Config.assignments[id])
-				pp.IMEI=Config.unmapIMEI(Config.assignments[id]);
+			if (event.assignments[id])
+				pp.IMEI=Config.unmapIMEI(event.assignments[id]);
 			res.send(JSON.stringify(pp, null, 4));
 			return;
 		}
@@ -406,6 +405,7 @@ function updateStart(req,res) {
 
 
 function updatePart(req,res) {
+	var event = Config.getEventById(req.params.eid);
 	res.header("Content-Type", "application/json; charset=utf-8");
 	function doIt(part) 
 	{
@@ -424,7 +424,7 @@ function updatePart(req,res) {
 			res.send(JSON.stringify({error:"Start No not valid!"}, null, 4));
 			return;
 		}
-		var r = Config.updateParticipant(part.id,part);
+		var r = Config.updateParticipant(event,part.id,part);
 		if (typeof r == "string") {
 			res.send(JSON.stringify({error:r}, null, 4));
 			return;
@@ -477,10 +477,18 @@ app.get('/events', function (req, res)
 	//console.log(req.query);
 	var eventId = req.params.id;
 	res.header("Content-Type", "application/json; charset=utf-8");
-	var r=[];
+	var t=[];
 	for (var j in Config.events) 
+		t.push(Config.events[j]);
+	t.sort(function(a, b){
+		var at = a.startTime.getTime();
+		var bt = b.startTime.getTime();
+		return -(at-bt);
+	});
+	var r=[];
+	for (var j in t) 
 	{
-		var event = Config.events[j];
+		var event = t[j];
 		r.push(eventDataTablesJSON(event));
 	}
 	res.send(JSON.stringify({data : r}, null, 4));
@@ -509,17 +517,17 @@ app.get('/starts/:id', function (req, res)
 		}
 	}
 });
-app.put('/participants', updatePart);
-app.post('/participants', updatePart);
-app.get('/participants', function (req, res) 
+app.put('/participants/:eid', updatePart);
+app.post('/participants/:eid', updatePart);
+app.get('/participants/:eid', function (req, res) 
 {
-	//console.log(req.query);
+	var event = Config.getEventById(req.params.eid);
 	res.header("Content-Type", "application/json; charset=utf-8");
 	if (req.query.mode == "acmpl") 
 	{
 		var r = [];
-		for (var i in Config.participants) {
-			var part = Config.participants[i];
+		for (var i in event.participants) {
+			var part = event.participants[i];
 			var name = Utils.myTrim(part.firstname+" "+part.lastname);
 			var data = part.idParticipant;
 			r.push({value:name,data:data});
@@ -527,31 +535,48 @@ app.get('/participants', function (req, res)
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "bcmpl") {
 		var r = [];
-		for (var i in Config.participants) {
-			var part = Config.participants[i];
+		for (var i in event.participants) {
+			var part = event.participants[i];
 			var data = part.idParticipant;
 			r.push({value:""+p.startPos(),data:data});
 		}
 		res.send(JSON.stringify(r, null, 4));
 	} else if (req.query.mode == "dtbl") {
 		var r = [];
-		for (var i in Config.participants) 
+		for (var i in event.participants) 
 		{
-			var part = Config.participants[i];
+			var part = event.participants[i];
 			r.push(partDataTablesJSON(part));
 		}
 		res.send(JSON.stringify({data : r}, null, 4));
 	} else {
-		res.send(JSON.stringify(Config.participants, null, 4));
+		res.send(JSON.stringify(event.participants, null, 4));
 	}
 });
 
 app.get('/event', function (req, res) {
-	var event = Config.getCurrentOrNextEvent();
-	if (event == null)
+	res.header("Content-Type", "application/json; charset=utf-8");
+	res.header("Access-Control-Allow-Origin", "http://localhost");	
+	var event=null;
+	if (req.query.event) 
+	{
+		for (var i in Config.events) 
+		{
+			var e = Config.events[i];
+			if (e.code == req.query.event || e.id == req.query.event) 
+			{
+				event=e;
+				break;
+			}
+		}
+	}
+	if (!event) {
+		res.send(JSON.stringify({}, null, 4));
 		return;
+	}
 	res.header("Content-Type", "application/json; charset=utf-8");
 	res.header("Access-Control-Allow-Origin", "http://localhost");
+	Tracking.prepareEvent(event);
 	var parr=[];
 	var cams=[];
 	for (var i in event.trackedParticipants) 
@@ -575,6 +600,11 @@ app.get('/event', function (req, res) {
 		else
 			parr.push(rres);
 	}
+	var ss=[];
+	for (var i in event.starts) {
+		var s = event.starts[i];
+		ss.push({id:s.id,start:s.startTime.getTime(),fromStartNo:s.fromStartNo,toStartNo:s.toStartNo,code:s.fromStartNo+" - "+s.toStartNo});
+	}
 	var rres = 
 	{
 		times: 
@@ -587,6 +617,7 @@ app.get('/event', function (req, res) {
 		participants : parr,
 		cams : cams,
 		route : event.trackData,
+		starts : ss
 	};
 	res.send(JSON.stringify(rres, null, 4));
 });
@@ -594,20 +625,22 @@ app.get('/event', function (req, res) {
 app.post('/stream', function (req, _res) 
 {
 	_res.header("Content-Type", "application/json; charset=utf-8");
-	//console.log("STREAM:");
-	//console.log(req.body);
 	var res=[];
+	var tdone=0;
+	var tlen = req.body.length;
+	function onDone(tres) {
+		for (var i=0;i<tres.length;i++)
+			res.push(tres[i]);
+		tdone++;
+		if (tdone == tlen) {
+			_res.send(JSON.stringify(res, null, 4));
+		}
+	}
 	for (var i in req.body) 
 	{
 		var e = req.body[i];
-		var t = Tracking.queryData(e.imei,e.start,e.end);
-		if (t) 
-			for (j in t) 
-				res.push(t[j]);
+		Tracking.queryData(e.imei,e.start,e.end,onDone); 
 	}	
-	/*console.log("RETURN JSON :::::");
-	console.log(res);*/
-	_res.send(JSON.stringify(res, null, 4));
 });
 //--------------------------------------------------------------------
 var server = app.listen(3000, function () 

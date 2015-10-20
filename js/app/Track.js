@@ -215,7 +215,7 @@ Class("Track",
 			this.updateFeature();
 			if (typeof window != "undefined") 
 			{
-				if (!GUI.getIsSkipExtent()) {
+				if (!GUI.getIsSkipExtent || !GUI.getIsSkipExtent()) {
 					if (this.feature) {
 						GUI.map.getView().fitExtent(this.feature.getGeometry().getExtent(), GUI.map.getSize());
 						console.log("Current extent : " + JSON.stringify(this.feature.getGeometry().getExtent()));

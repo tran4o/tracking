@@ -181,9 +181,6 @@ function mapEdit(id,json,valBikeStart,valRunStart,onSubmit)
 
 $(document).ready( function () 
 {
-	$(".button-assignments").click(function() {
-		window.open("assignment.html", '_blank');
-	});
 	$(".button-status").click(function() {
 		window.open("status.html", '_blank');
 	});
@@ -195,43 +192,6 @@ $(document).ready( function ()
 		$(".fw-nav").css("height","auto"); 
 	});
 	//----------------------------------------
-	window.EDITOR1 = new $.fn.dataTable.Editor( {
-		ajax: '../participants',
-		table: "#table-participants",
-		idSrc: "id",
-		fields: [ 
-		    {
-				label: "Start No",
-				name: "startNo"
-			},{
-				label: "First name",
-				name: "firstname"
-			},{
-				label: "Last name",
-				name: "lastname"
-			},{
-				label: "Gender",
-				name: "gender"
-			},{
-				label: "Nationality",
-				name: "nationality"
-			},{
-				label: "Start group",
-				name: "startGroup"
-			},{
-				label: "Club",
-				name: "club"
-			},{
-				label: "Birth date",
-				name: "birthDate",
-			},{
-				label: "Id",
-				name: "id",
-				type : "readonly"
-			}			
-		]
-	} );
-
 	window.EDITOR3 = new $.fn.dataTable.Editor( {
 		ajax: '../events',
 		table: "#table-events",
@@ -259,32 +219,7 @@ $(document).ready( function ()
 					name: "id",
 					type : "readonly"
 				}]
-	});
-
-	
-	var tableParticipants = $('#table-participants').DataTable( {
-		dom: "Tfrtip",
-		ajax: "../participants?mode=dtbl",
-		columns: [
-			{ data: "startNo",className : "dt-body-right" },
-			{ data: "firstname" },
-			{ data: "lastname" },
-			{ data: "gender" },
-			{ data: "nationality"},
-			{ data: "startGroup" },
-			{ data: "club"},
-			{ data: "birthDate",className : "dt-body-right" }
-		],
-		tableTools: {
-			sRowSelect: "os",
-			aButtons: [
-				{ sExtends: "editor_create", editor: EDITOR1 },
-				{ sExtends: "editor_edit",   editor: EDITOR1 },
-				{ sExtends: "editor_remove", editor: EDITOR1 }
-			]
-		}
-	} );	
-	
+	});	
 	var tableEvents = $('#table-events').DataTable( {
 		dom: "Tfrtip",
 		ajax: "../events",
@@ -331,7 +266,7 @@ $(document).ready( function ()
 		            .title( 'Edit event configuration' )
 		            .buttons( [
                                { label: 'Save', fn: function() { this.submit(); } },
-                               { label: 'Map', fn: function() {
+                               { label: 'Map', fn: function() {	
                             	   var dt = tableEvents.rows(".selected").data()[0];
                             	   var that=this;
                             	   mapEdit(dt.id,$("#DTE_Field_track").val(),$("#DTE_Field_bikeStartKM").val(),$("#DTE_Field_runStartKM").val(),function(data) {
@@ -346,6 +281,24 @@ $(document).ready( function ()
                                 	}
                                 	 var win = window.open("starts.html?id="+eid+"&title="+encodeURIComponent($("#DTE_Field_code").val()+" "+$("#DTE_Field_startTime").val()+" > "+$("#DTE_Field_endTime").val()), '_blank');
                                 	 win.focus();
+                                } },
+                                { label: 'Assignments', fn: function() {
+                                	var eid = $("#DTE_Field_id").val();
+                                	if (!eid || !eid.length) {
+                                		alert("Only on saved event possible!");
+                                		return;
+                                	}
+                                	 var win = window.open("assignment.html?eid="+eid+"&title="+encodeURIComponent($("#DTE_Field_code").val()), '_blank');
+                                	 win.focus();
+                                } },
+                                { label: 'Participants', fn: function() {
+                                	var eid = $("#DTE_Field_id").val();
+                                	if (!eid || !eid.length) {
+                                		alert("Only on saved event possible!");
+                                		return;
+                                	}
+                                	 var win = window.open("event.html?eid="+eid+"&title="+encodeURIComponent($("#DTE_Field_code").val()), '_blank');
+                                	 win.focus();
                                 } }
                              ] )
 		                    .edit( tableEvents.row( '.selected' ).node() );
@@ -355,22 +308,5 @@ $(document).ready( function ()
            ]
 		}
 	} );
-	
-	//-----------------------------------------------
-	
-	/*
-	$("#nav1").click(function() {
-		$("#nav1").addClass("active");
-		$("#nav2").removeClass("active");
-		$("#tab1").css("height","auto");
-		$("#tab2").css("height","0");
-	});
-	$("#nav2").click(function() {
-		$("#nav2").addClass("active");
-		$("#nav1").removeClass("active");
-		$("#tab2").css("height","auto");
-		$("#tab1").css("height","0");
-	});
-	*/
 	//-----------------------------------------------
 });

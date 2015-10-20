@@ -11,45 +11,33 @@ module.exports = function (grunt) {
     grunt.initConfig({
         exec: {
             browserify_index: {
-                command: 'browserify js\\app\\Index.js --debug >index.js'
+                command: 'browserify js/app/Index.js --debug >build/index.js'
+            },
+
+            browserify_live: {
+                command: 'browserify js/app/Live.js --debug >build/live.js'
             },
 
             browserify_admin: {
-                command: 'browserify js\\app\\Admin.js --debug >js\\nodejs\\admin\\admin.js'
+                command: 'browserify js/app/Admin.js --debug >build/admin.js'
+            },
+
+            browserify_event: {
+                command: 'browserify js/app/Event.js --debug >build/event.js'
             },
 
             browserify_start: {
-                command: 'browserify js\\app\\Starts.js --debug >js\\nodejs\\admin\\starts.js'
+                command: 'browserify js/app/Starts.js --debug >build/starts.js'
             }
         },
-
-        wget: {
-            raceParticipants: {
-                files: {
-                    //'data/participants.json': "http://portal.mikatiming.de/ah/rest/appapi/meetinginfo/race/9999990FEBE3BA0000000321/participations?apiKey=sast-152fed7f&pageMaxCount=9999"
-                    'data/participants.json': 'http://portal.mikatiming.de/ah/rest/appapi/meetinginfo/race/9999990FEBE3BA0000000322/participations?apiKey=sast-152fed7f&pageMaxCount=9999'
-                }
-            },
-            raceStart: {
-                files: {
-                    'data/.notused': "http://localhost:3000/raceStart/353816058291727"
-                }
-            },
-            raceClear: {
-                files: {
-                    'data/.notused': "http://connectedlifestyle.dtrd.de/triathlon/rest/clearRace"
-                }
-            }
-        }
     });
 
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('grunt-wget');
 
     // this will be the default/normal grunt task
     grunt.registerTask("default", ["log-build-start",
 
-        "exec:browserify_index", "exec:browserify_admin", "exec:browserify_start",
+                                   "exec:browserify_index", "exec:browserify_live", "exec:browserify_admin", "exec:browserify_start","exec:browserify_event",
 
         "log-build-end"]);
 };

@@ -1,6 +1,10 @@
 require('joose');
 var Utils = require('./Utils');
 var CONFIG = require('./Config');
+var RBTree = require('bintrees').RBTree;
+
+var cache = {};
+
 Class("BackendStream",
 {
     has:
@@ -9,100 +13,64 @@ Class("BackendStream",
 			is : "rw",
 			init : (window.location.host.indexOf("localhost") == 0 || window.location.host.indexOf("127.0.0.1") == 0) ? "http://localhost:3000/stream" : "node/stream"
 		},
+		track : {
+			is : "rw"
+		}
     },
     //--------------------------------------
     methods:
     {
-        start : function(track)
-        {    
-        	track.test1();
-        	// TEST
-        	/*if (0 == 1) 
-        	{
-        		var ctime = (new Date()).getTime();
-        		var cc=0;
-        		setInterval(function() 
-        		{
-        			cc++;
-                    for (var i in track.participants) 
-                    {
-                    	var diff = ((new Date()).getTime()-ctime)/1000; // seconds
-        				var elp = cc/60.0;  
-                    	if (elp > 1)
-                    		elp=1;
-                    	var pp = track.participants[i];
-                    	var pos = track.getPositionAndRotationFromElapsed(elp);
-                    	pp.pingCalculated(
-                    	  {
-                    	        "imei": "1000",
-                    	        "speed": 0,
-                    	        "elapsed": 0,
-                    	        "timestamp": (new Date()).getTime(),
-                    	        "gps": [Math.round(pos[0]*1000000.0)/1000000.0,Math.round(pos[1]*1000000.0)/1000000.0],
-                    	        "freq": 0,
-                    	        "isSOS": false,
-                    	        "acceleration": 0,
-                    	        "alt": 0,
-                    	        "overallRank": 1,
-                    	        "genderRank": 1,
-                    	        "groupRank": 1
-                    	    });
-                    }
-        		},3000);
-        		return;
-        	}*/
-        	//-------------------------------------------------------------------------        	
-    		var url = this.url;
-        	function doTick() 
-        	{
-                var mmap = {};
-                var ctime = (new Date()).getTime();
+    	toIndex : function(time) {
+    		return Math.floor(time/1000/60/10);	// 10 min block    		
+    	},
+    	fromIndex : function(index){
+    		return index *1000*60*10;	// 10 min block    		    		
+    	},
+
+    	liveSyncNow : function() 
+    	{
+    		var ctime = (new Date()).getTime();
+    		if (ctime >= CONFIG.times.begin && ctime <= CONFIG.times.end) 
+    		{
+    			// live sync ok
+    			var mmap = {};
+                var btime = this.fromIndex(index);
+                var etime = this.fromIndex(index+1);
                 var json = [];
-                for (var i in track.participants) 
+                for (var i in this.track.participants) 
                 {
-                	var pp = track.participants[i];
-                	pp.__done=false;
-                	if (pp.isFavorite)
+                	var pp = this.track.participants[i];
+                	if (pp.isFavorite) 
+                	{
+                    	pp.__done=false;
                 		mmap[pp.deviceId]=pp;
-                	var reft = ctime - 10*60*1000;
-                	if (!pp.__startTime || pp.__startTime < reft) {
-                		pp.__startTime=reft;
+                    	//???????
+                		var reft = this.fromIndex(this.toIndex(ctime));
+                    	if (!pp.__startTime || pp.__startTime < reft)
+                    		pp.__startTime=reft;
+                    	json.push({start:pp.__startTime,end : ctime,imei:pp.deviceId});
                 	}
-                	json.push({start:pp.__startTime,end : ctime,imei:pp.deviceId});
                 }
-                if (!json.length)
-                	return;
-                
-                var arr=[];
                 function processData(data) 
                 {
+                	var cleared={};
                 	for (var i in data) 
                 	{
-                		//console.warn(data[i]);
                 		var pp = mmap[data[i].imei];
                 		if (pp) {
                 			if (data[i].timestamp+1 > pp.__startTime)
-                				pp.__startTime=data[i].timestamp+1;
-                			pp.pingCalculated(data[i]);
-                			pp.__done=true;
+                				pp.__startTime=data[i].timestamp+1;                		
+                			pp.__done=true;                			
+                			pp.states.remove(data[i]);
+                			pp.states.insert(data[i]);
                 		}
                 	}
                 }
-                //--------------------------------------------------------------------------	
-                var arr=[];
-                for (var i in track.participants) {
-                	var pp = track.participants[i];
-                	var k = Math.round(pp.getElapsed()*100*100)/100.0;
-                	if (pp.__done)
-                		k="*"+k;
-                	arr.push(k);
-                }
-                console.log("GOT "+arr);
-                //--------------------------------------------------------------------------	
-                //console.log(json);
+                if (!json.length)
+                	return;
                 $.ajax({
                     type: "POST",
-                    url: url,
+                    url: this.url,
                     data: JSON.stringify(json),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -112,10 +80,73 @@ Class("BackendStream",
                     failure: function(errMsg) {
                         console.error("ERROR get data from backend "+errMsg)
                     }
+              });
+    		}
+    	},
+    	get : function(index,onResult) {
+    		if (!this.track)
+    			return {};
+    		var res = cache[index];
+    		if (res) {
+    			onResult();
+    		} else {
+    			var mmap = {};
+                var btime = this.fromIndex(index);
+                var etime = this.fromIndex(index+1);
+                var json = [];
+                for (var i in this.track.participants) 
+                {
+                	var pp = this.track.participants[i];
+                	if (pp.isFavorite) 
+                	{
+                    	pp.__done=false;
+                		mmap[pp.deviceId]=pp;
+                    	json.push({start:btime,end : etime,imei:pp.deviceId});
+                	}
+                }
+                function processData(data) 
+                {
+        			//---------------------------------------
+                	cache[index]=true;
+                	for (var i in data) 
+                	{
+                		var pp = mmap[data[i].imei];
+                		if (pp) {
+                			pp.__done=true;
+                			pp.states.remove(data[i]);
+                			pp.states.insert(data[i]);
+                			//---------------------------------------
+                		}
+                	}
+                	onResult(data);
+                }
+                if (!json.length) {
+                	cache[index]=true;
+                	onResult([]);
+                	return;
+                }                
+    			$.ajax({
+                      type: "POST",
+                      url: this.url,
+                      data: JSON.stringify(json),
+                      contentType: "application/json; charset=utf-8",
+                      dataType: "json",
+                      success: function(data){
+                          processData(data);
+                      },
+                      failure: function(errMsg) {
+                          console.error("ERROR get data from backend "+errMsg)
+                      }
                 });
-                setTimeout(doTick,CONFIG.timeouts.streamDataInterval*1000);
-        	}
-        	doTick();
+    		}
+    	},
+    
+        start : function(track)
+        {    
+        	// TODO ?? 
+        	CONFIG.__skipParticipantHistoryClear=999;
+        	this.setTrack(track);
+        	setInterval(this.liveSyncNow,CONFIG.timeouts.streamDataInterval*1000)
         }
     }    
 });

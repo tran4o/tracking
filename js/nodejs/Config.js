@@ -6,39 +6,27 @@ var Utils = require("./../app/Utils");
 var deepcopy = require('deepcopy');
 //var low = require('lowdb');
 //--------------------------------------------------------------------------------------
-console.log("\nLoading participants list...");
-var ppath = path.join(__dirname, "../../data/participants.json"); 
-var data = fs.readFileSync(ppath,{ encoding: 'utf8' });
-console.log("Participants data length "+data.length+" bytes");
-var json=JSON.parse(data);
 var now = (new Date()).getTime();
-exports.participants=json;
-console.log(json.length+" participants total loaded\n");
-
 var partByID;
 exports.updateCount=0;
-function onParticipantsChanged() 
+function onParticipantsChanged(event) 
 {
 	partByID = {};
-	for (var i in json.participants) {
-		var p = json.participants[i];
+	for (var i in event.participants) {
+		var p = event.participants[i];
 		var id = p.idParticipant;
 		partByID[id]=p;
 	}
-	for (var i in exports.events) 
+	event.parts=[];
+	for (var k in event.participants) 
 	{
-		var event = exports.events[i];
-		event.parts=[];
-		for (var k in event.participants) {
-			var p = event.participants[k];
-			if (partByID[p]) {
-				event.parts.push(partByID[p]);
-			}
+		var p = event.participants[k];
+		if (partByID[p]) {
+			event.parts.push(partByID[p]);
 		}
-	} 
+	}	
 	exports.updateCount++;
 }
-
 //--------------------------------------------------------------------------------------
 console.log("Loading server configuration...");
 var data = fs.readFileSync(path.join(__dirname, "../../data/config.json"),{ encoding: 'utf8' });
@@ -57,33 +45,53 @@ for (var j in json.events)
 	var event = json.events[j];
 	event.startTime = json.simulation.enabled ? new Date() : new Date(moment.utc(event.startTime, "DD.MM.YYYY HH:mm"));
 	event.endTime = json.simulation.enabled ? new Date((new Date().getTime())+60*1000*60*24) : new Date(moment.utc(event.endTime, "DD.MM.YYYY HH:mm"));
-
-	
 	console.log("START : "+event.startTime);
-	
 	console.log("\nEvent configration ["+Utils.formatDateTime(event.startTime)+"  >  "+Utils.formatDateTime(event.endTime)+"]");
 	console.log("Now is "+Utils.formatDateTime(new Date(now)));
 	console.log((event.startTime.getTime()-now)/(60.0*1000.0)+" MINUTES TO GO\n");
 	if (!event.starts)
 		event.starts=[];
-	if (!event.participants)
-		event.participants=[];	
 	for (var i in event.starts) 
 	{
 		var str = event.starts[i];
 		str.startTime = json.simulation.enabled ?  new Date() : moment.utc( moment.utc(event.startTime).format("DD.MM.YYYY")+" "+str.startTime, "DD.MM.YYYY HH:mm").toDate();
 		console.log("START for ["+str.fromStartNo+".."+str.toStartNo+"] @ "+Utils.formatDateTime(str.startTime));
 	}
-	var pp=[];
-	
-	if (json.simulation.enabled)
-		break;
+	event.participants=[];
+	var ppath = path.join(__dirname, "../../data/"+event.id+"/participants.json");
+	if (fs.existsSync(ppath)) {
+		try {
+			event.participants=JSON.parse(fs.readFileSync(ppath,{ encoding: 'utf8' }));
+		} catch (e) {
+			console.error("Can not parse participants json "+ppath);
+		}
+	}
+	console.log("Found participants : "+event.participants.length+" for event "+event.code);
+	event.assignments={};
+	var ppath = path.join(__dirname, "../../data/"+event.id+"/assignments.json");
+	if (fs.existsSync(ppath)) {
+		try {
+			event.assignments=JSON.parse(fs.readFileSync(ppath,{ encoding: 'utf8' }));
+		} catch (e) {
+			console.error("Can not parse assignments json "+ppath);
+		}
+	}
+	console.log("Found assignments : "+Object.keys(event.assignments).length+" for event "+event.code);	
 }
 //------------------------------------------------------------------------------------------
 for (var i in json)
 	exports[i]=json[i];
-onParticipantsChanged();
 //--------------------------------------------------------------------------------------
+exports.getEventById = function(id) {
+	for (var i in exports.events) 
+	{
+		var event = exports.events[i];
+		if (event.id == id)
+			return event;
+	}
+	return null;	
+} 
+
 exports.getCurrentEvent = function() 
 {
 	var ctime = (new Date()).getTime();
@@ -145,18 +153,6 @@ xml2js.parseString(data, function (err, result) {
 	}
 });
 //--------------------------------------------------------------------------------------
-var apath = path.join(__dirname, "../../data/assignments.json");
-var data = "{}";
-if (fs.existsSync(apath))
-	data=fs.readFileSync(apath,{ encoding: 'utf8' });
-console.log("Assignments data length "+data.length+" bytes");
-var assignments={};
-try {
-	assignments=JSON.parse(data);
-} catch(e) {
-	console.log("ERROR parsing json (assignments) : "+e)
-}
-exports.assignments=assignments;
 function mapIMEI(imei) {
 	if (aliases[imei])
 		return aliases[imei];
@@ -171,26 +167,29 @@ function unmapIMEI(imei)
 	}
 	return imei;
 }
-
-exports.aliases=aliases;
 exports.mapIMEI=mapIMEI;
 exports.unmapIMEI=unmapIMEI;
-function assignIMEI(mikaId,imei) 
+
+function assignIMEI(event,mikaId,imei) 
 {
 	if (!imei)
-		delete assignments[mikaId];
+		delete event.assignments[mikaId];
 	else
-		assignments[mikaId]=imei;
-	fs.writeFileSync(apath, JSON.stringify(assignments, null, 4)); 
+		event.assignments[mikaId]=imei;
+
+	
+	console.log("ASSIGN IMEI "+event.id);
+	console.log(event.assignments);
+	
+	var dpath = path.join(__dirname, "../../data/"+event.id);
+	if (!fs.existsSync(dpath)){
+	    fs.mkdirSync(dpath);
+	}	
+	var ppath = path.join(__dirname, "../../data/"+event.id+"/assignments.json"); 
+	fs.writeFileSync(ppath, JSON.stringify(event.assignments, null, 4)); 	
 	exports.updateCount++
 }
-function lookupIMEI(id) {
-	if (assignments[id] && assignments[id].length)
-		return assignments[id]; 
-	return null
-}
 exports.assignIMEI=assignIMEI;
-
 function saveEvents() 
 {
 	var ee=[];
@@ -229,24 +228,28 @@ function saveEvents()
 				s.fromStartNo=os.fromStartNo;
 			if (os.toStartNo != undefined)
 				s.toStartNo=os.toStartNo;
-			e.starts.push(s);
-			//console.log("KEY = "+k);
-			//console.log(JSON.stringify(s, null, 4));
+			e.starts.push(s);		
 		}
 		ee.push(e);
 	}
 	fs.writeFileSync(epath, JSON.stringify(ee, null, 4));
 }
-function saveParticipants() {
-	fs.writeFileSync(ppath, JSON.stringify(exports.participants, null, 4));
+function saveParticipants(event) 
+{
+	var dpath = path.join(__dirname, "../../data/"+event.id);
+	if (!fs.existsSync(dpath)){
+	    fs.mkdirSync(dpath);
+	}
+	var ppath = path.join(__dirname, "../../data/"+event.id+"/participants.json"); 
+	fs.writeFileSync(ppath, JSON.stringify(event.participants, null, 4)); 
 }
 //-----------------------------------
-function deleteParticipant(id) {
+function deleteParticipant(event,id) {
 	var npart=[];
 	var ok=false;
-	for (var i in exports.participants) 
+	for (var i in event.participants) 
 	{
-		var part = exports.participants[i];
+		var part = event.participants[i];
 		if (part.idParticipant == id) {
 			ok=true;
 			continue;
@@ -254,14 +257,13 @@ function deleteParticipant(id) {
 		npart.push(part);
 	}
 	if (ok) {
-		exports.participants=npart;
-		onParticipantsChanged();
-		saveParticipants();
+		onParticipantsChanged(event);
+		saveParticipants(event);
 	}
 	return ok;
 }
 exports.deleteParticipant=deleteParticipant;
-function updateParticipant(id,json) 
+function updateParticipant(event,id,json) 
 {	
 	function doIt(part) 
 	{
@@ -280,25 +282,26 @@ function updateParticipant(id,json)
 			delete part.startNo;
 		else
 			part.startNo=json.startNo;
-		onParticipantsChanged();
-		saveParticipants();
+		onParticipantsChanged(event);
+		saveParticipants(event);
 		return part;
 	}
-	for (var i in exports.participants) 
+	for (var i in event.participants) 
 	{
-		var part = exports.participants[i];
+		var part = event.participants[i];
 		if (part.idParticipant == id)  
 			return doIt(part);
 	}
 	var part = doIt({});
-	exports.participants.push(part);
-	onParticipantsChanged();
-	saveParticipants();
+	event.participants.push(part);
+	onParticipantsChanged(event);
+	saveParticipants(event);
 	return part;
 }
 exports.updateParticipant=updateParticipant;
 //-----------------------------------
 function deleteEvent(id) {
+	// TODO DELETE SUBDIRECTORIES
 	var nevent=[];
 	var ok=false;
 	for (var i in exports.events) 
@@ -394,7 +397,3 @@ function updateStart(event,id,json)
 }
 exports.updateStart=updateStart;
 //--------------------------------------------------------------------------------------
-//assignIMEI("ABC1","123A");
-//--------------------------------------------------------------------------------------
-console.log("Found "+Object.keys(assignments).length+" assignments\n");
-console.log(Object.keys(aliases).length+" aliases read from aliases.xml");

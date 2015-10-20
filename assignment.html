@@ -6,11 +6,11 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
  	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<script src="jquery.blockUI.js"></script>
- 	<script src="jquery.autocomplete.min.js"></script>
+	<script src="js/jquery.blockUI.js"></script>
+ 	<script src="js/jquery.autocomplete.min.js"></script>
 
- 	<link rel="stylesheet" type="text/css" href="jquery.resizeandcrop.css">
- 	<script type="text/javascript" src="jquery.resizeandcrop.js"></script>
+ 	<link rel="stylesheet" type="text/css" href="js/jquery.resizeandcrop.css">
+ 	<script type="text/javascript" src="js/jquery.resizeandcrop.js"></script>
  
 
 	<style>
@@ -100,7 +100,7 @@
 			padding-top : 10px;
 			padding-bottom : 10px;
 			padding-left : 5px;
-1		}
+		}
 		
 		.links a {
 			margin-right : 10px;
@@ -140,6 +140,8 @@
 <body>
 <div class="header">
 
+	<h1 class="page_title">Assignments for</h1>
+	
 	<div class="searchfield">
 	    <div class='form'><input type="text" id="name" placeholder="Participant Name" /></div>
 	 </div>
@@ -150,6 +152,24 @@
 	<input type='file' id="file" disabled/>
 	
 	<script>
+function transformToAssocArray(prmstr) {
+    var params = {};
+    var prmarr = prmstr.split("&");
+    for (var i = 0; i < prmarr.length; i++) {
+        var tmparr = prmarr[i].split("=");
+        params[tmparr[0]] = decodeURIComponent(tmparr[1]);
+    }
+    return params;
+}
+function getSearchParameters() {
+	    var prmstr = window.location.search.substr(1);
+	    return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+}
+var params = getSearchParameters();
+var eid = params.eid;
+console.log(params.title);
+document.title="Assignments for event "+(params.title ? params.title : "");
+	
 $.fn.pressEnter = function(fn) {  
     return this.each(function() {  
         $(this).bind('enterPress', fn);
@@ -180,7 +200,7 @@ function convertImgToBase64URL(url, callback, outputFormat){
 var partName2ID = [];
 var ID2PartName = [];
 $.ajaxSetup({ cache: false });
-$.getJSON( "../participants?mode=acmpl", function( data ) 
+$.getJSON( "../participants/"+eid+"?mode=acmpl", function( data ) 
 {
 	for (var i in data) 
 	{ 
@@ -189,8 +209,10 @@ $.getJSON( "../participants?mode=acmpl", function( data )
 	}
 });
 //---------------------------------------------------------------------
+document.title="Assignments "+(params.title ? params.title : "");
 $( document ).ready(function() 
 {
+	$(".page_title").html("Assignments "+(params.title ? params.title : ""));
 	function block() {
 		$.blockUI({
 			message : "",
@@ -241,7 +263,7 @@ $( document ).ready(function()
 		if (val && val.length) 
 		{
 			block();
-			$.getJSON( "../participant/"+val, function( data ) 
+			$.getJSON( "../participant/"+eid+"/"+val, function( data ) 
 			{
 				unblock();
 				if (data && Object.keys(data) && Object.keys(data).length) { 
@@ -340,7 +362,7 @@ $( document ).ready(function()
 		var img="";
 		if (imgNew)
 			img = imageToDataUri($("#block img")[0],128,128);
-		$.post( "../participant/"+id+"/setimei", {value : imei,img : img }).done(function(data) {
+		$.post( "../participant/"+eid+"/"+id+"/setimei", {value : imei,img : img }).done(function(data) {
 			unblock();
 			if (!data.error) {
 				$("#msg").html("");
@@ -393,17 +415,12 @@ $( document ).ready(function()
 	<div id="msg"></div>
 </div>
 <div class="links" style="display:none">
-	<a href="../assignments" target="_blank">Assignments</a>
+	<a href="../assignments/" target="_blank">Assignments</a>
 </div>
 <div class="info" style="display:none">
 <div id="block">
 </div>
 <textarea id="partjson" disabled></textarea> 
-</div>
-<div class="links">
-	<a href="../aliases" target="_blank">Aliases</a>
-	<a href="../assignments" target="_blank">Assignments</a>
-	<a href="../participants" target="_blank">Participants</a>
 </div>
 </body>
 </html>

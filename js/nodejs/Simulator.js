@@ -46,62 +46,83 @@ function generateJSON(imei,lons,lats,times)
 	return res;
 }
 //------------------------------------------
-exports.startSimulation = function(track,coef)  
+exports.simulate = function(event,track,onDone)  
 {
-	var trackInSeconds = 5*60*coef;	//10 min
-	console.log("Staring simulation with coef "+coef);
-	var stime = (new Date()).getTime();			 	// start ofs -30 sec 			
-	var randcoef = CONFIG.simulation.gpsInaccuracy * track.getTrackLengthInWGS84() / track.getTrackLength();
+	if (!track.participants || !track.participants.length) {
+		onDone();
+		return;
+	}
+	//-------------------------------
 	// clear all gps tracking data first..
-	var k=0;
+	var cnt1=0;
 	for (var i in track.participants) 
 	{
 		var id = track.participants[i].deviceId;
-		k++;
+		cnt1++;
 		request.get("http://liveortung.de/triathlon/rest/clearRace/"+id,doIt);
 	}
 	
-	function doIt() {
-		k--;
-		if (k == 0) {
-			console.log("Clearing data for simulation DONE | Starting... ")
-			tick();
-			setInterval(tick,30*1000); /* 30 seconds every simulation */
+	function doIt() 
+	{
+		cnt1--;
+		if (cnt1 == 0) 
+		{
+			var randcoef = CONFIG.simulation.gpsInaccuracy * track.getTrackLengthInWGS84() / track.getTrackLength();
+			var stime = event.startTime.getTime();
+			var etime = event.endTime.getTime();
+			console.log("Done clearing log! Starting simulation "+event.code);
+			console.log(event.startTime);
+			console.log(event.endTime);
+			var coefs=[];
+			for (var i in track.participants) 
+				coefs.push(Math.random()+1);
+			var t=stime-30*1000; 
+		    function doOne()
+			{
+		    	t+=30*1000;
+		    	if (t >= event.endTime.getTime()) {
+		    		onDone();
+		    		return;
+		    	}
+				var kk=track.participants.length;
+				console.log("Simulate "+new Date(t));
+				for (var i in track.participants) 
+				{
+					var part = track.participants[i];		
+					var lons = [];
+					var lats = [];
+					var times = [];
+					for (var k=0;k<3;k++) 
+					{
+						var tm = t + k*10*1000;
+						var elapsed = (tm - stime)/(etime-stime)*coefs[i];
+						if (elapsed > 1)
+							elapsed=1;
+						var pos = track.getPositionAndRotationFromElapsed(elapsed);
+						var dist1 = (Math.random()*2.0-1.0)*randcoef;
+						var dist2 =  (Math.random()*2.0-1.0)*randcoef*coefy;
+						pos[0]+=dist1;
+						pos[1]+=dist2;
+						times.push(tm); // GMT timestamp
+						lons.push(pos[0]);
+						lats.push(pos[1]);
+						console.log("ELAPSED="+elapsed);
+					}
+					var json = generateJSON(part.deviceId,lons,lats,times);
+					var client = requestJSON.createClient("http://liveortung.de");
+					function onReqDone() {
+						kk--;
+						//console.log(kk+" | POSTED for "+this.deviceId+" | TIME = "+moment.utc(times[0]).format("HHmmss.SS")+" | "+JSON.stringify(json));
+						if (kk == 0) {
+							doOne();
+						}
+					}
+					client.post('http://liveortung.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
+				}
+			}
+		    doOne();
 		}
 	}
-	track.test1();
-	function tick() 
-	{
-		var ctime = (new Date()).getTime();
-		for (var i in track.participants) 
-		{
-			var part = track.participants[i];		
-			var lons = [];
-			var lats = [];
-			var times = [];
-			for (var k=0;k<3;k++) 
-			{
-				var tm = ctime - (2-k)*10*1000;
-				if (tm < stime)
-					tm=stime;
-				var elapsed = ((tm - stime)/1000.0)/trackInSeconds + Config.simulation.startElapsed;
-				if (elapsed > 1)
-					elapsed=1;
-				var pos = track.getPositionAndRotationFromElapsed(elapsed);
-				var dist1 = (Math.random()*2.0-1.0)*randcoef;
-				var dist2 =  (Math.random()*2.0-1.0)*randcoef*coefy;
-				pos[0]+=dist1;
-				pos[1]+=dist2;
-				times.push(tm); // GMT timestamp
-				lons.push(pos[0]);
-				lats.push(pos[1]);
-			}
-			var json = generateJSON(part.deviceId,lons,lats,times);
-			var client = requestJSON.createClient("http://liveortung.de");
-			function onReqDone() {
-				//return console.log("POSTED for "+this.deviceId+" | TIME = "+moment.utc(times[0]).format("HHmmss.SS")+" | "+JSON.stringify(json));								
-			}
-			client.post('http://liveortung.de/triathlon/rest/raceData/blah/'+part.deviceId, json, onReqDone.bind(part));
-		}
-	}	
+	//-------------------------------
+	
 }

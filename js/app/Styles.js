@@ -1,4 +1,30 @@
 var CONFIG = require('./Config');
+//---------------------------------
+var aliases={};
+var aliasesR={};
+$.ajax({
+	type: "GET",
+	url: "data/aliases.xml",
+	dataType: "xml",
+	success: function(xml) {
+		var $xml = $(xml);
+		var $title = $xml.find( "M2MDevice" ).each(function() {
+			var devId=$(this).attr("m2mDeviceId");
+			var imei=$(this).attr("imeiNumber");
+			aliases[imei]=devId;
+			aliasesR[devId]=imei;
+		});
+	}
+});
+
+function alias(imei) 
+{ 
+	if (aliasesR[imei])
+		return aliasesR[imei];
+	return imei;
+}
+//---------------------------------
+
 
 var STYLES=
 {
@@ -261,21 +287,19 @@ var STYLES=
 		if (!part.isFavorite)
 			return [];
 		
+		var ctime = part.__ctime ? part.__ctime : (new Date()).getTime();
+		var speed = part.avg(ctime,"speed");
 		var etxt="";
-		var lstate = null;
-		if (part.states.length) {
-			lstate = part.states[part.states.length-1];
-			etxt=" "+parseFloat(Math.ceil(lstate.getSpeed() * 100) / 100).toFixed(2)+" m/s";// | acc "+parseFloat(Math.ceil(lstate.getAcceleration() * 100) / 100).toFixed(2)+" m/s";
+		if (speed) {
+			etxt=" "+parseFloat(Math.ceil(speed* 100) / 100).toFixed(2)+" m/s";
 		}
 		var zIndex = Math.round(part.getElapsed()*1000000)*1000+part.seqId;
-		/*if (part == GUI.getSelectedParticipant()) {
-			zIndex=1e20;
-		}*/
 		var styles=[];
 		//-----------------------------------------------------------------------------------------------------------------------
-		var ctime = (new Date()).getTime();
 		var isTime = (ctime >= CONFIG.times.begin && ctime <= CONFIG.times.end);
-		var isDirection = (lstate && lstate.getSpeed() > 0 && !part.isSOS && !part.isDiscarded && isTime);
+		var isSOS = part.min(ctime,"isSOS");
+		var isDiscarded = part.min(ctime,"isDiscarded");
+		var isDirection = (speed && !isSOS && !isDiscarded && isTime);
 		var animFrame = (ctime%3000)*Math.PI*2/3000.0;
 
         if (isTime) {
@@ -284,10 +308,10 @@ var STYLES=
                 image: new ol.style.Circle({
                     radius: 17,
                     fill: new ol.style.Fill({
-                        color: part.isDiscarded || part.isSOS ? "rgba(192,0,0," + (Math.sin(animFrame) * 0.7 + 0.3) + ")" : "rgba(" + colorAlphaArray(part.color, 0.85).join(",") + ")"
+                        color: isDiscarded || isSOS ? "rgba(192,0,0," + (Math.sin(animFrame) * 0.7 + 0.3) + ")" : "rgba(" + colorAlphaArray(part.color, 0.85).join(",") + ")"
                     }),
                     stroke: new ol.style.Stroke({
-                        color: part.isDiscarded || part.isSOS ? "rgba(255,0,0," + (1.0 - (Math.sin(animFrame) * 0.7 + 0.3)) + ")" : "#ffffff",
+                        color: isDiscarded || isSOS ? "rgba(255,0,0," + (1.0 - (Math.sin(animFrame) * 0.7 + 0.3)) + ")" : "#ffffff",
                         width: 3
                     })
                 }),
@@ -319,7 +343,7 @@ var STYLES=
                     fill: new ol.style.Fill({
                         color: '#000000'
                     }),
-                    text: part.getDeviceId(),
+                    text: alias(part.getDeviceId()),
                     offsetX: 0,
                     offsetY: 20
                 })
