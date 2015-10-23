@@ -305,7 +305,7 @@ $(document).ready(function () {
         $("body").addClass("mobile");
     // Event data loading - realtime or hard simulated
     //--------------------------------------------------------------------------
-    var eventDataUrl = "../node/event";
+    var eventDataUrl = "../event";
     if (params["event"]) {
     	eventDataUrl=eventDataUrl+"?event="+encodeURIComponent(params.event);
     }
