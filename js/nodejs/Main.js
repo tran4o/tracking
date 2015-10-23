@@ -31,7 +31,7 @@ var app = express();
 
 app.use('/test/admin', express.static(__dirname + '/admin'));
 app.use('/test', express.static(__dirname + './../../'));
-
+app.use('/legacy', express.static(__dirname + './../../legacy'));
 app.use('/admin', express.static(__dirname + '/admin'));
 app.use('/data/img', express.static(__dirname + './../../data/img'));
 app.use(compress());
